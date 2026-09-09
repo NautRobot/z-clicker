@@ -1,6 +1,15 @@
+// Rebirth Stats (Moved to the top just to be safe)
+let rebirthTokens = 0;
+let rebirthPowerLevel = 0; 
+let rebirthAutoLevel = 0;  
+let rbPowerCost = 1;
+let rbAutoCost = 2;
+
+// Standard Stats
 let zekes = 0; 
-let baseClickGain = 1 * rebirthPowerLevel; 
-let baseIdleZekes = 0 * rebirthAutoLevel; 
+// FIXED: Removed the math here so it doesn't try to access variables early or start you at 0 clicks
+let baseClickGain = 1; 
+let baseIdleZekes = 0; 
 const costMultiplier = 2.5; 
 
 // Costs
@@ -34,13 +43,6 @@ let zekeRobotCount = 0;
 
 let zekePartOne = false;
 let zekePartTwo = false;
-
-// Rebirth Stats
-let rebirthTokens = 0;
-let rebirthPowerLevel = 0; 
-let rebirthAutoLevel = 0;  
-let rbPowerCost = 1;
-let rbAutoCost = 2;
 
 const image = document.getElementById('zeke'); 
 
