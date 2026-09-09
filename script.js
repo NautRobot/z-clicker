@@ -154,7 +154,8 @@ function buyUpgrade(upgradeName) {
             if (zekes >= zekePartOneCost) { 
                 zekes -= zekePartOneCost; 
                 zekePartOne = true;
-                baseClickGain += 10000;
+                baseClickGain *= 1000;
+                updateAll();
                 document.getElementById('partOneBox').style.display = 'none';
             } 
             break; 
