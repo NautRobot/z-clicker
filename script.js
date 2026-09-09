@@ -71,7 +71,7 @@ function buyUpgrade(upgradeName) {
         case 'zekeFinger': 
             if (zekes >= zekeFingerCost) { 
                 zekes -= zekeFingerCost; 
-                baseClickGain += 1; 
+                baseClickGain += 1 * Math.max(1, rebirthPowerLevel); 
                 zekeFingerCount++; 
                 zekeFingerCost = Math.floor(zekeFingerCost * costMultiplier); 
             } 
@@ -79,7 +79,7 @@ function buyUpgrade(upgradeName) {
         case 'zekeToe': 
             if (zekes >= zekeToeCost) { 
                 zekes -= zekeToeCost; 
-                baseClickGain += 5; 
+                baseClickGain += 5 * Math.max(1, rebirthPowerLevel); 
                 zekeToeCount++; 
                 zekeToeCost = Math.floor(zekeToeCost * costMultiplier); 
             } 
@@ -87,7 +87,7 @@ function buyUpgrade(upgradeName) {
         case 'zekeFoot': 
             if (zekes >= zekeFootCost) { 
                 zekes -= zekeFootCost; 
-                baseClickGain += 10; 
+                baseClickGain += 10 * Math.max(1, rebirthPowerLevel); 
                 zekeFootCount++; 
                 zekeFootCost = Math.floor(zekeFootCost * costMultiplier); 
             } 
@@ -95,7 +95,7 @@ function buyUpgrade(upgradeName) {
         case 'zekeArm': 
             if (zekes >= zekeArmCost) { 
                 zekes -= zekeArmCost; 
-                baseClickGain += 25; 
+                baseClickGain += 25 * Math.max(1, rebirthPowerLevel); 
                 zekeArmCount++; 
                 zekeArmCost = Math.floor(zekeArmCost * costMultiplier); 
             } 
@@ -103,15 +103,15 @@ function buyUpgrade(upgradeName) {
         case 'zekeLeg': 
             if (zekes >= zekeLegCost) { 
                 zekes -= zekeLegCost; 
-                baseClickGain += 100; 
+                baseClickGain += 100 * Math.max(1, rebirthPowerLevel); 
                 zekeLegCount++; 
                 zekeLegCost = Math.floor(zekeLegCost * costMultiplier); 
             } 
-            break; 
+            break;
         case 'zekeShoe': 
             if (zekes >= zekeShoeCost) { 
                 zekes -= zekeShoeCost; 
-                baseIdleZekes += 1;
+                baseIdleZekes += 1 * Math.max(1, rebirthAutoLevel);
                 zekeShoeCount++; 
                 zekeShoeCost = Math.floor(zekeShoeCost * costMultiplier); 
             } 
@@ -119,7 +119,7 @@ function buyUpgrade(upgradeName) {
         case 'zekeGlasses': 
             if (zekes >= zekeGlassesCost) { 
                 zekes -= zekeGlassesCost; 
-                baseIdleZekes += 5;
+                baseIdleZekes += 5 * Math.max(1, rebirthAutoLevel);
                 zekeGlassesCount++; 
                 zekeGlassesCost = Math.floor(zekeGlassesCost * costMultiplier); 
             } 
@@ -127,7 +127,7 @@ function buyUpgrade(upgradeName) {
         case 'zekeBackpack': 
             if (zekes >= zekeBackpackCost) { 
                 zekes -= zekeBackpackCost; 
-                baseIdleZekes += 50;
+                baseIdleZekes += 50 * Math.max(1, rebirthAutoLevel);
                 zekeBackpackCount++; 
                 zekeBackpackCost = Math.floor(zekeBackpackCost * costMultiplier); 
             } 
@@ -135,7 +135,7 @@ function buyUpgrade(upgradeName) {
         case 'zekeLiver': 
             if (zekes >= zekeLiverCost) { 
                 zekes -= zekeLiverCost; 
-                baseIdleZekes += 100;
+                baseIdleZekes += 100 * Math.max(1, rebirthAutoLevel);
                 zekeLiverCount++; 
                 zekeLiverCost = Math.floor(zekeLiverCost * costMultiplier); 
             } 
@@ -143,7 +143,7 @@ function buyUpgrade(upgradeName) {
         case 'zekeRobot': 
             if (zekes >= zekeRobotCost) { 
                 zekes -= zekeRobotCost; 
-                baseIdleZekes += 1000;
+                baseIdleZekes += 1000 * Math.max(1, rebirthAutoLevel);
                 zekeRobotCount++; 
                 zekeRobotCost = Math.floor(zekeRobotCost * costMultiplier); 
             } 
@@ -240,6 +240,9 @@ function buyRebirthUpgrade(type) {
 
 function updateAll() { 
     let currentClickGain = (baseClickGain + rebirthPowerLevel);
+    let currentIdleZekes = baseIdleZekes * (1 + rebirthAutoLevel);
+    let tokenMultiplier = Math.max(1, rebirthTokens);
+    let currentClickGain = (baseClickGain + rebirthPowerLevel) * tokenMultiplier;
     let currentIdleZekes = baseIdleZekes * (1 + rebirthAutoLevel);
 
     document.getElementById("zekeCount").innerHTML = zekes; 
