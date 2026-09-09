@@ -1,7 +1,7 @@
 let zekes = 0; 
 let baseClickGain = 1; 
 let baseIdleZekes = 0; 
-const costMultiplier = 2.5; 
+const costMultiplier = 1.8; 
 
 // Costs
 let zekeFingerCost = 15; 
@@ -16,8 +16,8 @@ let zekeBackpackCost = 10000;
 let zekeLiverCost = 100000;
 let zekeRobotCost = 1000000;
 
-let zekePartOneCost = 1000000000;
-let zekePartTwoCost = 100000000000;
+let zekePartOneCost = 10000000;
+let zekePartTwoCost = 100000000;
 
 // Counts
 let zekeFingerCount = 0; 
