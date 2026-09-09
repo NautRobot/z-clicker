@@ -1,0 +1,211 @@
+body {
+  margin: 0;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  font-family: sans-serif;
+  overflow: hidden;
+  background-color: #1a1a1a;
+  color: #fff;
+}
+.banner {
+  width: 100%;
+  background: linear-gradient(90deg, #ff007f, #7f00ff);
+  text-align: center;
+  padding: 30px 0;
+  box-shadow: 0 6px 20px rgba(255,0,127,0.5);
+}
+.banner h1 {
+  margin: 0;
+  font-family: 'Rubik Glitch', cursive;
+  font-size: 4.5rem;
+  color: #fff;
+  letter-spacing: 4px;
+  text-shadow: 3px 3px #00ffff, -3px -3px #ff007f;
+}
+.main-layout {
+  display: flex;
+  flex: 1;
+  width: 100%;
+  justify-content: space-between;
+  align-items: stretch;
+  overflow: hidden;
+}
+.left-sidebar, .right-sidebar {
+  width: 280px;
+  background-color: #222;
+  padding: 20px;
+  box-sizing: border-box;
+  border-left: 2px solid #333;
+  border-right: 2px solid #333;
+  overflow-y: auto;
+  height: 100%;
+}
+.left-sidebar h3, .right-sidebar h3 {
+  text-align: center;
+  color: #00ffff;
+  font-family: 'Bungee Shade', cursive;
+  font-size: 1.1rem;
+}
+.upgrade-box {
+  background: linear-gradient(135deg, #2c3e50, #3498db);
+  border: 2px solid #00ffff;
+  border-radius: 12px;
+  padding: 12px;
+  margin-bottom: 15px;
+  box-shadow: 0 4px 12px rgba(0,255,255,0.2);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.upgrade-box:hover {
+  transform: translateY(-4px) scale(1.02);
+  box-shadow: 0 6px 18px rgba(0,255,255,0.4);
+}
+.upgrade-box button {
+  background-color: #ff007f;
+  color: white;
+  border: none;
+  padding: 10px;
+  width: 100%;
+  border-radius: 8px;
+  font-weight: bold;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: background 0.2s;
+}
+.upgrade-box button:hover {
+  background-color: #00ffff;
+  color: #1a1a1a;
+}
+.upgrade-box p {
+  margin: 8px 0 0 0;
+  font-size: 0.85rem;
+  text-align: right;
+  color: #f1c40f;
+}
+
+.upgrade-box-win {
+  background: linear-gradient(135deg, #2c3e50, #3498db);
+  border: 2px solid #00dddd;
+  border-radius: 12px;
+  padding: 12px;
+  margin-bottom: 15px;
+  box-shadow: 0 4px 12px rgba(0,105,155,0.2);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.upgrade-box-win:hover {
+  transform: translateY(-4px) scale(1.02);
+  box-shadow: 0 6px 18px rgba(0,105,155,0.4);
+}
+.upgrade-box-win button {
+  background-color: #bb343c;
+  color: white;
+  border: none;
+  padding: 10px;
+  width: 100%;
+  border-radius: 8px;
+  font-weight: bold;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: background 0.2s;
+}
+.upgrade-box-win button:hover {
+  background-color: #00ffff;
+  color: #3c3c3c;
+}
+.upgrade-box-win p {
+  margin: 8px 0 0 0;
+  font-size: 0.85rem;
+  text-align: right;
+  color: #b4c0af;
+}
+
+.rebirth-shop-box {
+  background: linear-gradient(135deg, #4b0082, #8a2be2);
+  border: 2px solid #ff00ff;
+  border-radius: 12px;
+  padding: 12px;
+  margin-bottom: 15px;
+  box-shadow: 0 4px 12px rgba(255,0,255,0.3);
+}
+.rebirth-shop-box button {
+  background-color: #ff00ff;
+  color: white;
+  border: none;
+  padding: 10px;
+  width: 100%;
+  border-radius: 8px;
+  font-weight: bold;
+  cursor: pointer;
+  font-size: 0.9rem;
+}
+.rebirth-shop-box button:hover {
+  background-color: #ffff00;
+  color: #1a1a1a;
+}
+.rebirth-shop-box p {
+  margin: 8px 0 0 0;
+  font-size: 0.85rem;
+  text-align: right;
+  color: #00ffff;
+}
+
+.game-container {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+  overflow-y: auto;
+}
+#zeke {
+  width: 350px;
+  height: 350px;
+  cursor: pointer;
+  max-width: 100%;
+  border-radius: 50%;
+  box-shadow: 0 0 30px rgba(255,0,127,0.4);
+  transition: width 0.5s ease, height 0.5s ease;
+}
+.win-image {
+  width: 550px !important;
+  height: 550px !important;
+  box-shadow: 0 0 60px rgba(0,255,255,0.8) !important;
+}
+.click-animation {
+  animation: pop 0.1s ease-out;
+}
+@keyframes pop {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.2); }
+  100% { transform: scale(1); }
+}
+#win-screen {
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 15px;
+}
+#win-screen h2 {
+  font-family: 'Rubik Glitch', cursive;
+  font-size: 3rem;
+  color: #00ffff;
+  margin: 0 0 10px 0;
+  text-shadow: 2px 2px #ff007f;
+}
+#win-screen button {
+  background-color: #00ff00;
+  color: #1a1a1a;
+  border: none;
+  padding: 12px 24px;
+  font-size: 1.2rem;
+  font-weight: bold;
+  border-radius: 10px;
+  cursor: pointer;
+  box-shadow: 0 0 15px #00ff00;
+}
+#win-screen button:hover {
+  background-color: #fff;
+  color: #000;
+}
