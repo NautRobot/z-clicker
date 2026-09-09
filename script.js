@@ -240,8 +240,6 @@ function buyRebirthUpgrade(type) {
 }
 
 function updateAll() { 
-    let currentClickGain = (baseClickGain + rebirthPowerLevel);
-    let currentIdleZekes = baseIdleZekes * (1 + rebirthAutoLevel);
     let tokenMultiplier = Math.max(1, rebirthTokens);
     let currentClickGain = (baseClickGain + rebirthPowerLevel) * tokenMultiplier;
     let currentIdleZekes = baseIdleZekes * (1 + rebirthAutoLevel);
@@ -303,7 +301,9 @@ function gainZeke(amount) {
 } 
 
 function gainZekesAutoCount() { 
-    gainZeke(baseClickGain + rebirthPowerLevel); 
+    let tokenMultiplier = Math.max(1, rebirthTokens);
+    let currentClickGain = (baseClickGain + rebirthPowerLevel) * tokenMultiplier;
+    gainZeke(currentClickGain); 
 } 
 
 function zekeBeep() { 
