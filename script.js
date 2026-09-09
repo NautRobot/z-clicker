@@ -153,7 +153,6 @@ function buyUpgrade(upgradeName) {
                 zekes -= zekePartOneCost; 
                 zekePartOne = true;
                 baseClickGain += 10000;
-                updateAll();
                 document.getElementById('partOneBox').style.display = 'none';
             } 
             break; 
