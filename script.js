@@ -17,7 +17,7 @@ let zekeLiverCost = 100000;
 let zekeRobotCost = 1000000;
 
 let zekePartOneCost = 1000000000;
-let zekePartTwoCost = 100000000000;
+let zekePartTwoCost = 10000000000;
 
 // Counts
 let zekeFingerCount = 0; 
@@ -152,6 +152,8 @@ function buyUpgrade(upgradeName) {
             if (zekes >= zekePartOneCost) { 
                 zekes -= zekePartOneCost; 
                 zekePartOne = true;
+                baseClickGain += 10000;
+                updateAll();
                 document.getElementById('partOneBox').style.display = 'none';
             } 
             break; 
