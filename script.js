@@ -307,8 +307,8 @@ function gainZekesAutoCount() {
 } 
 
 function zekeBeep() { 
-    const audio = new Audio('zekeBeep.mp3'); 
-    audio.play().catch(e => console.log("Audio playback prevented until user interacts with the page: ", e)); 
+    // const audio = new Audio('zekeBeep.mp3'); 
+    // audio.play().catch(e => console.log("Audio playback prevented until user interacts with the page: ", e)); 
 }
 
 // --- COOKIE SAVE SYSTEM ---
