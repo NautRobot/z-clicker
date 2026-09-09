@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html>
+<head>
+<link href="https://googleapis.com" rel="stylesheet">
+<style>
+body {
+  margin: 0;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  font-family: sans-serif;
+  overflow: hidden;
+  background-color: #1a1a1a;
+  color: #fff;
+}
+.banner {
+  width: 100%;
+  background: linear-gradient(90deg, #ff007f, #7f00ff);
+  text-align: center;
+  padding: 30px 0;
+  box-shadow: 0 6px 20px rgba(255,0,127,0.5);
+}
+.banner h1 {
+  margin: 0;
+  font-family: 'Rubik Glitch', cursive;
+  font-size: 4.5rem;
+  color: #fff;
+  letter-spacing: 4px;
+  text-shadow: 3px 3px #00ffff, -3px -3px #ff007f;
+}
+.main-layout {
+  display: flex;
+  flex: 1;
+  width: 100%;
+  justify-content: space-between;
+  align-items: stretch;
+  overflow: hidden; /* Prevent the layout container from overflowing */
+}
+.left-sidebar, .right-sidebar {
+  width: 280px;
+  background-color: #222;
+  padding: 20px;
+  box-sizing: border-box;
+  border-left: 2px solid #333;
+  border-right: 2px solid #333;
+  overflow-y: auto;
+  height: 100%; /* Fill the main layout height */
+}
+.left-sidebar h3, .right-sidebar h3 {
+  text-align: center;
+  color: #00ffff;
+  font-family: 'Bungee Shade', cursive;
+  font-size: 1.1rem;
+}
+.upgrade-box {
+  background: linear-gradient(135deg, #2c3e50, #3498db);
+  border: 2px solid #00ffff;
+  border-radius: 12px;
+  padding: 12px;
+  margin-bottom: 15px;
+  box-shadow: 0 4px 12px rgba(0,255,255,0.2);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.upgrade-box:hover {
+  transform: translateY(-4px) scale(1.02);
+  box-shadow: 0 6px 18px rgba(0,255,255,0.4);
+}
+.upgrade-box button {
+  background-color: #ff007f;
+  color: white;
+  border: none;
+  padding: 10px;
+  width: 100%;
+  border-radius: 8px;
+  font-weight: bold;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: background 0.2s;
+}
+.upgrade-box button:hover {
+  background-color: #00ffff;
+  color: #1a1a1a;
+}
+.upgrade-box p {
+  margin: 8px 0 0 0;
+  font-size: 0.85rem;
+  text-align: right;
+  color: #f1c40f;
+}
+
+    
+.upgrade-box-win {
+  background: linear-gradient(135deg, #2c3e50, #3498db);
+  border: 2px solid #00dddd;
+  border-radius: 12px;
+  padding: 12px;
+  margin-bottom: 15px;
+  box-shadow: 0 4px 12px rgba(0,105,155,0.2);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.upgrade-box-win:hover {
+  transform: translateY(-4px) scale(1.02);
+  box-shadow: 0 6px 18px rgba(0,105,155,0.4);
+}
+.upgrade-box-win button {
+  background-color: #bb343c;
+  color: white;
+  border: none;
+  padding: 10px;
+  width: 100%;
+  border-radius: 8px;
+  font-weight: bold;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: background 0.2s;
+}
+.upgrade-box-win button:hover {
+  background-color: #00ffff;
+  color: #3c3c3c;
+}
+.upgrade-box-win p {
+  margin: 8px 0 0 0;
+  font-size: 0.85rem;
+  text-align: right;
+  color: #b4c0af;
+}
+.game-container {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+  overflow-y: auto;
+}
+#zeke {
+  width: 350px;
+  height: 350px;
+  cursor: pointer;
+  max-width: 100%;
+  height: auto;
+  border-radius: 50%;
+  box-shadow: 0 0 30px rgba(255,0,127,0.4);
+}
+.click-animation {
+  animation: pop 0.1s ease-out;
+}
+@keyframes pop {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.2); }
+  100% { transform: scale(1); }
+}
+</style>
+</head>
+<body>
+<header class="banner">
+  <h1>ZEKE CLICKER</h1>
+</header>
+<div class="main-layout">
+  <div class="left-sidebar">
+    <h3>Click Upgrades</h3>
+    <div class="upgrade-box">
+      <button id="buyZekeFinger" onclick="buyUpgrade('zekeFinger')">
+        Buy Zeke's Finger (Cost: <span id="fingerCost">15</span>)
+      </button>
+      <p>Add +1 Click Value.</p>
+      <p>Owned: <span id="fingerCount">0</span></p>
+    </div>
+    <div class="upgrade-box">
+      <button id="buyZekeToe" onclick="buyUpgrade('zekeToe')">
+        Buy Zeke's Toe (Cost: <span id="toeCost">100</span>)
+      </button>
+      <p>Add +5 Click Value.</p>
+      <p>Owned: <span id="toeCount">0</span></p>
+    </div>
+    <div class="upgrade-box">
+      <button id="buyZekeFoot" onclick="buyUpgrade('zekeFoot')">
+        Buy Zeke's Foot (Cost: <span id="footCost">500</span>)
+      </button>
+      <p>Add +10 Click Value.</p>
+      <p>Owned: <span id="footCount">0</span></p>
+    </div>
+    <div class="upgrade-box">
+      <button id="buyZekeArm" onclick="buyUpgrade('zekeArm')">
+        Buy Zeke's Arm (Cost: <span id="armCost">2500</span>)
+      </button>
+      <p>Add +25 Click Value.</p>
+      <p>Owned: <span id="armCount">0</span></p>
+    </div>
+    <div class="upgrade-box">
+      <button id="buyZekeLeg" onclick="buyUpgrade('zekeLeg')">
+        Buy Zeke's Leg (Cost: <span id="legCost">10000</span>)
+      </button>
+      <p>Add +100 Click Value.</p>
+      <p>Owned: <span id="legCount">0</span></p>
+    </div>
+
+    <div class="upgrade-box-win">
+      <button id="zekePartOne" onclick="buyUpgrade('zekePartOne')">
+        Buy Zeke Part One (Cost: <span id="robotCost">1000000000</span>)
+      </button>
+      <p>Part 1/2. To Win.</p>
+    </div>
+  </div>
+  <div class="game-container">
+    <p style="font-size: 1.5rem; font-weight: bold;">Zekes Gathered: <span id="zekeCount">0</span></p>
+    <p style="color: #00ffff;">Zeke Click Value: <span id="zekeClickGain">1</span></p>
+    <p style="color: #00ffff;">Zekes Per Second: <span id="zekeIdleCount">0</span></p>
+    <img src="zeke.jpg" id="zeke" onclick="gainZekesAutoCount()">
+  </div>
+  <div class="right-sidebar">
+    <h3>Gather Upgrades</h3>
+    <div class="upgrade-box">
+      <button id="buyZekeShoe" onclick="buyUpgrade('zekeShoe')">
+        Buy Zeke's Shoe (Cost: <span id="shoeCost">100</span>)
+      </button>
+      <p>Add +1 Auto Value.</p>
+      <p>Owned: <span id="shoeCount">0</span></p>
+    </div>
+
+      <div class="upgrade-box">
+      <button id="buyZekeGlasses" onclick="buyUpgrade('zekeGlasses')">
+        Buy Zeke's Glasses (Cost: <span id="glassesCost">1000</span>)
+      </button>
+      <p>Add +5 Auto Value.</p>
+      <p>Owned: <span id="glassesCount">0</span></p>
+    </div>
+
+      <div class="upgrade-box">
+      <button id="buyZekeBackpack" onclick="buyUpgrade('zekeBackpack')">
+        Buy Zeke's Backpack (Cost: <span id="backpackCost">10000</span>)
+      </button>
+      <p>Add +50 Auto Value.</p>
+      <p>Owned: <span id="backpackCount">0</span></p>
+    </div>
+
+      <div class="upgrade-box">
+      <button id="buyZekeLiver" onclick="buyUpgrade('zekeLiver')">
+        Buy Zeke's Liver (Cost: <span id="liverCost">100000</span>)
+      </button>
+      <p>Add +100 Auto Value.</p>
+      <p>Owned: <span id="liverCount">0</span></p>
+    </div>
+
+      <div class="upgrade-box">
+      <button id="buyZekeRobot" onclick="buyUpgrade('zekeRobot')">
+        Buy Zeke's Robot (Cost: <span id="robotCost">1000000</span>)
+      </button>
+      <p>Add +1000 Auto Value.</p>
+      <p>Owned: <span id="robotCount">0</span></p>
+    </div>
+
+      <div class="upgrade-box-win">
+      <button id="zekePartTwo" onclick="buyUpgrade('zekePartTwo')">
+        Buy Zeke Part Two (Cost: <span id="robotCost">100000000000</span>)
+      </button>
+      <p>Part 2/2. To Win.</p>
+    </div>
+  </div>
+</div>
+<script src="script.js"></script>
+</body>
+</html>
