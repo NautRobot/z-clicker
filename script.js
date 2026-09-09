@@ -1,6 +1,6 @@
 let zekes = 0; 
-let baseClickGain = 1; 
-let baseIdleZekes = 0; 
+let baseClickGain = 1 * rebirthPowerLevel; 
+let baseIdleZekes = 0 * rebirthAutoLevel; 
 const costMultiplier = 2.5; 
 
 // Costs
