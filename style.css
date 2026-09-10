@@ -1,233 +1,146 @@
 body {
-  margin: 0;
-  height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  font-family: sans-serif;
-  overflow: hidden;
-  background-color: #1a1a1a;
-  color: #fff;
+    background-color: #121212;
+    color: #e0e0e0;
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
+
 .banner {
-  width: 100%;
-  background: linear-gradient(90deg, #ff007f, #7f00ff);
-  text-align: center;
-  padding: 30px 0;
-  box-shadow: 0 6px 20px rgba(255,0,127,0.5);
+    background-color: #1f1f1f;
+    width: 100%;
+    text-align: center;
+    padding: 15px 0;
+    border-bottom: 2px solid #333;
 }
+
 .banner h1 {
-  margin: 0;
-  font-family: 'Rubik Glitch', cursive;
-  font-size: 4.5rem;
-  color: #fff;
-  letter-spacing: 4px;
-  text-shadow: 3px 3px #00ffff, -3px -3px #ff007f;
+    margin: 0;
+    color: #ff007f;
+    letter-spacing: 2px;
 }
+
 .main-layout {
-  display: flex;
-  flex: 1;
-  width: 100%;
-  justify-content: space-between;
-  align-items: stretch;
-  overflow: hidden;
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    max-width: 1200px;
+    margin-top: 20px;
+    gap: 20px;
 }
+
 .left-sidebar, .right-sidebar {
-  width: 280px;
-  background-color: #222;
-  padding: 20px;
-  box-sizing: border-box;
-  border-left: 2px solid #333;
-  border-right: 2px solid #333;
-  overflow-y: auto;
-  height: 100%;
+    width: 250px;
+    background-color: #1a1a1a;
+    padding: 15px;
+    border: 1px solid #333;
+    border-radius: 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
 }
+
 .left-sidebar h3, .right-sidebar h3 {
-  text-align: center;
-  color: #00ffff;
-  font-family: 'Bungee Shade', cursive;
-  font-size: 1.1rem;
+    margin-top: 0;
+    text-align: center;
+    color: #00ffff;
 }
-.upgrade-box {
-  background: linear-gradient(135deg, #2c3e50, #3498db);
-  border: 2px solid #00ffff;
-  border-radius: 12px;
-  padding: 12px;
-  margin-bottom: 15px;
-  box-shadow: 0 4px 12px rgba(0,255,255,0.2);
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
-}
-.upgrade-box:hover {
-  transform: translateY(-4px) scale(1.02);
-  box-shadow: 0 6px 18px rgba(0,255,255,0.4);
-}
-.upgrade-box button {
-  background-color: #ff007f;
-  color: white;
-  border: none;
-  padding: 10px;
-  width: 100%;
-  border-radius: 8px;
-  font-weight: bold;
-  cursor: pointer;
-  font-size: 0.9rem;
-  transition: background 0.2s;
-}
-.upgrade-box button:hover {
-  background-color: #00ffff;
-  color: #1a1a1a;
-}
-.upgrade-box p {
-  margin: 8px 0 0 0;
-  font-size: 0.85rem;
-  text-align: right;
-  color: #f1c40f;
+
+.upgrade-box, .upgrade-box-win, .rebirth-shop-box {
+    background-color: #242424;
+    padding: 10px;
+    border-radius: 6px;
+    border: 1px solid #444;
 }
 
 .upgrade-box-win {
-  background: linear-gradient(135deg, #2c3e50, #3498db);
-  border: 2px solid #00dddd;
-  border-radius: 12px;
-  padding: 12px;
-  margin-bottom: 15px;
-  box-shadow: 0 4px 12px rgba(0,105,155,0.2);
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
-}
-.upgrade-box-win:hover {
-  transform: translateY(-4px) scale(1.02);
-  box-shadow: 0 6px 18px rgba(0,105,155,0.4);
-}
-.upgrade-box-win button {
-  background-color: #bb343c;
-  color: white;
-  border: none;
-  padding: 10px;
-  width: 100%;
-  border-radius: 8px;
-  font-weight: bold;
-  cursor: pointer;
-  font-size: 0.9rem;
-  transition: background 0.2s;
-}
-.upgrade-box-win button:hover {
-  background-color: #00ffff;
-  color: #3c3c3c;
-}
-.upgrade-box-win p {
-  margin: 8px 0 0 0;
-  font-size: 0.85rem;
-  text-align: right;
-  color: #b4c0af;
+    border-color: #ff007f;
 }
 
-.rebirth-shop-box {
-  background: linear-gradient(135deg, #4b0082, #8a2be2);
-  border: 2px solid #ff00ff;
-  border-radius: 12px;
-  padding: 12px;
-  margin-bottom: 15px;
-  box-shadow: 0 4px 12px rgba(255,0,255,0.3);
+.upgrade-box button, .upgrade-box-win button, .rebirth-shop-box button {
+    width: 100%;
+    background-color: #ff007f;
+    color: white;
+    border: none;
+    padding: 8px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: bold;
 }
-.rebirth-shop-box button {
-  background-color: #ff00ff;
-  color: white;
-  border: none;
-  padding: 10px;
-  width: 100%;
-  border-radius: 8px;
-  font-weight: bold;
-  cursor: pointer;
-  font-size: 0.9rem;
-}
-.rebirth-shop-box button:hover {
-  background-color: #ffff00;
-  color: #1a1a1a;
-}
-.rebirth-shop-box p {
-  margin: 8px 0 0 0;
-  font-size: 0.85rem;
-  text-align: right;
-  color: #00ffff;
+
+.upgrade-box button:hover, .upgrade-box-win button:hover {
+    background-color: #e0006e;
 }
 
 .game-container {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  padding: 20px;
-  overflow-y: auto;
+    flex-grow: 1;
+    background-color: #1a1a1a;
+    border: 1px solid #333;
+    border-radius: 8px;
+    padding: 20px;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
 }
+
 #zeke {
-  width: 350px;
-  height: 350px;
-  cursor: pointer;
-  max-width: 100%;
-  border-radius: 50%;
-  box-shadow: 0 0 30px rgba(255,0,127,0.4);
-  transition: width 0.5s ease, height 0.5s ease;
+    width: 200px;
+    height: 200px;
+    border-radius: 50%;
+    object-fit: cover;
+    cursor: pointer;
+    border: 4px solid #00ffff;
+    transition: transform 0.1s ease;
 }
-.win-image {
-  width: 550px !important;
-  height: 550px !important;
-  box-shadow: 0 0 60px rgba(0,255,255,0.8) !important;
+
+#zeke:active {
+    transform: scale(0.95);
 }
+
 .click-animation {
-  animation: pop 0.1s ease-out;
+    animation: pulse 0.1s;
 }
-@keyframes pop {
-  0% { transform: scale(1); }
-  50% { transform: scale(1.2); }
-  100% { transform: scale(1); }
+
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+    100% { transform: scale(1); }
 }
+
 #win-screen {
-  display: none;
-  flex-direction: column;
-  align-items: center;
-  margin-bottom: 15px;
+    display: none;
+    position: absolute;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0,0,0,0.85);
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    z-index: 10;
+    border-radius: 8px;
 }
-#win-screen h2 {
-  font-family: 'Rubik Glitch', cursive;
-  font-size: 3rem;
-  color: #00ffff;
-  margin: 0 0 10px 0;
-  text-shadow: 2px 2px #ff007f;
-}
-#win-screen button {
-  background-color: #00ff00;
-  color: #1a1a1a;
-  border: none;
-  padding: 12px 24px;
-  font-size: 1.2rem;
-  font-weight: bold;
-  border-radius: 10px;
-  cursor: pointer;
-  box-shadow: 0 0 15px #00ff00;
-}
-#win-screen button:hover {
-  background-color: #fff;
-  color: #000;
-}
-@keyframes fallFromBottom {
-  0% { transform: translateY(0px) rotate(0deg); opacity: 0; }
-  10% { opacity: 1; }
-  90% { opacity: 1; }
-  100% { transform: translateY(-100vh) rotate(360deg); opacity: 0; }
+
+.win-image {
+    border-color: #ff00ff !important;
+    box-shadow: 0 0 20px #ff00ff;
 }
 
 .falling-golden-zeke {
-  position: fixed;
-  bottom: -60px;
-  width: 50px;
-  height: 50px;
-  border-radius: 50%;
-  border: 3px solid #ffff00;
-  box-shadow: 0 0 20px #ffff00;
-  cursor: pointer;
-  animation: fallFromBottom 7s linear forwards;
-  z-index: 999;
-  background-image: url('zeke.jpg');
-  background-size: cover;
-  background-position: center;
+    position: fixed;
+    top: -50px;
+    width: 40px;
+    height: 40px;
+    background-color: gold;
+    border-radius: 50%;
+    cursor: pointer;
+    z-index: 999;
+    animation: fall 7s linear forwards;
+}
+
+@keyframes fall {
+    to { transform: translateY(105vh); }
 }
