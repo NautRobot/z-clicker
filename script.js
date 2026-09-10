@@ -515,6 +515,61 @@ function loadGame() {
     updateAll();
 }
 
+function restartGame() {
+    if (confirm("Are you sure you want to restart? All progress, upgrades, and rebirth tokens will be permanently lost!")) {
+        // Clear the save cookie by setting its expiration to the past
+        document.cookie = "zekeClickerSave=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+        
+        // Reset all core variables
+        zekes = 0; 
+        baseClickGain = 1; 
+        baseIdleZekes = 0; 
+
+        zekeFingerCost = 15; zekeFingerCount = 0;
+        zekeToeCost = 120; zekeToeCount = 0;
+        zekeFootCost = 900; zekeFootCount = 0;
+        zekeArmCost = 7500; zekeArmCount = 0;
+        zekeLegCost = 50000; zekeLegCount = 0;
+
+        zekeShoeCost = 50; zekeShoeCount = 0;
+        zekeGlassesCost = 400; zekeGlassesCount = 0;
+        zekeBackpackCost = 3500; zekeBackpackCount = 0;
+        zekeLiverCost = 25000; zekeLiverCount = 0;
+        zekeRobotCost = 150000; zekeRobotCount = 0;
+
+        zekePartOneCost = 10000000;
+        zekePartTwoCost = 50000000;
+        zekePartOne = false;
+        zekePartTwo = false;
+
+        rebirthTokens = 0;
+        rebirthPowerLevel = 0; 
+        rebirthAutoLevel = 0;  
+        rbPowerCost = 1;
+        rbAutoCost = 2;
+
+        clickBuffMultiplier = 1;
+        autoBuffMultiplier = 1;
+        clickBuffTimer = 0;
+        autoBuffTimer = 0;
+
+        // Reset UI visibility states
+        image.classList.remove('win-image');
+        let winScreen = document.getElementById('win-screen');
+        if (winScreen) winScreen.style.display = 'none';
+        
+        let p1Box = document.getElementById('partOneBox');
+        if (p1Box) p1Box.style.display = 'block';
+        let p2Box = document.getElementById('partTwoBox');
+        if (p2Box) p2Box.style.display = 'block';
+        
+        let rebirthSidebar = document.getElementById('rebirth-sidebar');
+        if (rebirthSidebar) rebirthSidebar.style.display = 'none';
+
+        updateAll();
+    }
+}
+
 window.onload = function() {
     loadGame();
 };
