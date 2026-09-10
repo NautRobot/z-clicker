@@ -417,7 +417,6 @@ function updateAll() {
 
 function gainZeke(amount) { 
     zekes += amount; 
-    zekeBeep(); 
     updateAll(); 
 } 
 
@@ -425,11 +424,6 @@ function gainZekesAutoCount() {
     let powerMult = Math.max(1, rebirthPowerLevel * 2);
     gainZeke((baseClickGain * powerMult) * clickBuffMultiplier); 
 } 
-
-function zekeBeep() { 
-    const audio = new Audio('zekeBeep.mp3'); 
-    audio.play().catch(e => {}); 
-}
 
 function setCookie(name, value, days) {
     let expires = "";
