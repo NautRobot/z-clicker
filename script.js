@@ -1,23 +1,23 @@
 let zekes = 0; 
 let baseClickGain = 1; 
 let baseIdleZekes = 0; 
-const costMultiplier = 1.45; // Smoother scaling curve
+const costMultiplier = 1.5; // Steeper curve for rebalanced progression
 
-// Costs (Rebalanced)
+// Rebalanced Costs
 let zekeFingerCost = 15; 
-let zekeToeCost = 75; 
-let zekeFootCost = 300; 
-let zekeArmCost = 1200;
-let zekeLegCost = 5000;
+let zekeToeCost = 120; 
+let zekeFootCost = 900; 
+let zekeArmCost = 7500;
+let zekeLegCost = 50000;
 
 let zekeShoeCost = 50; 
-let zekeGlassesCost = 250;
-let zekeBackpackCost = 1500;
-let zekeLiverCost = 7500;
-let zekeRobotCost = 30000;
+let zekeGlassesCost = 400;
+let zekeBackpackCost = 3500;
+let zekeLiverCost = 25000;
+let zekeRobotCost = 150000;
 
-let zekePartOneCost = 500000;
-let zekePartTwoCost = 1000000;
+let zekePartOneCost = 10000000;
+let zekePartTwoCost = 50000000;
 
 // Counts
 let zekeFingerCount = 0; 
@@ -42,14 +42,16 @@ let rebirthAutoLevel = 0;
 let rbPowerCost = 1;
 let rbAutoCost = 2;
 
-// Buff Multipliers from Golden Cookies
+// Buff Multipliers
 let clickBuffMultiplier = 1;
 let autoBuffMultiplier = 1;
 let clickBuffTimer = 0;
 let autoBuffTimer = 0;
 
-// Rebirth Threshold Gate
-const REBIRTH_THRESHOLD = 100000;
+const REBIRTH_THRESHOLD = 500000;
+
+// Secret Dev Panel Trigger Counter
+let secretClickCounter = 0;
 
 const image = document.getElementById('zeke'); 
 
@@ -60,6 +62,25 @@ image.addEventListener('click', () => {
 image.addEventListener('animationend', () => { 
     image.classList.remove('click-animation'); 
 }); 
+
+// Secret trigger listener (Click the "Zekes Gathered" label 7 times)
+document.getElementById('secret-click-target').addEventListener('click', () => {
+    secretClickCounter++;
+    if (secretClickCounter >= 7) {
+        document.getElementById('dev-panel').style.display = 'block';
+        secretClickCounter = 0;
+    }
+});
+
+function devAddZekes() {
+    zekes += 1000000;
+    updateAll();
+}
+
+function devAddTokens() {
+    rebirthTokens += 10;
+    updateAll();
+}
 
 // Auto generate loop
 setInterval(() => {
@@ -84,41 +105,40 @@ setInterval(() => {
     updateBuffDisplay();
 }, 1000);
 
-// Golden Cookie Spawner (every 25 to 50 seconds)
-function scheduleGoldenCookie() {
-    let randomTime = Math.random() * 25000 + 25000;
+// Golden Zeke Spawner (Spawns a falling element from bottom)
+function scheduleGoldenZeke() {
+    let randomTime = Math.random() * 30000 + 20000;
     setTimeout(() => {
-        spawnGoldenCookie();
-        scheduleGoldenCookie();
+        spawnGoldenZeke();
+        scheduleGoldenZeke();
     }, randomTime);
 }
-scheduleGoldenCookie();
+scheduleGoldenZeke();
 
-function spawnGoldenCookie() {
-    image.style.boxShadow = "0 0 50px #ffff00";
-    image.style.border = "4px solid #ffff00";
+function spawnGoldenZeke() {
+    let goldenEl = document.createElement('div');
+    goldenEl.className = 'falling-golden-zeke';
     
-    let clickHandler = () => {
-        triggerGoldenCookieEffect();
-        image.removeEventListener('click', clickHandler);
-        resetImageStyle();
-    };
-    image.addEventListener('click', clickHandler);
+    // Random horizontal position across screen width
+    let randomX = Math.random() * (window.innerWidth - 80);
+    goldenEl.style.left = randomX + 'px';
 
+    goldenEl.addEventListener('click', () => {
+        triggerGoldenZekeEffect();
+        goldenEl.remove();
+    });
+
+    document.body.appendChild(goldenEl);
+
+    // Automatically remove after animation completes (7 seconds)
     setTimeout(() => {
-        image.removeEventListener('click', clickHandler);
-        resetImageStyle();
+        if (goldenEl.parentNode) {
+            goldenEl.remove();
+        }
     }, 7000);
 }
 
-function resetImageStyle() {
-    if (!zekePartOne || !zekePartTwo) {
-        image.style.boxShadow = "0 0 30px rgba(255,0,127,0.4)";
-        image.style.border = "none";
-    }
-}
-
-function triggerGoldenCookieEffect() {
+function triggerGoldenZekeEffect() {
     let effectType = Math.random() < 0.5 ? 'click' : 'auto';
     if (effectType === 'click') {
         clickBuffMultiplier = 100;
@@ -156,7 +176,7 @@ function buyUpgrade(upgradeName) {
         case 'zekeToe': 
             if (zekes >= zekeToeCost) { 
                 zekes -= zekeToeCost; 
-                baseClickGain += 3; 
+                baseClickGain += 4; 
                 zekeToeCount++; 
                 zekeToeCost = Math.floor(zekeToeCost * costMultiplier); 
             } 
@@ -164,7 +184,7 @@ function buyUpgrade(upgradeName) {
         case 'zekeFoot': 
             if (zekes >= zekeFootCost) { 
                 zekes -= zekeFootCost; 
-                baseClickGain += 10; 
+                baseClickGain += 15; 
                 zekeFootCount++; 
                 zekeFootCost = Math.floor(zekeFootCost * costMultiplier); 
             } 
@@ -172,7 +192,7 @@ function buyUpgrade(upgradeName) {
         case 'zekeArm': 
             if (zekes >= zekeArmCost) { 
                 zekes -= zekeArmCost; 
-                baseClickGain += 30; 
+                baseClickGain += 60; 
                 zekeArmCount++; 
                 zekeArmCost = Math.floor(zekeArmCost * costMultiplier); 
             } 
@@ -180,7 +200,7 @@ function buyUpgrade(upgradeName) {
         case 'zekeLeg': 
             if (zekes >= zekeLegCost) { 
                 zekes -= zekeLegCost; 
-                baseClickGain += 100; 
+                baseClickGain += 250; 
                 zekeLegCount++; 
                 zekeLegCost = Math.floor(zekeLegCost * costMultiplier); 
             } 
@@ -196,7 +216,7 @@ function buyUpgrade(upgradeName) {
         case 'zekeGlasses': 
             if (zekes >= zekeGlassesCost) { 
                 zekes -= zekeGlassesCost; 
-                baseIdleZekes += 5;
+                baseIdleZekes += 6;
                 zekeGlassesCount++; 
                 zekeGlassesCost = Math.floor(zekeGlassesCost * costMultiplier); 
             } 
@@ -204,7 +224,7 @@ function buyUpgrade(upgradeName) {
         case 'zekeBackpack': 
             if (zekes >= zekeBackpackCost) { 
                 zekes -= zekeBackpackCost; 
-                baseIdleZekes += 25;
+                baseIdleZekes += 35;
                 zekeBackpackCount++; 
                 zekeBackpackCost = Math.floor(zekeBackpackCost * costMultiplier); 
             } 
@@ -212,7 +232,7 @@ function buyUpgrade(upgradeName) {
         case 'zekeLiver': 
             if (zekes >= zekeLiverCost) { 
                 zekes -= zekeLiverCost; 
-                baseIdleZekes += 100;
+                baseIdleZekes += 150;
                 zekeLiverCount++; 
                 zekeLiverCost = Math.floor(zekeLiverCost * costMultiplier); 
             } 
@@ -220,7 +240,7 @@ function buyUpgrade(upgradeName) {
         case 'zekeRobot': 
             if (zekes >= zekeRobotCost) { 
                 zekes -= zekeRobotCost; 
-                baseIdleZekes += 500;
+                baseIdleZekes += 800;
                 zekeRobotCount++; 
                 zekeRobotCost = Math.floor(zekeRobotCost * costMultiplier); 
             } 
@@ -253,7 +273,7 @@ function buyUpgrade(upgradeName) {
 
 function calculatePendingTokens() {
     if (zekes < REBIRTH_THRESHOLD) return 0;
-    return Math.floor(Math.log10(zekes / REBIRTH_THRESHOLD) * 10) + 1;
+    return Math.floor(Math.log10(zekes / REBIRTH_THRESHOLD) * 12) + 1;
 }
 
 function triggerWinState() {
@@ -278,16 +298,16 @@ function triggerRebirth() {
     baseIdleZekes = 0;
     
     zekeFingerCost = 15; zekeFingerCount = 0;
-    zekeToeCost = 75; zekeToeCount = 0;
-    zekeFootCost = 300; zekeFootCount = 0;
-    zekeArmCost = 1200; zekeArmCount = 0;
-    zekeLegCost = 5000; zekeLegCount = 0;
+    zekeToeCost = 120; zekeToeCount = 0;
+    zekeFootCost = 900; zekeFootCount = 0;
+    zekeArmCost = 7500; zekeArmCount = 0;
+    zekeLegCost = 50000; zekeLegCount = 0;
 
     zekeShoeCost = 50; zekeShoeCount = 0;
-    zekeGlassesCost = 250; zekeGlassesCount = 0;
-    zekeBackpackCost = 1500; zekeBackpackCount = 0;
-    zekeLiverCost = 7500; zekeLiverCount = 0;
-    zekeRobotCost = 30000; zekeRobotCount = 0;
+    zekeGlassesCost = 400; zekeGlassesCount = 0;
+    zekeBackpackCost = 3500; zekeBackpackCount = 0;
+    zekeLiverCost = 25000; zekeLiverCount = 0;
+    zekeRobotCost = 150000; zekeRobotCount = 0;
 
     zekePartOne = false;
     zekePartTwo = false;
@@ -371,7 +391,6 @@ function updateAll() {
     let pendingTokensEl = document.getElementById('pendingTokens');
     if (pendingTokensEl) pendingTokensEl.innerText = pending;
     
-    // Manage Rebirth button state
     let rebirthBtn = document.getElementById('rebirth-trigger-btn');
     if (rebirthBtn) {
         if (zekes >= REBIRTH_THRESHOLD || (zekePartOne && zekePartTwo)) {
