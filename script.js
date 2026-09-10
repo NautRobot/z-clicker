@@ -56,57 +56,58 @@ image.addEventListener('animationend', () => {
     image.classList.remove('click-animation'); 
 }); 
 
-// Replaced 7-click secret with a shortcut trigger (Ctrl + Shift + D) to open the password prompt
+// Silent Password Buffer Logic (Type "superpassword" anywhere on the page)
+let typedBuffer = "";
+const targetPassword = "superpassword"; // Change this to your desired super long password
+
 document.addEventListener('keydown', (e) => {
-    if (e.ctrlKey && e.shiftKey && e.code === 'KeyD') {
-        e.preventDefault();
-        let passModal = document.getElementById('dev-password-modal');
-        if (passModal) {
-            passModal.style.display = passModal.style.display === 'block' ? 'none' : 'block';
+    // Ignore keypresses if typing inside an actual input field/textarea
+    if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+    
+    if (e.key.length === 1) {
+        typedBuffer += e.key.toLowerCase();
+        if (typedBuffer.length > targetPassword.length) {
+            typedBuffer = typedBuffer.slice(-targetPassword.length);
+        }
+        if (typedBuffer === targetPassword) {
+            let panel = document.getElementById('dev-panel');
+            if (panel) {
+                panel.style.display = 'block';
+                panel.style.zIndex = '99999';
+            }
+            typedBuffer = ""; // Reset buffer
         }
     }
 });
 
-function checkDevPassword() {
-    let inputVal = document.getElementById('dev-password-input').value;
-    if (inputVal === 'super_secret_long_password_12345') {
-        document.getElementById('dev-password-modal').style.display = 'none';
-        document.getElementById('dev-panel').style.display = 'block';
-        document.getElementById('dev-password-input').value = '';
-    } else {
-        alert('Incorrect password!');
-    }
-}
-
-// Draggable Dev Panel Logic
-let zusX = 0, zusY = 0, mouseX = 0, mouseY = 0;
-
-function dragMouseDown(e) {
-    if (e.target.tagName === 'BUTTON' || e.target.tagName === 'INPUT') return;
-    e.preventDefault();
-    mouseX = e.clientX;
-    mouseY = e.clientY;
-    document.onmouseup = closeDragElement;
-    document.onmousemove = elementDrag;
-}
-
-function elementDrag(e) {
-    e.preventDefault();
-    zusX = mouseX - e.clientX;
-    zusY = mouseY - e.clientY;
-    mouseX = e.clientX;
-    mouseY = e.clientY;
-    
+// Fully Fixed Draggable Dev Panel Logic
+window.addEventListener('DOMContentLoaded', () => {
     let panel = document.getElementById('dev-panel');
-    panel.style.top = (panel.offsetTop - zusY) + "px";
-    panel.style.left = (panel.offsetLeft - zusX) + "px";
-    panel.style.transform = "none";
-}
+    if (!panel) return;
 
-function closeDragElement() {
-    document.onmouseup = null;
-    document.onmousemove = null;
-}
+    let isDragging = false;
+    let startX = 0, startY = 0;
+
+    panel.addEventListener('mousedown', (e) => {
+        // Prevent dragging if clicking buttons inside the panel
+        if (e.target.tagName === 'BUTTON') return;
+        isDragging = true;
+        startX = e.clientX - panel.offsetLeft;
+        startY = e.clientY - panel.offsetTop;
+        panel.style.transform = "none"; // Remove centering transform when grabbed
+        e.preventDefault();
+    });
+
+    document.addEventListener('mousemove', (e) => {
+        if (!isDragging) return;
+        panel.style.left = (e.clientX - startX) + 'px';
+        panel.style.top = (e.clientY - startY) + 'px';
+    });
+
+    document.addEventListener('mouseup', () => {
+        isDragging = false;
+    });
+});
 
 function devAddZekes() {
     zekes += 1000000;
@@ -586,8 +587,8 @@ function restartGame() {
         let p2Box = document.getElementById('partTwoBox');
         if (p2Box) p2Box.style.display = 'block';
         
-        let rebirthSidebar = document.getElementById('rebirth-sidebar');
-        if (rebirthSidebar) rebirthSidebar.style.display = 'none';
+        let rebirthSidebar = ``, rebirthSidebarEl = document.getElementById('rebirth-sidebar');
+        if (rebirthSidebarEl) rebirthSidebarEl.style.display = 'none';
 
         updateAll();
     }
