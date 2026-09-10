@@ -48,6 +48,9 @@ let autoBuffMultiplier = 1;
 let clickBuffTimer = 0;
 let autoBuffTimer = 0;
 
+// Rebirth Threshold Gate
+const REBIRTH_THRESHOLD = 100000;
+
 const image = document.getElementById('zeke'); 
 
 image.addEventListener('click', () => { 
@@ -95,7 +98,6 @@ function spawnGoldenCookie() {
     image.style.boxShadow = "0 0 50px #ffff00";
     image.style.border = "4px solid #ffff00";
     
-    // Golden cookie lasts for 7 seconds if unclicked
     let clickHandler = () => {
         triggerGoldenCookieEffect();
         image.removeEventListener('click', clickHandler);
@@ -132,7 +134,8 @@ function updateBuffDisplay() {
     let text = "";
     if (clickBuffTimer > 0) text += `⚡ 100x Click Power (${clickBuffTimer}s) `;
     if (autoBuffTimer > 0) text += `🚀 1000x Auto Power (${autoBuffTimer}s)`;
-    document.getElementById('active-buffs').innerText = text;
+    let buffElement = document.getElementById('active-buffs');
+    if (buffElement) buffElement.innerText = text;
 }
 
 // Auto save loop
@@ -226,14 +229,16 @@ function buyUpgrade(upgradeName) {
             if (zekes >= zekePartOneCost) { 
                 zekes -= zekePartOneCost; 
                 zekePartOne = true;
-                document.getElementById('partOneBox').style.display = 'none';
+                let p1Box = document.getElementById('partOneBox');
+                if (p1Box) p1Box.style.display = 'none';
             } 
             break; 
         case 'zekePartTwo': 
             if (zekes >= zekePartTwoCost) { 
                 zekes -= zekePartTwoCost; 
                 zekePartTwo = true;
-                document.getElementById('partTwoBox').style.display = 'none';
+                let p2Box = document.getElementById('partTwoBox');
+                if (p2Box) p2Box.style.display = 'none';
             } 
             break; 
     } 
@@ -247,20 +252,25 @@ function buyUpgrade(upgradeName) {
 } 
 
 function calculatePendingTokens() {
-    if (zekes < 100) return 1;
-    return Math.floor(Math.log10(zekes) * 3);
+    if (zekes < REBIRTH_THRESHOLD) return 0;
+    return Math.floor(Math.log10(zekes / REBIRTH_THRESHOLD) * 10) + 1;
 }
 
 function triggerWinState() {
     image.classList.add('win-image');
-    document.getElementById('win-screen').style.display = 'flex';
-    document.getElementById('win-title').innerText = "FULL ASCENSION!";
+    let winScreen = document.getElementById('win-screen');
+    if (winScreen) winScreen.style.display = 'flex';
+    let winTitle = document.getElementById('win-title');
+    if (winTitle) winTitle.innerText = "FULL ASCENSION!";
     let earnedTokens = calculatePendingTokens();
-    document.getElementById('pendingTokens').innerText = earnedTokens;
+    let pendingTokensEl = document.getElementById('pendingTokens');
+    if (pendingTokensEl) pendingTokensEl.innerText = earnedTokens;
 }
 
 function triggerRebirth() {
     let earnedTokens = calculatePendingTokens();
+    if (earnedTokens <= 0 && !(zekePartOne && zekePartTwo)) return;
+    
     rebirthTokens += earnedTokens;
 
     zekes = 0;
@@ -283,11 +293,15 @@ function triggerRebirth() {
     zekePartTwo = false;
 
     image.classList.remove('win-image');
-    document.getElementById('win-screen').style.display = 'none';
-    document.getElementById('partOneBox').style.display = 'block';
-    document.getElementById('partTwoBox').style.display = 'block';
+    let winScreen = document.getElementById('win-screen');
+    if (winScreen) winScreen.style.display = 'none';
+    let p1Box = document.getElementById('partOneBox');
+    if (p1Box) p1Box.style.display = 'block';
+    let p2Box = document.getElementById('partTwoBox');
+    if (p2Box) p2Box.style.display = 'block';
     
-    document.getElementById('rebirth-sidebar').style.display = 'block';
+    let rebirthSidebar = document.getElementById('rebirth-sidebar');
+    if (rebirthSidebar) rebirthSidebar.style.display = 'block';
 
     updateAll();
     saveGame();
@@ -354,13 +368,41 @@ function updateAll() {
     document.getElementById("rbAutoCost").innerHTML = rbAutoCost;
     
     let pending = calculatePendingTokens();
-    document.getElementById('pendingTokens').innerText = pending;
-    document.getElementById('manualPendingTokens').innerText = pending;
+    let pendingTokensEl = document.getElementById('pendingTokens');
+    if (pendingTokensEl) pendingTokensEl.innerText = pending;
+    
+    // Manage Rebirth button state
+    let rebirthBtn = document.getElementById('rebirth-trigger-btn');
+    if (rebirthBtn) {
+        if (zekes >= REBIRTH_THRESHOLD || (zekePartOne && zekePartTwo)) {
+            rebirthBtn.disabled = false;
+            rebirthBtn.style.background = "#ff007f";
+            rebirthBtn.style.color = "#fff";
+            rebirthBtn.style.borderColor = "#ff007f";
+            rebirthBtn.style.cursor = "pointer";
+            rebirthBtn.innerText = `Rebirth (+${pending} Tokens)`;
+        } else {
+            rebirthBtn.disabled = true;
+            rebirthBtn.style.background = "#333";
+            rebirthBtn.style.color = "#888";
+            rebirthBtn.style.borderColor = "#555";
+            rebirthBtn.style.cursor = "not-allowed";
+            let remaining = Math.max(0, REBIRTH_THRESHOLD - Math.floor(zekes));
+            rebirthBtn.innerText = `Rebirth Locked (${remaining.toLocaleString()} more needed)`;
+        }
+    }
 
-    if (zekePartOne) document.getElementById('partOneBox').style.display = 'none';
-    if (zekePartTwo) document.getElementById('partTwoBox').style.display = 'none';
+    if (zekePartOne) {
+        let p1Box = document.getElementById('partOneBox');
+        if (p1Box) p1Box.style.display = 'none';
+    }
+    if (zekePartTwo) {
+        let p2Box = document.getElementById('partTwoBox');
+        if (p2Box) p2Box.style.display = 'none';
+    }
     if (rebirthTokens > 0 || rebirthPowerLevel > 0 || rebirthAutoLevel > 0) {
-        document.getElementById('rebirth-sidebar').style.display = 'block';
+        let rebirthSidebar = document.getElementById('rebirth-sidebar');
+        if (rebirthSidebar) rebirthSidebar.style.display = 'block';
     }
 } 
 
@@ -437,7 +479,7 @@ function loadGame() {
             zekeToeCount = data.zekeToeCount ?? zekeToeCount;
             zekeArmCount = data.zekeArmCount ?? zekeArmCount;
             zekeLegCount = data.zekeLegCount ?? zekeLegCount;
-            zekeShoeCount = data.zekeShoeCount ?? zekeShoeCost;
+            zekeShoeCount = data.zekeShoeCount ?? zekeShoeCount;
             zekeGlassesCount = data.zekeGlassesCount ?? zekeGlassesCount;
             zekeBackpackCount = data.zekeBackpackCount ?? zekeBackpackCount;
             zekeLiverCount = data.zekeLiverCount ?? zekeLiverCount;
