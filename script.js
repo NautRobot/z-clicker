@@ -183,8 +183,8 @@ function triggerGoldenZekeEffect() {
 
 function updateBuffDisplay() {
     let text = "";
-    if (clickBuffTimer > 0) text += `⚡ 100x Click Power (${clickBuffTimer}s) `;
-    if (autoBuffTimer > 0) text += `🚀 1000x Auto Power (${autoBuffTimer}s)`;
+    if (clickBuffTimer > 0) text += `⚡ 2x Click Power (${clickBuffTimer}s) `;
+    if (autoBuffTimer > 0) text += `🚀 10x Auto Power (${autoBuffTimer}s)`;
     let buffElement = document.getElementById('active-buffs');
     if (buffElement) buffElement.innerText = text;
 }
