@@ -23,37 +23,37 @@
     </div>
     <div class="upgrade-box">
       <button id="buyZekeToe" onclick="buyUpgrade('zekeToe')">
-        Buy Zeke's Toe (Cost: <span id="toeCost">75</span>)
+        Buy Zeke's Toe (Cost: <span id="toeCost">120</span>)
       </button>
-      <p>Add +3 Click Value.</p>
+      <p>Add +4 Click Value.</p>
       <p>Owned: <span id="toeCount">0</span></p>
     </div>
     <div class="upgrade-box">
       <button id="buyZekeFoot" onclick="buyUpgrade('zekeFoot')">
-        Buy Zeke's Foot (Cost: <span id="footCost">300</span>)
+        Buy Zeke's Foot (Cost: <span id="footCost">900</span>)
       </button>
-      <p>Add +10 Click Value.</p>
+      <p>Add +15 Click Value.</p>
       <p>Owned: <span id="footCount">0</span></p>
     </div>
     <div class="upgrade-box">
       <button id="buyZekeArm" onclick="buyUpgrade('zekeArm')">
-        Buy Zeke's Arm (Cost: <span id="armCost">1200</span>)
+        Buy Zeke's Arm (Cost: <span id="armCost">7500</span>)
       </button>
-      <p>Add +30 Click Value.</p>
+      <p>Add +60 Click Value.</p>
       <p>Owned: <span id="armCount">0</span></p>
     </div>
     <div class="upgrade-box">
       <button id="buyZekeLeg" onclick="buyUpgrade('zekeLeg')">
-        Buy Zeke's Leg (Cost: <span id="legCost">5000</span>)
+        Buy Zeke's Leg (Cost: <span id="legCost">50000</span>)
       </button>
-      <p>Add +100 Click Value.</p>
+      <p>Add +250 Click Value.</p>
       <p>Owned: <span id="legCount">0</span></p>
     </div>
     <div class="upgrade-box-win" id="partOneBox">
       <button id="zekePartOne" onclick="buyUpgrade('zekePartOne')">
-        Buy Zeke Part One (Cost: <span id="partOneCostDisplay">500000</span>)
+        Buy Zeke Part One (Cost: <span id="partOneCostDisplay">10000000</span>)
       </button>
-      <p>Part 1/2. Progress booster.</p>
+      <p>Part 1/2. Ascension Booster.</p>
     </div>
   </div>
 
@@ -71,20 +71,20 @@
     </div>
   </div>
 
-<div class="game-container">
+  <div class="game-container" id="game-container">
     <div id="win-screen">
       <h2 id="win-title">ASCENSION READY!</h2>
       <button onclick="triggerRebirth()">Rebirth? (+<span id="pendingTokens">1</span> Tokens)</button>
     </div>
     <div id="active-buffs" style="color: #ffff00; font-weight: bold; min-height: 24px;"></div>
-    <p style="font-size: 1.5rem; font-weight: bold;">Zekes Gathered: <span id="zekeCount">0</span></p>
+    <p style="font-size: 1.5rem; font-weight: bold;" id="secret-click-target">Zekes Gathered: <span id="zekeCount">0</span></p>
     <p style="color: #00ffff;">Zeke Click Value: <span id="zekeClickGain">1</span></p>
     <p style="color: #00ffff;">Zekes Per Second: <span id="zekeIdleCount">0</span></p>
     <div style="position: relative; display: inline-block;">
       <img src="zeke.jpg" id="zeke" onclick="gainZekesAutoCount()">
     </div>
     <button id="rebirth-trigger-btn" style="margin-top: 15px; background: #333; color: #888; border: 1px solid #555; padding: 8px 16px; border-radius: 6px; cursor: not-allowed;" onclick="triggerRebirth()" disabled>
-      Rebirth Locked (Need 100k Zekes)
+      Rebirth Locked (Need 500k Zekes)
     </button>
   </div>
 
@@ -100,39 +100,48 @@
     </div>
     <div class="upgrade-box">
       <button id="buyZekeGlasses" onclick="buyUpgrade('zekeGlasses')">
-        Buy Zeke's Glasses (Cost: <span id="glassesCost">250</span>)
+        Buy Zeke's Glasses (Cost: <span id="glassesCost">400</span>)
       </button>
-      <p>Add +5 Auto Value.</p>
+      <p>Add +6 Auto Value.</p>
       <p>Owned: <span id="glassesCount">0</span></p>
     </div>
     <div class="upgrade-box">
       <button id="buyZekeBackpack" onclick="buyUpgrade('zekeBackpack')">
-        Buy Zeke's Backpack (Cost: <span id="backpackCost">1500</span>)
+        Buy Zeke's Backpack (Cost: <span id="backpackCost">3500</span>)
       </button>
-      <p>Add +25 Auto Value.</p>
+      <p>Add +35 Auto Value.</p>
       <p>Owned: <span id="backpackCount">0</span></p>
     </div>
     <div class="upgrade-box">
       <button id="buyZekeLiver" onclick="buyUpgrade('zekeLiver')">
-        Buy Zeke's Liver (Cost: <span id="liverCost">7500</span>)
+        Buy Zeke's Liver (Cost: <span id="liverCost">25000</span>)
       </button>
-      <p>Add +100 Auto Value.</p>
+      <p>Add +150 Auto Value.</p>
       <p>Owned: <span id="liverCount">0</span></p>
     </div>
     <div class="upgrade-box">
       <button id="buyZekeRobot" onclick="buyUpgrade('zekeRobot')">
-        Buy Zeke's Robot (Cost: <span id="robotCost">30000</span>)
+        Buy Zeke's Robot (Cost: <span id="robotCost">150000</span>)
       </button>
-      <p>Add +500 Auto Value.</p>
+      <p>Add +800 Auto Value.</p>
       <p>Owned: <span id="robotCount">0</span></p>
     </div>
     <div class="upgrade-box-win" id="partTwoBox">
       <button id="zekePartTwo" onclick="buyUpgrade('zekePartTwo')">
-        Buy Zeke Part Two (Cost: <span id="partTwoCostDisplay">1000000</span>)
+        Buy Zeke Part Two (Cost: <span id="partTwoCostDisplay">50000000</span>)
       </button>
-      <p>Part 2/2. Progress booster.</p>
+      <p>Part 2/2. Ascension Booster.</p>
     </div>
   </div>
+</div>
+
+<!-- Secret Dev Panel Modal -->
+<div id="dev-panel" style="display:none; position:fixed; top:20%; left:50%; transform:translateX(-50%); background:#111; border:2px solid #00ffff; padding:20px; z-index:9999; border-radius:10px; color:#fff; text-align:center;">
+  <h3>🛠️ Secret Dev Panel</h3>
+  <p>Modify game state easily:</p>
+  <button onclick="devAddZekes()" style="background:#ff007f; color:#fff; border:none; padding:8px 12px; margin:5px; border-radius:5px; cursor:pointer;">+1,000,000 Zekes</button><br>
+  <button onclick="devAddTokens()" style="background:#8a2be2; color:#fff; border:none; padding:8px 12px; margin:5px; border-radius:5px; cursor:pointer;">+10 Rebirth Tokens</button><br>
+  <button onclick="document.getElementById('dev-panel').style.display='none'" style="background:#333; color:#fff; border:none; padding:6px 12px; margin-top:10px; border-radius:5px; cursor:pointer;">Close</button>
 </div>
 
 <script src="script.js"></script>
