@@ -71,7 +71,7 @@
     </div>
   </div>
 
-  <!-- Center Game Container -->
+<!-- Center Game Container -->
   <div class="game-container" id="game-container">
     <div id="win-screen">
       <h2 id="win-title">ASCENSION READY!</h2>
@@ -84,8 +84,10 @@
     <div style="position: relative; display: inline-block;">
       <img src="zeke.jpg" id="zeke" onclick="gainZekesAutoCount()" alt="Zeke">
     </div>
-    <button id="rebirth-trigger-btn" style="margin-top: 15px; background: #333; color: #888; border: 1px solid #555; padding: 8px 16px; border-radius: 6px; cursor: not-allowed;" onclick="triggerRebirth()" disabled>
-      Rebirth Locked (Need 500k Zekes)
+    
+    <!-- Single Rebirth Button (Hidden by default until unlocked) -->
+    <button id="rebirth-trigger-btn" style="display: none; margin-top: 15px; background: #ff007f; color: #fff; border: 1px solid #ff007f; padding: 8px 16px; border-radius: 6px; cursor: pointer;" onclick="triggerRebirth()">
+      Rebirth (+<span id="pendingTokensBtn">1</span> Tokens)
     </button>
     <br>
     <button onclick="restartGame()" style="margin-top: 10px; background: #800000; color: #fff; border: 1px solid #ff0000; padding: 6px 12px; border-radius: 6px; cursor: pointer;">
