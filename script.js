@@ -498,11 +498,11 @@ function saveGame() {
         zekePartOne, zekePartTwo,
         rebirthTokens, rebirthPowerLevel, rebirthAutoLevel, rbPowerCost, rbAutoCost
     };
-    return;//setCookie("zekeClickerSave", JSON.stringify(gameState), 365);
+    setCookie("zekeClickerSave_v2", JSON.stringify(gameState), 365);
 }
 
 function loadGame() {
-    let savedData = {};//getCookie("zekeClickerSave");
+    let savedData = getCookie("zekeClickerSave_v2");
     if (savedData) {
         try {
             let data = JSON.parse(savedData);
