@@ -45,7 +45,6 @@ let clickBuffTimer = 0;
 let autoBuffTimer = 0;
 
 const REBIRTH_THRESHOLD = 500000;
-let secretClickCounter = 0;
 
 const image = document.getElementById('zeke'); 
 
@@ -57,13 +56,57 @@ image.addEventListener('animationend', () => {
     image.classList.remove('click-animation'); 
 }); 
 
-document.getElementById('secret-click-target').addEventListener('click', () => {
-    secretClickCounter++;
-    if (secretClickCounter >= 7) {
-        document.getElementById('dev-panel').style.display = 'block';
-        secretClickCounter = 0;
+// Replaced 7-click secret with a shortcut trigger (Ctrl + Shift + D) to open the password prompt
+document.addEventListener('keydown', (e) => {
+    if (e.ctrlKey && e.shiftKey && e.code === 'KeyD') {
+        e.preventDefault();
+        let passModal = document.getElementById('dev-password-modal');
+        if (passModal) {
+            passModal.style.display = passModal.style.display === 'block' ? 'none' : 'block';
+        }
     }
 });
+
+function checkDevPassword() {
+    let inputVal = document.getElementById('dev-password-input').value;
+    if (inputVal === 'super_secret_long_password_12345') {
+        document.getElementById('dev-password-modal').style.display = 'none';
+        document.getElementById('dev-panel').style.display = 'block';
+        document.getElementById('dev-password-input').value = '';
+    } else {
+        alert('Incorrect password!');
+    }
+}
+
+// Draggable Dev Panel Logic
+let zusX = 0, zusY = 0, mouseX = 0, mouseY = 0;
+
+function dragMouseDown(e) {
+    if (e.target.tagName === 'BUTTON' || e.target.tagName === 'INPUT') return;
+    e.preventDefault();
+    mouseX = e.clientX;
+    mouseY = e.clientY;
+    document.onmouseup = closeDragElement;
+    document.onmousemove = elementDrag;
+}
+
+function elementDrag(e) {
+    e.preventDefault();
+    zusX = mouseX - e.clientX;
+    zusY = mouseY - e.clientY;
+    mouseX = e.clientX;
+    mouseY = e.clientY;
+    
+    let panel = document.getElementById('dev-panel');
+    panel.style.top = (panel.offsetTop - zusY) + "px";
+    panel.style.left = (panel.offsetLeft - zusX) + "px";
+    panel.style.transform = "none";
+}
+
+function closeDragElement() {
+    document.onmouseup = null;
+    document.onmousemove = null;
+}
 
 function devAddZekes() {
     zekes += 1000000;
@@ -382,7 +425,6 @@ function updateAll() {
     
     let rebirthBtn = document.getElementById('rebirth-trigger-btn');
     if (rebirthBtn) {
-        // Once unlocked by reaching threshold or completing parts once, keep it visible forever
         if (zekes >= REBIRTH_THRESHOLD || (zekePartOne && zekePartTwo) || rebirthTokens > 0 || rebirthPowerLevel > 0 || rebirthAutoLevel > 0) {
             rebirthBtn.style.display = "inline-block";
             if (pending > 0) {
