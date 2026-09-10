@@ -140,7 +140,7 @@ setInterval(() => {
 }, 1000);
 
 function scheduleGoldenZeke() {
-    let randomTime = Math.random() * 30000 + 20000;
+    let randomTime = Math.random() * 40000 + 40000;
     setTimeout(() => {
         spawnGoldenZeke();
         scheduleGoldenZeke();
