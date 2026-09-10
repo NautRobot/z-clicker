@@ -1,9 +1,8 @@
 let zekes = 0; 
 let baseClickGain = 1; 
 let baseIdleZekes = 0; 
-const costMultiplier = 1.5; // Steeper curve for rebalanced progression
+const costMultiplier = 1.5;
 
-// Rebalanced Costs
 let zekeFingerCost = 15; 
 let zekeToeCost = 120; 
 let zekeFootCost = 900; 
@@ -19,7 +18,6 @@ let zekeRobotCost = 150000;
 let zekePartOneCost = 10000000;
 let zekePartTwoCost = 50000000;
 
-// Counts
 let zekeFingerCount = 0; 
 let zekeFootCount = 0; 
 let zekeToeCount = 0; 
@@ -35,22 +33,18 @@ let zekeRobotCount = 0;
 let zekePartOne = false;
 let zekePartTwo = false;
 
-// Rebirth Stats
 let rebirthTokens = 0;
 let rebirthPowerLevel = 0; 
 let rebirthAutoLevel = 0;  
 let rbPowerCost = 1;
 let rbAutoCost = 2;
 
-// Buff Multipliers
 let clickBuffMultiplier = 1;
 let autoBuffMultiplier = 1;
 let clickBuffTimer = 0;
 let autoBuffTimer = 0;
 
 const REBIRTH_THRESHOLD = 500000;
-
-// Secret Dev Panel Trigger Counter
 let secretClickCounter = 0;
 
 const image = document.getElementById('zeke'); 
@@ -63,7 +57,6 @@ image.addEventListener('animationend', () => {
     image.classList.remove('click-animation'); 
 }); 
 
-// Secret trigger listener (Click the "Zekes Gathered" label 7 times)
 document.getElementById('secret-click-target').addEventListener('click', () => {
     secretClickCounter++;
     if (secretClickCounter >= 7) {
@@ -82,7 +75,6 @@ function devAddTokens() {
     updateAll();
 }
 
-// Auto generate loop
 setInterval(() => {
     let multiplier = Math.max(1, rebirthAutoLevel * 2);
     let totalIdle = baseIdleZekes * multiplier * autoBuffMultiplier;
@@ -92,7 +84,6 @@ setInterval(() => {
     }
 }, 1000);
 
-// Buff countdown loop
 setInterval(() => {
     if (clickBuffTimer > 0) {
         clickBuffTimer--;
@@ -105,7 +96,6 @@ setInterval(() => {
     updateBuffDisplay();
 }, 1000);
 
-// Golden Zeke Spawner (Spawns a falling element from bottom)
 function scheduleGoldenZeke() {
     let randomTime = Math.random() * 30000 + 20000;
     setTimeout(() => {
@@ -118,8 +108,6 @@ scheduleGoldenZeke();
 function spawnGoldenZeke() {
     let goldenEl = document.createElement('div');
     goldenEl.className = 'falling-golden-zeke';
-    
-    // Random horizontal position across screen width
     let randomX = Math.random() * (window.innerWidth - 80);
     goldenEl.style.left = randomX + 'px';
 
@@ -130,7 +118,6 @@ function spawnGoldenZeke() {
 
     document.body.appendChild(goldenEl);
 
-    // Automatically remove after animation completes (7 seconds)
     setTimeout(() => {
         if (goldenEl.parentNode) {
             goldenEl.remove();
@@ -158,7 +145,6 @@ function updateBuffDisplay() {
     if (buffElement) buffElement.innerText = text;
 }
 
-// Auto save loop
 setInterval(() => {
     saveGame();
 }, 10000);
@@ -517,10 +503,8 @@ function loadGame() {
 
 function restartGame() {
     if (confirm("Are you sure you want to restart? All progress, upgrades, and rebirth tokens will be permanently lost!")) {
-        // Clear the save cookie by setting its expiration to the past
         document.cookie = "zekeClickerSave=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
         
-        // Reset all core variables
         zekes = 0; 
         baseClickGain = 1; 
         baseIdleZekes = 0; 
@@ -553,7 +537,6 @@ function restartGame() {
         clickBuffTimer = 0;
         autoBuffTimer = 0;
 
-        // Reset UI visibility states
         image.classList.remove('win-image');
         let winScreen = document.getElementById('win-screen');
         if (winScreen) winScreen.style.display = 'none';
