@@ -23,63 +23,67 @@
     </div>
     <div class="upgrade-box">
       <button id="buyZekeToe" onclick="buyUpgrade('zekeToe')">
-        Buy Zeke's Toe (Cost: <span id="toeCost">100</span>)
+        Buy Zeke's Toe (Cost: <span id="toeCost">75</span>)
       </button>
-      <p>Add +5 Click Value.</p>
+      <p>Add +3 Click Value.</p>
       <p>Owned: <span id="toeCount">0</span></p>
     </div>
     <div class="upgrade-box">
       <button id="buyZekeFoot" onclick="buyUpgrade('zekeFoot')">
-        Buy Zeke's Foot (Cost: <span id="footCost">500</span>)
+        Buy Zeke's Foot (Cost: <span id="footCost">300</span>)
       </button>
       <p>Add +10 Click Value.</p>
       <p>Owned: <span id="footCount">0</span></p>
     </div>
     <div class="upgrade-box">
       <button id="buyZekeArm" onclick="buyUpgrade('zekeArm')">
-        Buy Zeke's Arm (Cost: <span id="armCost">2500</span>)
+        Buy Zeke's Arm (Cost: <span id="armCost">1200</span>)
       </button>
-      <p>Add +25 Click Value.</p>
+      <p>Add +30 Click Value.</p>
       <p>Owned: <span id="armCount">0</span></p>
     </div>
     <div class="upgrade-box">
       <button id="buyZekeLeg" onclick="buyUpgrade('zekeLeg')">
-        Buy Zeke's Leg (Cost: <span id="legCost">10000</span>)
+        Buy Zeke's Leg (Cost: <span id="legCost">5000</span>)
       </button>
       <p>Add +100 Click Value.</p>
       <p>Owned: <span id="legCount">0</span></p>
     </div>
     <div class="upgrade-box-win" id="partOneBox">
       <button id="zekePartOne" onclick="buyUpgrade('zekePartOne')">
-        Buy Zeke Part One (Cost: <span id="partOneCostDisplay">10000000</span>)
+        Buy Zeke Part One (Cost: <span id="partOneCostDisplay">500000</span>)
       </button>
-      <p>Part 1/2. To Win.</p>
+      <p>Part 1/2. Progress booster.</p>
     </div>
   </div>
 
-  <!-- Rebirth Sidebar (Hidden by default, shows up after win/rebirth) -->
+  <!-- Rebirth Sidebar -->
   <div class="left-sidebar" id="rebirth-sidebar" style="display: none;">
     <h3>Rebirth Shop</h3>
     <p style="color: #ff00ff; text-align:center;">Tokens: <span id="tokenCount">0</span></p>
     <div class="rebirth-shop-box">
       <button onclick="buyRebirthUpgrade('power')">Rebirth Power (Cost: <span id="rbPowerCost">1</span>)</button>
-      <p>+1x Click Multiplier. Owned: <span id="rbPowerCount">0</span></p>
+      <p>+2x Click Multiplier. Owned: <span id="rbPowerCount">0</span></p>
     </div>
     <div class="rebirth-shop-box">
       <button onclick="buyRebirthUpgrade('auto')">Rebirth Auto (Cost: <span id="rbAutoCost">2</span>)</button>
-      <p>+1x Auto Multiplier. Owned: <span id="rbAutoCount">0</span></p>
+      <p>+2x Auto Multiplier. Owned: <span id="rbAutoCount">0</span></p>
     </div>
   </div>
 
   <div class="game-container">
     <div id="win-screen">
-      <h2>YOU WIN!</h2>
-      <button onclick="triggerRebirth()">Rebirth? (+<span id="pendingTokens">10</span> Tokens)</button>
+      <h2 id="win-title">ASCENSION READY!</h2>
+      <button onclick="triggerRebirth()">Rebirth? (+<span id="pendingTokens">1</span> Tokens)</button>
     </div>
+    <div id="active-buffs" style="color: #ffff00; font-weight: bold; min-height: 24px;"></div>
     <p style="font-size: 1.5rem; font-weight: bold;">Zekes Gathered: <span id="zekeCount">0</span></p>
     <p style="color: #00ffff;">Zeke Click Value: <span id="zekeClickGain">1</span></p>
     <p style="color: #00ffff;">Zekes Per Second: <span id="zekeIdleCount">0</span></p>
-    <img src="zeke.jpg" id="zeke" onclick="gainZekesAutoCount()">
+    <div style="position: relative; display: inline-block;">
+      <img src="zeke.jpg" id="zeke" onclick="gainZekesAutoCount()">
+    </div>
+    <button style="margin-top: 15px; background: #555; color: #fff; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer;" onclick="triggerRebirth()">Early Rebirth (+<span id="manualPendingTokens">0</span> Tokens)</button>
   </div>
 
   <!-- Right Sidebar (Normal Upgrades) -->
@@ -87,44 +91,44 @@
     <h3>Gather Upgrades</h3>
     <div class="upgrade-box">
       <button id="buyZekeShoe" onclick="buyUpgrade('zekeShoe')">
-        Buy Zeke's Shoe (Cost: <span id="shoeCost">100</span>)
+        Buy Zeke's Shoe (Cost: <span id="shoeCost">50</span>)
       </button>
       <p>Add +1 Auto Value.</p>
       <p>Owned: <span id="shoeCount">0</span></p>
     </div>
     <div class="upgrade-box">
       <button id="buyZekeGlasses" onclick="buyUpgrade('zekeGlasses')">
-        Buy Zeke's Glasses (Cost: <span id="glassesCost">1000</span>)
+        Buy Zeke's Glasses (Cost: <span id="glassesCost">250</span>)
       </button>
       <p>Add +5 Auto Value.</p>
       <p>Owned: <span id="glassesCount">0</span></p>
     </div>
     <div class="upgrade-box">
       <button id="buyZekeBackpack" onclick="buyUpgrade('zekeBackpack')">
-        Buy Zeke's Backpack (Cost: <span id="backpackCost">10000</span>)
+        Buy Zeke's Backpack (Cost: <span id="backpackCost">1500</span>)
       </button>
-      <p>Add +50 Auto Value.</p>
+      <p>Add +25 Auto Value.</p>
       <p>Owned: <span id="backpackCount">0</span></p>
     </div>
     <div class="upgrade-box">
       <button id="buyZekeLiver" onclick="buyUpgrade('zekeLiver')">
-        Buy Zeke's Liver (Cost: <span id="liverCost">100000</span>)
+        Buy Zeke's Liver (Cost: <span id="liverCost">7500</span>)
       </button>
       <p>Add +100 Auto Value.</p>
       <p>Owned: <span id="liverCount">0</span></p>
     </div>
     <div class="upgrade-box">
       <button id="buyZekeRobot" onclick="buyUpgrade('zekeRobot')">
-        Buy Zeke's Robot (Cost: <span id="robotCost">1000000</span>)
+        Buy Zeke's Robot (Cost: <span id="robotCost">30000</span>)
       </button>
-      <p>Add +1000 Auto Value.</p>
+      <p>Add +500 Auto Value.</p>
       <p>Owned: <span id="robotCount">0</span></p>
     </div>
     <div class="upgrade-box-win" id="partTwoBox">
       <button id="zekePartTwo" onclick="buyUpgrade('zekePartTwo')">
-        Buy Zeke Part Two (Cost: <span id="partTwoCostDisplay">100000000</span>)
+        Buy Zeke Part Two (Cost: <span id="partTwoCostDisplay">1000000</span>)
       </button>
-      <p>Part 2/2. To Win.</p>
+      <p>Part 2/2. Progress booster.</p>
     </div>
   </div>
 </div>
