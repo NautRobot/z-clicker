@@ -172,10 +172,10 @@ function spawnGoldenZeke() {
 function triggerGoldenZekeEffect() {
     let effectType = Math.random() < 0.5 ? 'click' : 'auto';
     if (effectType === 'click') {
-        clickBuffMultiplier = 100;
+        clickBuffMultiplier = 2;
         clickBuffTimer = 10;
     } else {
-        autoBuffMultiplier = 1000;
+        autoBuffMultiplier = 10;
         autoBuffTimer = 20;
     }
     updateAll();
