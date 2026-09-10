@@ -377,23 +377,27 @@ function updateAll() {
     let pendingTokensEl = document.getElementById('pendingTokens');
     if (pendingTokensEl) pendingTokensEl.innerText = pending;
     
+    let pendingTokensBtnEl = document.getElementById('pendingTokensBtn');
+    if (pendingTokensBtnEl) pendingTokensBtnEl.innerText = pending;
+    
     let rebirthBtn = document.getElementById('rebirth-trigger-btn');
     if (rebirthBtn) {
-        if (zekes >= REBIRTH_THRESHOLD || (zekePartOne && zekePartTwo)) {
-            rebirthBtn.disabled = false;
-            rebirthBtn.style.background = "#ff007f";
-            rebirthBtn.style.color = "#fff";
-            rebirthBtn.style.borderColor = "#ff007f";
-            rebirthBtn.style.cursor = "pointer";
-            rebirthBtn.innerText = `Rebirth (+${pending} Tokens)`;
+        // Once unlocked by reaching threshold or completing parts once, keep it visible forever
+        if (zekes >= REBIRTH_THRESHOLD || (zekePartOne && zekePartTwo) || rebirthTokens > 0 || rebirthPowerLevel > 0 || rebirthAutoLevel > 0) {
+            rebirthBtn.style.display = "inline-block";
+            if (pending > 0) {
+                rebirthBtn.disabled = false;
+                rebirthBtn.style.background = "#ff007f";
+                rebirthBtn.style.cursor = "pointer";
+                rebirthBtn.innerText = `Rebirth (+${pending} Tokens)`;
+            } else {
+                rebirthBtn.disabled = true;
+                rebirthBtn.style.background = "#555";
+                rebirthBtn.style.cursor = "not-allowed";
+                rebirthBtn.innerText = `Rebirth (+0 Tokens - Need more Zekes)`;
+            }
         } else {
-            rebirthBtn.disabled = true;
-            rebirthBtn.style.background = "#333";
-            rebirthBtn.style.color = "#888";
-            rebirthBtn.style.borderColor = "#555";
-            rebirthBtn.style.cursor = "not-allowed";
-            let remaining = Math.max(0, REBIRTH_THRESHOLD - Math.floor(zekes));
-            rebirthBtn.innerText = `Rebirth Locked (${remaining.toLocaleString()} more needed)`;
+            rebirthBtn.style.display = "none";
         }
     }
 
@@ -409,7 +413,7 @@ function updateAll() {
         let rebirthSidebar = document.getElementById('rebirth-sidebar');
         if (rebirthSidebar) rebirthSidebar.style.display = 'block';
     }
-} 
+}
 
 function gainZeke(amount) { 
     zekes += amount; 
