@@ -209,3 +209,25 @@ body {
   background-color: #fff;
   color: #000;
 }
+@keyframes fallFromBottom {
+  0% { transform: translateY(0px) rotate(0deg); opacity: 0; }
+  10% { opacity: 1; }
+  90% { opacity: 1; }
+  100% { transform: translateY(-100vh) rotate(360deg); opacity: 0; }
+}
+
+.falling-golden-zeke {
+  position: fixed;
+  bottom: -60px;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  border: 3px solid #ffff00;
+  box-shadow: 0 0 20px #ffff00;
+  cursor: pointer;
+  animation: fallFromBottom 7s linear forwards;
+  z-index: 999;
+  background-image: url('zeke.jpg');
+  background-size: cover;
+  background-position: center;
+}
