@@ -71,30 +71,27 @@
     </div>
   </div>
 
+  <!-- Center Game Container -->
   <div class="game-container" id="game-container">
     <div id="win-screen">
       <h2 id="win-title">ASCENSION READY!</h2>
       <button onclick="triggerRebirth()">Rebirth? (+<span id="pendingTokens">1</span> Tokens)</button>
     </div>
     <div id="active-buffs" style="color: #ffff00; font-weight: bold; min-height: 24px;"></div>
-    <p style="font-size: 1.5rem; font-weight: bold;" id="secret-click-target">Zekes Gathered: <span id="zekeCount">0</span></p>
+    <p style="font-size: 1.5rem; font-weight: bold; cursor: pointer;" id="secret-click-target">Zekes Gathered: <span id="zekeCount">0</span></p>
     <p style="color: #00ffff;">Zeke Click Value: <span id="zekeClickGain">1</span></p>
     <p style="color: #00ffff;">Zekes Per Second: <span id="zekeIdleCount">0</span></p>
     <div style="position: relative; display: inline-block;">
-      <img src="zeke.jpg" id="zeke" onclick="gainZekesAutoCount()">
+      <img src="zeke.jpg" id="zeke" onclick="gainZekesAutoCount()" alt="Zeke">
     </div>
     <button id="rebirth-trigger-btn" style="margin-top: 15px; background: #333; color: #888; border: 1px solid #555; padding: 8px 16px; border-radius: 6px; cursor: not-allowed;" onclick="triggerRebirth()" disabled>
-      Rebirth Locked (Need 500k Zekes)
-    </button>
-  </div>
-
-  <button id="rebirth-trigger-btn" style="margin-top: 15px; background: #333; color: #888; border: 1px solid #555; padding: 8px 16px; border-radius: 6px; cursor: not-allowed;" onclick="triggerRebirth()" disabled>
       Rebirth Locked (Need 500k Zekes)
     </button>
     <br>
     <button onclick="restartGame()" style="margin-top: 10px; background: #800000; color: #fff; border: 1px solid #ff0000; padding: 6px 12px; border-radius: 6px; cursor: pointer;">
       Hard Reset / Restart Game
     </button>
+  </div>
 
   <!-- Right Sidebar (Normal Upgrades) -->
   <div class="right-sidebar" id="right-sidebar">
