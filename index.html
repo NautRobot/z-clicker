@@ -71,7 +71,7 @@
     </div>
   </div>
 
-  <div class="game-container">
+<div class="game-container">
     <div id="win-screen">
       <h2 id="win-title">ASCENSION READY!</h2>
       <button onclick="triggerRebirth()">Rebirth? (+<span id="pendingTokens">1</span> Tokens)</button>
@@ -83,7 +83,9 @@
     <div style="position: relative; display: inline-block;">
       <img src="zeke.jpg" id="zeke" onclick="gainZekesAutoCount()">
     </div>
-    <button style="margin-top: 15px; background: #555; color: #fff; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer;" onclick="triggerRebirth()">Early Rebirth (+<span id="manualPendingTokens">0</span> Tokens)</button>
+    <button id="rebirth-trigger-btn" style="margin-top: 15px; background: #333; color: #888; border: 1px solid #555; padding: 8px 16px; border-radius: 6px; cursor: not-allowed;" onclick="triggerRebirth()" disabled>
+      Rebirth Locked (Need 100k Zekes)
+    </button>
   </div>
 
   <!-- Right Sidebar (Normal Upgrades) -->
