@@ -56,9 +56,8 @@ image.addEventListener('animationend', () => {
     image.classList.remove('click-animation'); 
 }); 
 
-// Silent Password Buffer Logic (Type "superpassword" anywhere on the page)
 let typedBuffer = "";
-const targetPassword = "superpassword"; // Change this to your desired super long password
+const targetPassword = "super_secret_long_password_12345_i_love_zeke"; // Change this to your desired super long password
 
 document.addEventListener('keydown', (e) => {
     // Ignore keypresses if typing inside an actual input field/textarea
