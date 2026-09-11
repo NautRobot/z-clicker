@@ -1,7 +1,9 @@
 let zekes = 0; 
 let baseClickGain = 1; 
 let baseIdleZekes = 0; 
-const costMultiplier = 1.5;
+
+// Balanced cost multiplier so the game stays engaging longer
+const costMultiplier = 1.15; 
 
 let zekeFingerCost = 15; 
 let zekeToeCost = 120; 
@@ -15,8 +17,9 @@ let zekeBackpackCost = 3500;
 let zekeLiverCost = 25000;
 let zekeRobotCost = 150000;
 
-let zekePartOneCost = 10000000;
-let zekePartTwoCost = 50000000;
+// Lowered the prestige part requirements to make it reachable
+let zekePartOneCost = 1000000;
+let zekePartTwoCost = 5000000;
 
 let zekeFingerCount = 0; 
 let zekeFootCount = 0; 
@@ -44,23 +47,51 @@ let autoBuffMultiplier = 1;
 let clickBuffTimer = 0;
 let autoBuffTimer = 0;
 
-const REBIRTH_THRESHOLD = 500000;
+// Rebirth unlocks much sooner now so players actually see the mechanic
+const REBIRTH_THRESHOLD = 100000; 
 
 const image = document.getElementById('zeke'); 
 
-image.addEventListener('click', () => { 
-    image.classList.add('click-animation'); 
-}); 
-
-image.addEventListener('animationend', () => { 
+// Handling Click events directly to spawn the visual floating text
+image.addEventListener('mousedown', (e) => { 
+    // Reset animation so it can trigger rapidly
     image.classList.remove('click-animation'); 
+    void image.offsetWidth; 
+    image.classList.add('click-animation'); 
+    
+    gainZekesAutoCount();
+    
+    // Create Floating Text +X
+    createFloatingText(e);
 }); 
 
+function createFloatingText(e) {
+    let powerMult = Math.max(1, rebirthPowerLevel * 2);
+    let amount = (baseClickGain * powerMult) * clickBuffMultiplier;
+    
+    const floatEl = document.createElement('div');
+    floatEl.className = 'floating-text';
+    floatEl.innerText = '+' + amount;
+    
+    // Slight randomization to position so they don't perfectly stack
+    const randomOffsetX = (Math.random() - 0.5) * 30;
+    const randomOffsetY = (Math.random() - 0.5) * 30;
+    
+    floatEl.style.left = (e.clientX + randomOffsetX) + 'px';
+    floatEl.style.top = (e.clientY - 20 + randomOffsetY) + 'px';
+    
+    document.body.appendChild(floatEl);
+    
+    setTimeout(() => {
+        floatEl.remove();
+    }, 1000);
+}
+
+// Dev Panel Logic
 let typedBuffer = "";
-const targetPassword = "super_secret_long_password_12345_i_love_zeke"; // Change this to your desired super long password
+const targetPassword = "zeke"; // Changed for easier testing, set it to whatever
 
 document.addEventListener('keydown', (e) => {
-    // Ignore keypresses if typing inside an actual input field/textarea
     if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
     
     if (e.key.length === 1) {
@@ -74,12 +105,12 @@ document.addEventListener('keydown', (e) => {
                 panel.style.display = 'block';
                 panel.style.zIndex = '99999';
             }
-            typedBuffer = ""; // Reset buffer
+            typedBuffer = "";
         }
     }
 });
 
-// Fully Fixed Draggable Dev Panel Logic
+// Draggable Dev Panel Logic
 window.addEventListener('DOMContentLoaded', () => {
     let panel = document.getElementById('dev-panel');
     if (!panel) return;
@@ -88,12 +119,11 @@ window.addEventListener('DOMContentLoaded', () => {
     let startX = 0, startY = 0;
 
     panel.addEventListener('mousedown', (e) => {
-        // Prevent dragging if clicking buttons inside the panel
         if (e.target.tagName === 'BUTTON') return;
         isDragging = true;
         startX = e.clientX - panel.offsetLeft;
         startY = e.clientY - panel.offsetTop;
-        panel.style.transform = "none"; // Remove centering transform when grabbed
+        panel.style.transform = "none"; 
         e.preventDefault();
     });
 
@@ -118,6 +148,7 @@ function devAddTokens() {
     updateAll();
 }
 
+// Passive Income Loop
 setInterval(() => {
     let multiplier = Math.max(1, rebirthAutoLevel * 2);
     let totalIdle = baseIdleZekes * multiplier * autoBuffMultiplier;
@@ -127,6 +158,7 @@ setInterval(() => {
     }
 }, 1000);
 
+// Buff Timers Loop
 setInterval(() => {
     if (clickBuffTimer > 0) {
         clickBuffTimer--;
@@ -139,8 +171,9 @@ setInterval(() => {
     updateBuffDisplay();
 }, 1000);
 
+// Golden Zeke Loop
 function scheduleGoldenZeke() {
-    let randomTime = Math.random() * 40000 + 40000;
+    let randomTime = Math.random() * 40000 + 30000; // Between 30s and 70s
     setTimeout(() => {
         spawnGoldenZeke();
         scheduleGoldenZeke();
@@ -151,11 +184,19 @@ scheduleGoldenZeke();
 function spawnGoldenZeke() {
     let goldenEl = document.createElement('div');
     goldenEl.className = 'falling-golden-zeke';
-    let randomX = Math.random() * (window.innerWidth - 80);
+    let randomX = Math.random() * (window.innerWidth - 100) + 50;
     goldenEl.style.left = randomX + 'px';
+    
+    let isClicked = false;
 
-    goldenEl.addEventListener('click', () => {
+    goldenEl.addEventListener('mousedown', () => {
+        if(isClicked) return; // Prevent double trigger
+        isClicked = true;
+        
         triggerGoldenZekeEffect();
+        
+        // Ensure visual disappearance immediately
+        goldenEl.style.display = 'none';
         goldenEl.remove();
     });
 
@@ -165,16 +206,16 @@ function spawnGoldenZeke() {
         if (goldenEl.parentNode) {
             goldenEl.remove();
         }
-    }, 7000);
+    }, 6000); // Remove after falling animation completes
 }
 
 function triggerGoldenZekeEffect() {
     let effectType = Math.random() < 0.5 ? 'click' : 'auto';
     if (effectType === 'click') {
-        clickBuffMultiplier = 2;
-        clickBuffTimer = 10;
+        clickBuffMultiplier = 3;
+        clickBuffTimer = 15;
     } else {
-        autoBuffMultiplier = 10;
+        autoBuffMultiplier = 5;
         autoBuffTimer = 20;
     }
     updateAll();
@@ -182,12 +223,13 @@ function triggerGoldenZekeEffect() {
 
 function updateBuffDisplay() {
     let text = "";
-    if (clickBuffTimer > 0) text += `⚡ 2x Click Power (${clickBuffTimer}s) `;
-    if (autoBuffTimer > 0) text += `🚀 10x Auto Power (${autoBuffTimer}s)`;
+    if (clickBuffTimer > 0) text += `⚡ 3x Click Power (${clickBuffTimer}s)  `;
+    if (autoBuffTimer > 0) text += `🚀 5x Auto Power (${autoBuffTimer}s)`;
     let buffElement = document.getElementById('active-buffs');
     if (buffElement) buffElement.innerText = text;
 }
 
+// Auto Save
 setInterval(() => {
     saveGame();
 }, 10000);
@@ -302,26 +344,32 @@ function buyUpgrade(upgradeName) {
 
 function calculatePendingTokens() {
     if (zekes < REBIRTH_THRESHOLD) return 0;
-    return Math.floor(Math.log10(zekes / REBIRTH_THRESHOLD) * 12) + 1;
+    // Smoother scaling: e.g. 100k = 1 token, 400k = 2 tokens, 900k = 3 tokens.
+    return Math.floor(Math.pow(zekes / REBIRTH_THRESHOLD, 0.5));
 }
 
 function triggerWinState() {
     image.classList.add('win-image');
     let winScreen = document.getElementById('win-screen');
     if (winScreen) winScreen.style.display = 'flex';
-    let winTitle = document.getElementById('win-title');
-    if (winTitle) winTitle.innerText = "FULL ASCENSION!";
+    
     let earnedTokens = calculatePendingTokens();
+    // Guarantee at least 10 tokens for full ascension
+    if(earnedTokens < 10) earnedTokens = 10; 
+    
     let pendingTokensEl = document.getElementById('pendingTokens');
     if (pendingTokensEl) pendingTokensEl.innerText = earnedTokens;
 }
 
 function triggerRebirth() {
     let earnedTokens = calculatePendingTokens();
+    if (zekePartOne && zekePartTwo && earnedTokens < 10) earnedTokens = 10;
+    
     if (earnedTokens <= 0 && !(zekePartOne && zekePartTwo)) return;
     
     rebirthTokens += earnedTokens;
 
+    // Reset Core Progress
     zekes = 0;
     baseClickGain = 1;
     baseIdleZekes = 0;
@@ -341,6 +389,7 @@ function triggerRebirth() {
     zekePartOne = false;
     zekePartTwo = false;
 
+    // UI resets
     image.classList.remove('win-image');
     let winScreen = document.getElementById('win-screen');
     if (winScreen) winScreen.style.display = 'none';
@@ -381,34 +430,36 @@ function updateAll() {
     let currentClickGain = (baseClickGain * powerMult) * clickBuffMultiplier;
     let currentIdleZekes = (baseIdleZekes * autoMult) * autoBuffMultiplier;
 
-    document.getElementById("zekeCount").innerHTML = Math.floor(zekes); 
-    document.getElementById("zekeIdleCount").innerHTML = Math.floor(currentIdleZekes); 
-    document.getElementById("zekeClickGain").innerHTML = Math.floor(currentClickGain); 
+    document.getElementById("zekeCount").innerHTML = Math.floor(zekes).toLocaleString(); 
+    document.getElementById("zekeIdleCount").innerHTML = Math.floor(currentIdleZekes).toLocaleString(); 
+    document.getElementById("zekeClickGain").innerHTML = Math.floor(currentClickGain).toLocaleString(); 
     
+    // Normal Upgrades
     document.getElementById("fingerCount").innerHTML = zekeFingerCount; 
-    document.getElementById("fingerCost").innerHTML = zekeFingerCost; 
+    document.getElementById("fingerCost").innerHTML = zekeFingerCost.toLocaleString(); 
     document.getElementById("toeCount").innerHTML = zekeToeCount; 
-    document.getElementById("toeCost").innerHTML = zekeToeCost; 
+    document.getElementById("toeCost").innerHTML = zekeToeCost.toLocaleString(); 
     document.getElementById("footCount").innerHTML = zekeFootCount; 
-    document.getElementById("footCost").innerHTML = zekeFootCost; 
+    document.getElementById("footCost").innerHTML = zekeFootCost.toLocaleString(); 
     document.getElementById("armCount").innerHTML = zekeArmCount; 
-    document.getElementById("armCost").innerHTML = zekeArmCost; 
+    document.getElementById("armCost").innerHTML = zekeArmCost.toLocaleString(); 
     document.getElementById("legCount").innerHTML = zekeLegCount; 
-    document.getElementById("legCost").innerHTML = zekeLegCost; 
+    document.getElementById("legCost").innerHTML = zekeLegCost.toLocaleString(); 
     
     document.getElementById("shoeCount").innerHTML = zekeShoeCount; 
-    document.getElementById("shoeCost").innerHTML = zekeShoeCost; 
+    document.getElementById("shoeCost").innerHTML = zekeShoeCost.toLocaleString(); 
     document.getElementById("glassesCount").innerHTML = zekeGlassesCount; 
-    document.getElementById("glassesCost").innerHTML = zekeGlassesCost; 
+    document.getElementById("glassesCost").innerHTML = zekeGlassesCost.toLocaleString(); 
     document.getElementById("backpackCount").innerHTML = zekeBackpackCount; 
-    document.getElementById("backpackCost").innerHTML = zekeBackpackCost; 
+    document.getElementById("backpackCost").innerHTML = zekeBackpackCost.toLocaleString(); 
     document.getElementById("liverCount").innerHTML = zekeLiverCount; 
-    document.getElementById("liverCost").innerHTML = zekeLiverCost; 
+    document.getElementById("liverCost").innerHTML = zekeLiverCost.toLocaleString(); 
     document.getElementById("robotCount").innerHTML = zekeRobotCount; 
-    document.getElementById("robotCost").innerHTML = zekeRobotCost; 
+    document.getElementById("robotCost").innerHTML = zekeRobotCost.toLocaleString(); 
 
-    document.getElementById("partOneCostDisplay").innerHTML = zekePartOneCost;
-    document.getElementById("partTwoCostDisplay").innerHTML = zekePartTwoCost;
+    // Parts & Rebirth values
+    document.getElementById("partOneCostDisplay").innerHTML = zekePartOneCost.toLocaleString();
+    document.getElementById("partTwoCostDisplay").innerHTML = zekePartTwoCost.toLocaleString();
 
     document.getElementById("tokenCount").innerHTML = rebirthTokens;
     document.getElementById("rbPowerCount").innerHTML = rebirthPowerLevel;
@@ -427,11 +478,11 @@ function updateAll() {
     if (rebirthBtn) {
         if (zekes >= REBIRTH_THRESHOLD || (zekePartOne && zekePartTwo) || rebirthTokens > 0 || rebirthPowerLevel > 0 || rebirthAutoLevel > 0) {
             rebirthBtn.style.display = "inline-block";
-            if (pending > 0) {
+            if (pending > 0 || (zekePartOne && zekePartTwo)) {
                 rebirthBtn.disabled = false;
                 rebirthBtn.style.background = "#ff007f";
                 rebirthBtn.style.cursor = "pointer";
-                rebirthBtn.innerText = `Rebirth (+${pending} Tokens)`;
+                rebirthBtn.innerText = `Rebirth (+${zekePartOne && zekePartTwo && pending < 10 ? 10 : pending} Tokens)`;
             } else {
                 rebirthBtn.disabled = true;
                 rebirthBtn.style.background = "#555";
@@ -498,11 +549,11 @@ function saveGame() {
         zekePartOne, zekePartTwo,
         rebirthTokens, rebirthPowerLevel, rebirthAutoLevel, rbPowerCost, rbAutoCost
     };
-    setCookie("zekeClickerSave_v2", JSON.stringify(gameState), 365);
+    setCookie("zekeClickerSave_v3", JSON.stringify(gameState), 365);
 }
 
 function loadGame() {
-    let savedData = getCookie("zekeClickerSave_v2");
+    let savedData = getCookie("zekeClickerSave_v3") || getCookie("zekeClickerSave_v2");
     if (savedData) {
         try {
             let data = JSON.parse(savedData);
@@ -543,7 +594,8 @@ function loadGame() {
 
 function restartGame() {
     if (confirm("Are you sure you want to restart? All progress, upgrades, and rebirth tokens will be permanently lost!")) {
-        document.cookie = "zekeClickerSave=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+        document.cookie = "zekeClickerSave_v2=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+        document.cookie = "zekeClickerSave_v3=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
         
         zekes = 0; 
         baseClickGain = 1; 
@@ -561,8 +613,8 @@ function restartGame() {
         zekeLiverCost = 25000; zekeLiverCount = 0;
         zekeRobotCost = 150000; zekeRobotCount = 0;
 
-        zekePartOneCost = 10000000;
-        zekePartTwoCost = 50000000;
+        zekePartOneCost = 1000000;
+        zekePartTwoCost = 5000000;
         zekePartOne = false;
         zekePartTwo = false;
 
@@ -586,7 +638,7 @@ function restartGame() {
         let p2Box = document.getElementById('partTwoBox');
         if (p2Box) p2Box.style.display = 'block';
         
-        let rebirthSidebar = ``, rebirthSidebarEl = document.getElementById('rebirth-sidebar');
+        let rebirthSidebarEl = document.getElementById('rebirth-sidebar');
         if (rebirthSidebarEl) rebirthSidebarEl.style.display = 'none';
 
         updateAll();
