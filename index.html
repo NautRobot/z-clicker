@@ -250,5 +250,53 @@
 </div>
 
 <script src="script.js"></script>
+    <!-- GLOBAL ZEKE POINTS TRACKER (Copy into all games) -->
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+  import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+  import { getDatabase, ref, runTransaction } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyCyD2K3TT7hOfakFPgJ9mMjTEM8Jim9_rA",
+    authDomain: "z-clicker-97488.firebaseapp.com",
+    projectId: "z-clicker-97488",
+    storageBucket: "z-clicker-97488.firebasestorage.app",
+    messagingSenderId: "686862323992",
+    appId: "1:686862323992:web:e25c46b7deb67254278e6d",
+    databaseURL: "https://z-clicker-97488-default-rtdb.firebaseio.com" 
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const db = getDatabase(app);
+
+  signInAnonymously(auth).catch(console.error);
+
+  onAuthStateChanged(auth, (user) => {
+    if (!user) return;
+
+    let activeSeconds = 0;
+
+    // Tick every second if the user is actively viewing the tab
+    setInterval(() => {
+      if (!document.hidden) {
+        activeSeconds++;
+
+        // Every 60 seconds of active play, give 1 point
+        if (activeSeconds >= 60) {
+          activeSeconds = 0;
+          const userPointsRef = ref(db, `users/${user.uid}/points`);
+          
+          runTransaction(userPointsRef, (currentPoints) => {
+            return (currentPoints || 0) + 1;
+          }).then(() => {
+            console.log("+1 Global Zeke Point awarded for time spent!");
+          });
+        }
+      }
+    }, 1000);
+  });
+</script>
+    
 </body>
 </html>
