@@ -1,72 +1,201 @@
-// Layer 0: Normal Gameplay
-let zekes = 0; 
-let baseClickGain = 1; 
-let baseIdleZekes = 0; 
-const costMultiplier = 1.15; 
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.5.0/firebase-app.js";
+import { getDatabase, ref, onValue, onDisconnect, set, increment, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.5.0/firebase-database.js";
 
-let zekeFingerCost = 15, zekeFingerCount = 0;
-let zekeToeCost = 120, zekeToeCount = 0;
-let zekeFootCost = 900, zekeFootCount = 0;
-let zekeArmCost = 7500, zekeArmCount = 0;
-let zekeLegCost = 50000, zekeLegCount = 0;
+// For Firebase JS SDK v7.20.0 and later, measurementId is optional
+const firebaseConfig = {
+  apiKey: "AIzaSyCyD2K3TT7hOfakFPgJ9mMjTEM8Jim9_rA",
+  authDomain: "z-clicker-97488.firebaseapp.com",
+  projectId: "z-clicker-97488",
+  storageBucket: "z-clicker-97488.firebasestorage.app",
+  messagingSenderId: "686862323992",
+  appId: "1:686862323992:web:e25c46b7deb67254278e6d",
+  measurementId: "G-Y92C3EM9E1"
+};
 
-let zekeShoeCost = 50, zekeShoeCount = 0;
-let zekeGlassesCost = 400, zekeGlassesCount = 0;
-let zekeBackpackCost = 3500, zekeBackpackCount = 0;
-let zekeLiverCost = 25000, zekeLiverCount = 0;
-let zekeRobotCost = 150000, zekeRobotCount = 0;
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
 
-// Layer 1: Rebirth (Soft Reset)
-const REBIRTH_THRESHOLD = 100000;
-let rebirthTokens = 0;
-let totalRebirths = 0;
-let rebirthPowerLevel = 0, rbPowerCost = 1; 
-let rebirthAutoLevel = 0, rbAutoCost = 2;  
+// Logic: Generate a unique ID for this session
+const sessionRef = ref(db, 'online_users/' + Date.now() + Math.random().toString(36).substring(2));
+set(sessionRef, true); // Mark as online
+onDisconnect(sessionRef).remove(); // Auto-remove when tab closes!
 
-// Layer 2: Ascension (Medium Reset)
-const ASCENSION_THRESHOLD = 100;
-let ascensionPoints = 0;
-let totalAscensions = 0;
-let ascensionAutoRebirth = false; 
-let ascensionPowerLevel = 0, ascPowerCost = 1;
-let ascensionAutoLevel = 0, ascAutoCost = 1;
+// Listen to total count
+const usersRef = ref(db, 'online_users');
+onValue(usersRef, (snapshot) => {
+    let count = snapshot.size || 0;
+    document.getElementById('realLiveUsers').innerText = count;
+});
 
-// Layer 3: Transcension (Hard Reset/Win)
-let transcensionPartOne = false;
-let transcensionPartTwo = false;
-const transPartOneCost = 50;  
-const transPartTwoCost = 150; 
+// Increment and read Total Visits
+const visitsRef = ref(db, 'total_visits');
+set(visitsRef, increment(1)); // Add 1 on page load
+onValue(visitsRef, (snapshot) => {
+    document.getElementById('realTotalVisits').innerText = (snapshot.val() || 0).toLocaleString();
+});
+*/
 
-// Buffs
-let clickBuffMultiplier = 1, clickBuffTimer = 0;
-let autoBuffMultiplier = 1, autoBuffTimer = 0;
 
-const image = document.getElementById('zeke'); 
+// ==========================================
+// 2. DATA-DRIVEN GAME ENGINE
+// ==========================================
 
-// Click Event
-if (image) {
-    image.addEventListener('mousedown', (e) => { 
-        image.classList.remove('click-animation'); 
-        void image.offsetWidth; 
-        image.classList.add('click-animation'); 
+let game = {
+    zekes: 0,
+    allTimeZekes: 0, // Used for calculating Rebirth Memories
+    memories: 0,
+    spentMemories: 0,
+    astralZekes: 0,
+    
+    // Core stats calculated per tick
+    cps: 0,
+    clickValue: 1,
+};
+
+const COST_SCALAR = 1.15; // Cookie Clicker standard
+
+// --- BUILDINGS (Right Panel List) ---
+const buildings = [
+    { id: 'b_finger', name: "Zeke's Finger", baseCost: 15, baseCPS: 0.2, count: 0 },
+    { id: 'b_toe', name: "Zeke's Toe", baseCost: 100, baseCPS: 1, count: 0 },
+    { id: 'b_shoe', name: "Zeke's Shoe", baseCost: 1100, baseCPS: 8, count: 0 },
+    { id: 'b_glasses', name: "Zeke's Glasses", baseCost: 12000, baseCPS: 47, count: 0 },
+    { id: 'b_backpack', name: "Zeke's Backpack", baseCost: 130000, baseCPS: 260, count: 0 },
+    { id: 'b_liver', name: "Zeke's Liver", baseCost: 1400000, baseCPS: 1400, count: 0 },
+    { id: 'b_clone', name: "Zeke Clone", baseCost: 20000000, baseCPS: 7800, count: 0 }
+];
+
+// --- NORMAL UPGRADES (Right Panel Grid) ---
+// type: 'building_mult' (multiplies a building's base CPS)
+// type: 'click_mult' (multiplies base click value)
+// type: 'synergy_mouse' (click gains x% of CPS)
+const upgrades = [
+    // Clickers
+    { id: 'u_c1', name: 'Zeke Cursor', desc: 'Clicking is twice as efficient.', cost: 500, type: 'click_mult', val: 2, reqCheck: ()=>game.allTimeZekes>=100, bought: false, icon: '🖱️' },
+    { id: 'u_c2', name: 'Carpal Tunnel', desc: 'Clicking is twice as efficient.', cost: 10000, type: 'click_mult', val: 2, reqCheck: ()=>game.allTimeZekes>=5000, bought: false, icon: '💪' },
+    
+    // Synergies
+    { id: 'u_syn1', name: 'Plastic Mouse', desc: 'Clicking gains +1% of your total CPS.', cost: 50000, type: 'synergy_mouse', val: 0.01, reqCheck: ()=>game.cps>=100, bought: false, icon: '🐁' },
+    { id: 'u_syn2', name: 'Iron Mouse', desc: 'Clicking gains +1% of your total CPS.', cost: 5000000, type: 'synergy_mouse', val: 0.01, reqCheck: ()=>game.cps>=5000, bought: false, icon: '🐭' },
+
+    // Building Boosts
+    { id: 'u_b1', name: 'Nimble Fingers', desc: 'Fingers are twice as efficient.', cost: 150, type: 'building_mult', target: 'b_finger', val: 2, reqCheck: ()=>getBld('b_finger').count>=10, bought: false, icon: '☝️' },
+    { id: 'u_b2', name: 'Thick Toes', desc: 'Toes are twice as efficient.', cost: 1000, type: 'building_mult', target: 'b_toe', val: 2, reqCheck: ()=>getBld('b_toe').count>=10, bought: false, icon: '🦶' },
+    { id: 'u_b3', name: 'Nike Airs', desc: 'Shoes are twice as efficient.', cost: 11000, type: 'building_mult', target: 'b_shoe', val: 2, reqCheck: ()=>getBld('b_shoe').count>=10, bought: false, icon: '👟' },
+];
+
+// --- PRESTIGE TREES (Middle Panel) ---
+const rebirthTree = [
+    { id: 'rt_1', name: 'Better Base', desc: 'Base click value +5.', cost: 1, bought: false },
+    { id: 'rt_2', name: 'Synergy Core', desc: 'Fingers boost Shoes by 1% each.', cost: 5, bought: false },
+];
+
+const ascensionTree = [
+    { id: 'at_1', name: 'Crit Chance', desc: 'Unlock 10% chance to Crit (x5 click).', cost: 1, bought: false },
+    { id: 'at_2', name: 'Astral Aura', desc: 'Memories grant +2% global boost instead of +1%.', cost: 3, bought: false },
+];
+
+// Helpers
+const getBld = (id) => buildings.find(b => b.id === id);
+const getUpg = (id) => upgrades.find(u => u.id === id);
+const getRT = (id) => rebirthTree.find(u => u.id === id);
+const getAT = (id) => ascensionTree.find(u => u.id === id);
+const getBldCost = (b) => Math.floor(b.baseCost * Math.pow(COST_SCALAR, b.count));
+
+
+// ==========================================
+// 3. CORE LOGIC & CALCULATION
+// ==========================================
+
+function calculateStats() {
+    // 1. Calculate Base CPS
+    let newCPS = 0;
+    buildings.forEach(b => {
+        let bldMult = 1;
+        // Apply normal upgrades targeted at this building
+        upgrades.forEach(u => {
+            if (u.bought && u.type === 'building_mult' && u.target === b.id) bldMult *= u.val;
+        });
         
-        gainZekesAutoCount();
-        createFloatingText(e);
-    }); 
+        // Rebirth Tree specific synergies
+        if (getRT('rt_2').bought && b.id === 'b_shoe') {
+            bldMult *= (1 + (getBld('b_finger').count * 0.01));
+        }
+
+        newCPS += (b.baseCPS * bldMult) * b.count;
+    });
+
+    // 2. Apply Global Prestige Multipliers to CPS
+    let memoryBoostValue = getAT('at_2').bought ? 0.02 : 0.01;
+    let memoryMultiplier = 1 + (game.memories * memoryBoostValue);
+    
+    // Astral Zekes give +50% each
+    let astralMultiplier = 1 + (game.astralZekes * 0.5); 
+
+    game.cps = newCPS * memoryMultiplier * astralMultiplier;
+
+    // 3. Calculate Click Value
+    let clickBase = getRT('rt_1').bought ? 6 : 1; // Rebirth tree base boost
+    
+    upgrades.forEach(u => {
+        if (u.bought && u.type === 'click_mult') clickBase *= u.val;
+    });
+
+    // Apply synergies (Mouse upgrades adding % of CPS)
+    let synergyBonus = 0;
+    upgrades.forEach(u => {
+        if (u.bought && u.type === 'synergy_mouse') synergyBonus += (game.cps * u.val);
+    });
+
+    // Apply global modifiers to click as well
+    game.clickValue = (clickBase + synergyBonus) * memoryMultiplier * astralMultiplier;
 }
 
-function createFloatingText(e) {
-    let rpMult = Math.max(1, rebirthPowerLevel * 2);
-    let apMult = Math.pow(5, ascensionPowerLevel); 
-    let amount = (baseClickGain * rpMult * apMult) * clickBuffMultiplier;
-    
+// Tick loop
+setInterval(() => {
+    if (game.cps > 0) {
+        let amount = game.cps / 10; // Run 10 times a second for smoothness
+        game.zekes += amount;
+        game.allTimeZekes += amount;
+    }
+    updateUI();
+}, 100);
+
+// ==========================================
+// 4. INTERACTION
+// ==========================================
+
+const zekeImg = document.getElementById('zeke');
+if (zekeImg) {
+    zekeImg.addEventListener('mousedown', (e) => {
+        zekeImg.classList.remove('click-animation'); 
+        void zekeImg.offsetWidth; 
+        zekeImg.classList.add('click-animation'); 
+        
+        // Crit Logic (Unlocked via Ascension Tree)
+        let isCrit = false;
+        let finalClick = game.clickValue;
+        if (getAT('at_1').bought && Math.random() < 0.10) {
+            isCrit = true;
+            finalClick *= 5;
+        }
+
+        game.zekes += finalClick;
+        game.allTimeZekes += finalClick;
+        
+        createFloatingText(e, finalClick, isCrit);
+        updateUI();
+    });
+}
+
+function createFloatingText(e, amount, isCrit) {
     const floatEl = document.createElement('div');
     floatEl.className = 'floating-text';
-    floatEl.innerText = '+' + formatNumber(amount);
+    floatEl.innerText = (isCrit ? 'CRIT! +' : '+') + formatNumber(amount);
+    if (isCrit) floatEl.style.color = '#ff00ff';
     
     const randomOffsetX = (Math.random() - 0.5) * 30;
     const randomOffsetY = (Math.random() - 0.5) * 30;
-    
     floatEl.style.left = (e.clientX + randomOffsetX) + 'px';
     floatEl.style.top = (e.clientY - 20 + randomOffsetY) + 'px';
     
@@ -74,522 +203,279 @@ function createFloatingText(e) {
     setTimeout(() => { floatEl.remove(); }, 1000);
 }
 
-// Dev Panel Logic
-let typedBuffer = "";
-const targetPassword = "zeke"; 
-
-document.addEventListener('keydown', (e) => {
-    if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
-    if (e.key.length === 1) {
-        typedBuffer += e.key.toLowerCase();
-        if (typedBuffer.length > targetPassword.length) {
-            typedBuffer = typedBuffer.slice(-targetPassword.length);
-        }
-        if (typedBuffer === targetPassword) {
-            let panel = document.getElementById('dev-panel');
-            if (panel) { panel.style.display = 'block'; panel.style.zIndex = '99999'; }
-            typedBuffer = "";
-        }
+// Buy functions
+function buyBuilding(id) {
+    let b = getBld(id);
+    let cost = getBldCost(b);
+    if (game.zekes >= cost) {
+        game.zekes -= cost;
+        b.count++;
+        calculateStats();
+        updateUI();
     }
-});
+}
 
-// Draggable Dev Panel Logic
-window.addEventListener('DOMContentLoaded', () => {
-    let panel = document.getElementById('dev-panel');
-    if (!panel) return;
-    let isDragging = false;
-    let startX = 0, startY = 0;
-
-    panel.addEventListener('mousedown', (e) => {
-        if (e.target.tagName === 'BUTTON') return;
-        isDragging = true;
-        startX = e.clientX - panel.offsetLeft;
-        startY = e.clientY - panel.offsetTop;
-        panel.style.transform = "none"; 
-        e.preventDefault();
-    });
-
-    document.addEventListener('mousemove', (e) => {
-        if (!isDragging) return;
-        panel.style.left = (e.clientX - startX) + 'px';
-        panel.style.top = (e.clientY - startY) + 'px';
-    });
-
-    document.addEventListener('mouseup', () => { isDragging = false; });
-});
-
-function devAddZekes() { zekes += 10000000000; updateAll(); }
-function devAddTokens() { rebirthTokens += 1000; updateAll(); }
-function devAddAP() { ascensionPoints += 100; updateAll(); }
-
-// Passive Income & Auto Rebirth Loop
-setInterval(() => {
-    let raMult = Math.max(1, rebirthAutoLevel * 2);
-    let aaMult = Math.pow(5, ascensionAutoLevel);
-    let totalIdle = baseIdleZekes * raMult * aaMult * autoBuffMultiplier;
-    
-    if (totalIdle > 0) {
-        zekes += totalIdle;
+function buyUpgrade(id) {
+    let u = getUpg(id);
+    if (game.zekes >= u.cost && !u.bought) {
+        game.zekes -= u.cost;
+        u.bought = true;
+        calculateStats();
+        buildStore(); // Rebuild store to remove bought icon
+        updateUI();
     }
-
-    // Auto-Rebirth Logic
-    if (ascensionAutoRebirth) {
-        let toggle = document.getElementById('autoRebirthToggle');
-        let targetEl = document.getElementById('autoRebirthTarget');
-        let target = targetEl ? (parseInt(targetEl.value) || 1) : 1;
-        
-        if (toggle && toggle.checked) {
-            if (calculatePendingTokens() >= target) {
-                triggerRebirth();
-            }
-        }
-    }
-
-    updateAll();
-}, 1000);
-
-// Buff Timers Loop
-setInterval(() => {
-    if (clickBuffTimer > 0) {
-        clickBuffTimer--;
-        if (clickBuffTimer === 0) clickBuffMultiplier = 1;
-    }
-    if (autoBuffTimer > 0) {
-        autoBuffTimer--;
-        if (autoBuffTimer === 0) autoBuffMultiplier = 1;
-    }
-    updateBuffDisplay();
-}, 1000);
-
-// Golden Zeke Loop
-function scheduleGoldenZeke() {
-    let randomTime = Math.random() * 40000 + 30000; 
-    setTimeout(() => {
-        spawnGoldenZeke();
-        scheduleGoldenZeke();
-    }, randomTime);
-}
-scheduleGoldenZeke();
-
-function spawnGoldenZeke() {
-    let goldenEl = document.createElement('div');
-    goldenEl.className = 'falling-golden-zeke';
-    let randomX = Math.random() * (window.innerWidth - 100) + 50;
-    goldenEl.style.left = randomX + 'px';
-    
-    let isClicked = false;
-    goldenEl.addEventListener('mousedown', () => {
-        if(isClicked) return;
-        isClicked = true;
-        triggerGoldenZekeEffect();
-        goldenEl.style.display = 'none';
-        goldenEl.remove();
-    });
-
-    document.body.appendChild(goldenEl);
-    setTimeout(() => { if (goldenEl.parentNode) goldenEl.remove(); }, 6000); 
 }
 
-function triggerGoldenZekeEffect() {
-    let effectType = Math.random() < 0.5 ? 'click' : 'auto';
-    if (effectType === 'click') {
-        clickBuffMultiplier = 3;
-        clickBuffTimer = 15;
-    } else {
-        autoBuffMultiplier = 5;
-        autoBuffTimer = 20;
-    }
-    updateAll();
+// ==========================================
+// 5. PRESTIGE SYSTEM
+// ==========================================
+
+function getPendingMemories() {
+    // Formula: Cube root of millions
+    if (game.allTimeZekes < 1000000) return 0;
+    let earned = Math.floor(Math.cbrt(game.allTimeZekes / 1000000));
+    let totalGotten = game.memories + game.spentMemories;
+    return Math.max(0, earned - totalGotten);
 }
 
-// Safe HTML Updater Helper to prevent "Cannot set property of null" errors
-function setHTML(id, value) {
-    let el = document.getElementById(id);
-    if (el) el.innerHTML = value;
+function getPendingAstral() {
+    // Formula based on total memories gathered
+    let totalMemories = game.memories + game.spentMemories;
+    if (totalMemories < 100) return 0;
+    return Math.floor(totalMemories / 100);
 }
 
-function setDisplay(id, value) {
-    let el = document.getElementById(id);
-    if (el) el.style.display = value;
-}
-
-function updateBuffDisplay() {
-    let text = "";
-    if (clickBuffTimer > 0) text += `⚡ 3x Click Power (${clickBuffTimer}s)  `;
-    if (autoBuffTimer > 0) text += `🚀 5x Auto Power (${autoBuffTimer}s)`;
-    setHTML('active-buffs', text);
-}
-
-// Auto Save
-setInterval(() => { saveGame(); }, 10000);
-
-function buyUpgrade(upgradeName) { 
-    switch(upgradeName) { 
-        case 'zekeFinger': 
-            if (zekes >= zekeFingerCost) { zekes -= zekeFingerCost; baseClickGain += 1; zekeFingerCount++; zekeFingerCost = Math.floor(zekeFingerCost * costMultiplier); } 
-            break; 
-        case 'zekeToe': 
-            if (zekes >= zekeToeCost) { zekes -= zekeToeCost; baseClickGain += 4; zekeToeCount++; zekeToeCost = Math.floor(zekeToeCost * costMultiplier); } 
-            break; 
-        case 'zekeFoot': 
-            if (zekes >= zekeFootCost) { zekes -= zekeFootCost; baseClickGain += 15; zekeFootCount++; zekeFootCost = Math.floor(zekeFootCost * costMultiplier); } 
-            break; 
-        case 'zekeArm': 
-            if (zekes >= zekeArmCost) { zekes -= zekeArmCost; baseClickGain += 60; zekeArmCount++; zekeArmCost = Math.floor(zekeArmCost * costMultiplier); } 
-            break; 
-        case 'zekeLeg': 
-            if (zekes >= zekeLegCost) { zekes -= zekeLegCost; baseClickGain += 250; zekeLegCount++; zekeLegCost = Math.floor(zekeLegCost * costMultiplier); } 
-            break; 
-        case 'zekeShoe': 
-            if (zekes >= zekeShoeCost) { zekes -= zekeShoeCost; baseIdleZekes += 1; zekeShoeCount++; zekeShoeCost = Math.floor(zekeShoeCost * costMultiplier); } 
-            break; 
-        case 'zekeGlasses': 
-            if (zekes >= zekeGlassesCost) { zekes -= zekeGlassesCost; baseIdleZekes += 6; zekeGlassesCount++; zekeGlassesCost = Math.floor(zekeGlassesCost * costMultiplier); } 
-            break; 
-        case 'zekeBackpack': 
-            if (zekes >= zekeBackpackCost) { zekes -= zekeBackpackCost; baseIdleZekes += 35; zekeBackpackCount++; zekeBackpackCost = Math.floor(zekeBackpackCost * costMultiplier); } 
-            break; 
-        case 'zekeLiver': 
-            if (zekes >= zekeLiverCost) { zekes -= zekeLiverCost; baseIdleZekes += 150; zekeLiverCount++; zekeLiverCost = Math.floor(zekeLiverCost * costMultiplier); } 
-            break; 
-        case 'zekeRobot': 
-            if (zekes >= zekeRobotCost) { zekes -= zekeRobotCost; baseIdleZekes += 800; zekeRobotCount++; zekeRobotCost = Math.floor(zekeRobotCost * costMultiplier); } 
-            break; 
-        case 'transcensionPartOne': 
-            if (ascensionPoints >= transPartOneCost) { 
-                ascensionPoints -= transPartOneCost; transcensionPartOne = true;
-                setDisplay('partOneBox', 'none');
-            } 
-            break; 
-        case 'transcensionPartTwo': 
-            if (ascensionPoints >= transPartTwoCost) { 
-                ascensionPoints -= transPartTwoCost; transcensionPartTwo = true;
-                setDisplay('partTwoBox', 'none');
-            } 
-            break; 
-    } 
-
-    if (transcensionPartOne && transcensionPartTwo) {
-        setDisplay('win-screen', 'flex');
-    }
-
-    updateAll(); 
-    saveGame();
-} 
-
-// -- Prestige Math --
-function calculatePendingTokens() {
-    if (zekes < REBIRTH_THRESHOLD) return 0;
-    return Math.floor(Math.pow(zekes / REBIRTH_THRESHOLD, 0.5));
-}
-function calculatePendingAP() {
-    if (rebirthTokens < ASCENSION_THRESHOLD) return 0;
-    return Math.floor(Math.pow(rebirthTokens / ASCENSION_THRESHOLD, 0.5));
-}
-
-// -- Rebirth (Soft Reset) --
 function triggerRebirth() {
-    let earnedTokens = calculatePendingTokens();
-    if (earnedTokens <= 0) return;
+    let pending = getPendingMemories();
+    if (pending <= 0) return;
     
-    rebirthTokens += earnedTokens;
-    totalRebirths++;
-
-    zekes = 0;
-    baseClickGain = 1;
-    baseIdleZekes = 0;
+    game.memories += pending;
     
-    zekeFingerCost = 15; zekeFingerCount = 0;
-    zekeToeCost = 120; zekeToeCount = 0;
-    zekeFootCost = 900; zekeFootCount = 0;
-    zekeArmCost = 7500; zekeArmCount = 0;
-    zekeLegCost = 50000; zekeLegCount = 0;
-
-    zekeShoeCost = 50; zekeShoeCount = 0;
-    zekeGlassesCost = 400; zekeGlassesCount = 0;
-    zekeBackpackCost = 3500; zekeBackpackCount = 0;
-    zekeLiverCost = 25000; zekeLiverCount = 0;
-    zekeRobotCost = 150000; zekeRobotCount = 0;
-
-    updateAll();
-    saveGame();
+    // Soft Reset
+    game.zekes = 0;
+    buildings.forEach(b => b.count = 0);
+    upgrades.forEach(u => u.bought = false);
+    
+    calculateStats();
+    buildStore();
+    updateUI();
 }
 
-// -- Ascension (Medium Reset) --
 function triggerAscension() {
-    let earnedAP = calculatePendingAP();
-    if (earnedAP <= 0) return;
+    let pending = getPendingAstral();
+    if (pending <= 0) return;
 
-    ascensionPoints += earnedAP;
-    totalAscensions++;
+    game.astralZekes += pending;
 
-    // Reset Normal
-    zekes = 0;
-    baseClickGain = 1;
-    baseIdleZekes = 0;
+    // Hard Reset
+    game.zekes = 0;
+    game.allTimeZekes = 0;
+    game.memories = 0;
+    game.spentMemories = 0;
     
-    zekeFingerCost = 15; zekeFingerCount = 0;
-    zekeToeCost = 120; zekeToeCount = 0;
-    zekeFootCost = 900; zekeFootCount = 0;
-    zekeArmCost = 7500; zekeArmCount = 0;
-    zekeLegCost = 50000; zekeLegCount = 0;
-
-    zekeShoeCost = 50; zekeShoeCount = 0;
-    zekeGlassesCost = 400; zekeGlassesCount = 0;
-    zekeBackpackCost = 3500; zekeBackpackCount = 0;
-    zekeLiverCost = 25000; zekeLiverCount = 0;
-    zekeRobotCost = 150000; zekeRobotCount = 0;
-
-    // Reset Rebirth
-    rebirthTokens = 0;
-    rebirthPowerLevel = 0; rbPowerCost = 1;
-    rebirthAutoLevel = 0; rbAutoCost = 2;
-
-    // UI Resets
-    let autoToggle = document.getElementById('autoRebirthToggle');
-    if(autoToggle) autoToggle.checked = false; 
-
-    updateAll();
-    saveGame();
+    buildings.forEach(b => b.count = 0);
+    upgrades.forEach(u => u.bought = false);
+    rebirthTree.forEach(u => u.bought = false);
+    
+    calculateStats();
+    buildStore();
+    buildPrestigeTrees();
+    updateUI();
 }
 
-function buyRebirthUpgrade(type) {
-    if (type === 'power' && rebirthTokens >= rbPowerCost) {
-        rebirthTokens -= rbPowerCost;
-        rebirthPowerLevel++;
-        rbPowerCost += 2;
-    } else if (type === 'auto' && rebirthTokens >= rbAutoCost) {
-        rebirthTokens -= rbAutoCost;
-        rebirthAutoLevel++;
-        rbAutoCost += 3;
+function buyTreeUpgrade(tree, id) {
+    if (tree === 'rebirth') {
+        let u = getRT(id);
+        if (!u.bought && game.memories >= u.cost) {
+            game.memories -= u.cost;
+            game.spentMemories += u.cost;
+            u.bought = true;
+        }
+    } else if (tree === 'ascension') {
+        let u = getAT(id);
+        if (!u.bought && game.astralZekes >= u.cost) {
+            game.astralZekes -= u.cost;
+            u.bought = true;
+        }
     }
-    updateAll(); saveGame();
+    calculateStats();
+    buildPrestigeTrees();
+    updateUI();
 }
 
-function buyAscensionUpgrade(type) {
-    if (type === 'autoRebirth' && !ascensionAutoRebirth && ascensionPoints >= 3) {
-        ascensionPoints -= 3;
-        ascensionAutoRebirth = true;
-    } else if (type === 'power' && ascensionPoints >= ascPowerCost) {
-        ascensionPoints -= ascPowerCost;
-        ascensionPowerLevel++;
-        ascPowerCost = Math.floor(ascPowerCost * 2);
-    } else if (type === 'auto' && ascensionPoints >= ascAutoCost) {
-        ascensionPoints -= ascAutoCost;
-        ascensionAutoLevel++;
-        ascAutoCost = Math.floor(ascAutoCost * 2);
-    }
-    updateAll(); saveGame();
+// ==========================================
+// 6. UI BUILDERS (Runs on load)
+// ==========================================
+const tooltip = document.getElementById('tooltip');
+
+function showTooltip(e, name, cost, desc, currencySymbol = 'Zekes') {
+    tooltip.innerHTML = `<h4>${name}</h4><span class="tt-cost">Cost: ${formatNumber(cost)} ${currencySymbol}</span><div>${desc}</div>`;
+    tooltip.style.display = 'block';
+    
+    let x = e.pageX + 15;
+    let y = e.pageY + 15;
+    
+    // Prevent flowing off screen right
+    if (x + 200 > window.innerWidth) x = e.pageX - 215;
+    
+    tooltip.style.left = x + 'px';
+    tooltip.style.top = y + 'px';
+}
+function hideTooltip() { tooltip.style.display = 'none'; }
+
+function buildStore() {
+    // 1. Upgrades Grid (Only show unbought ones that meet reqs)
+    const upgContainer = document.getElementById('upgrades-container');
+    upgContainer.innerHTML = '';
+    upgrades.forEach(u => {
+        if (!u.bought && u.reqCheck()) {
+            let el = document.createElement('div');
+            el.className = 'upgrade-icon';
+            el.innerHTML = u.icon;
+            el.onclick = () => { buyUpgrade(u.id); hideTooltip(); };
+            el.onmouseenter = (e) => showTooltip(e, u.name, u.cost, u.desc);
+            el.onmousemove = (e) => showTooltip(e, u.name, u.cost, u.desc);
+            el.onmouseleave = hideTooltip;
+            upgContainer.appendChild(el);
+        }
+    });
+
+    // 2. Buildings List
+    const bldContainer = document.getElementById('buildings-container');
+    bldContainer.innerHTML = '';
+    buildings.forEach(b => {
+        let el = document.createElement('div');
+        el.className = 'building-row';
+        el.id = `ui_${b.id}`;
+        el.onclick = () => buyBuilding(b.id);
+        
+        el.innerHTML = `
+            <div class="bld-info">
+                <span class="bld-name">${b.name}</span>
+                <span class="bld-cost" id="cost_${b.id}">${formatNumber(getBldCost(b))} Zekes</span>
+            </div>
+            <span class="bld-count" id="count_${b.id}">${b.count}</span>
+        `;
+        bldContainer.appendChild(el);
+    });
+}
+
+function buildPrestigeTrees() {
+    const rtContainer = document.getElementById('rebirth-tree');
+    rtContainer.innerHTML = '';
+    rebirthTree.forEach(u => {
+        rtContainer.innerHTML += `
+            <div class="tree-item ${u.bought ? 'bought' : ''}">
+                <div>
+                    <strong>${u.name}</strong><br>
+                    <span style="font-size:0.8rem; color:#aaa;">${u.desc}</span>
+                </div>
+                ${u.bought ? '<span>Owned</span>' : `<button onclick="buyTreeUpgrade('rebirth', '${u.id}')">Cost: ${u.cost} M</button>`}
+            </div>
+        `;
+    });
+
+    const atContainer = document.getElementById('ascension-tree');
+    atContainer.innerHTML = '';
+    ascensionTree.forEach(u => {
+        atContainer.innerHTML += `
+            <div class="tree-item ${u.bought ? 'bought' : ''}" style="border-color: ${u.bought ? '#ffd700' : '#444'}; background: ${u.bought ? '#332b00' : '#242424'}">
+                <div>
+                    <strong>${u.name}</strong><br>
+                    <span style="font-size:0.8rem; color:#aaa;">${u.desc}</span>
+                </div>
+                ${u.bought ? '<span style="color:#ffd700;">Owned</span>' : `<button style="background:#b8860b;" onclick="buyTreeUpgrade('ascension', '${u.id}')">Cost: ${u.cost} A</button>`}
+            </div>
+        `;
+    });
+}
+
+function updateUI() {
+    document.getElementById('zekeCount').innerText = Math.floor(game.zekes).toLocaleString();
+    document.getElementById('cpsDisplay').innerText = formatNumber(game.cps);
+    document.getElementById('clickValueDisplay').innerText = formatNumber(game.clickValue);
+
+    // Update Building Costs dynamically without rebuilding entire DOM
+    buildings.forEach(b => {
+        let costEl = document.getElementById(`cost_${b.id}`);
+        let countEl = document.getElementById(`count_${b.id}`);
+        let rowEl = document.getElementById(`ui_${b.id}`);
+        if (costEl) {
+            let cost = getBldCost(b);
+            costEl.innerText = formatNumber(cost) + " Zekes";
+            countEl.innerText = b.count;
+            rowEl.style.opacity = game.zekes >= cost ? "1" : "0.5"; // Dim if can't afford
+        }
+    });
+    
+    // Store Upgrade visibility logic periodically checks to see if new things unlock
+    // (Optimization: In a massive game, you'd only run this specific check once every second, but here it's fine)
+    if (Math.random() < 0.1) buildStore(); 
+
+    // Prestige UI
+    document.getElementById('memoryCount').innerText = game.memories.toLocaleString();
+    let memoryBoostValue = getAT('at_2').bought ? 2 : 1;
+    document.getElementById('memoryBoost').innerText = (game.memories * memoryBoostValue).toLocaleString();
+    
+    let pMem = getPendingMemories();
+    let rBtn = document.getElementById('btn-rebirth');
+    document.getElementById('pendingMemories').innerText = pMem.toLocaleString();
+    rBtn.disabled = pMem <= 0;
+
+    document.getElementById('astralCount').innerText = game.astralZekes.toLocaleString();
+    
+    let pAst = getPendingAstral();
+    let aBtn = document.getElementById('btn-ascend');
+    document.getElementById('pendingAstral').innerText = pAst.toLocaleString();
+    aBtn.disabled = pAst <= 0;
+
+    // Reveal Crit UI if unlocked
+    document.getElementById('critDisplay').style.display = getAT('at_1').bought ? 'block' : 'none';
 }
 
 function formatNumber(num) {
-    if (num < 1000000) return Math.floor(num).toLocaleString();
+    if (num < 1000) return Math.floor(num).toLocaleString();
+    if (num < 1000000) return (num / 1000).toFixed(1) + "k";
     if (num < 1000000000) return (num / 1000000).toFixed(2) + "M";
     if (num < 1000000000000) return (num / 1000000000).toFixed(2) + "B";
     return (num / 1000000000000).toFixed(2) + "T";
 }
 
-function updateAll() { 
-    let rpMult = Math.max(1, rebirthPowerLevel * 2);
-    let raMult = Math.max(1, rebirthAutoLevel * 2);
-    let apMult = Math.pow(5, ascensionPowerLevel);
-    let aaMult = Math.pow(5, ascensionAutoLevel);
-
-    let currentClickGain = (baseClickGain * rpMult * apMult) * clickBuffMultiplier;
-    let currentIdleZekes = (baseIdleZekes * raMult * aaMult) * autoBuffMultiplier;
-
-    // Core Stats
-    setHTML("zekeCount", formatNumber(zekes));
-    setHTML("zekeIdleCount", formatNumber(currentIdleZekes));
-    setHTML("zekeClickGain", formatNumber(currentClickGain));
-    
-    // Normal Upgrades Display
-    setHTML("fingerCount", zekeFingerCount);
-    setHTML("fingerCost", formatNumber(zekeFingerCost));
-    setHTML("toeCount", zekeToeCount);
-    setHTML("toeCost", formatNumber(zekeToeCost));
-    setHTML("footCount", zekeFootCount);
-    setHTML("footCost", formatNumber(zekeFootCost));
-    setHTML("armCount", zekeArmCount);
-    setHTML("armCost", formatNumber(zekeArmCost));
-    setHTML("legCount", zekeLegCount);
-    setHTML("legCost", formatNumber(zekeLegCost));
-    
-    setHTML("shoeCount", zekeShoeCount);
-    setHTML("shoeCost", formatNumber(zekeShoeCost));
-    setHTML("glassesCount", zekeGlassesCount);
-    setHTML("glassesCost", formatNumber(zekeGlassesCost));
-    setHTML("backpackCount", zekeBackpackCount);
-    setHTML("backpackCost", formatNumber(zekeBackpackCost));
-    setHTML("liverCount", zekeLiverCount);
-    setHTML("liverCost", formatNumber(zekeLiverCost));
-    setHTML("robotCount", zekeRobotCount);
-    setHTML("robotCost", formatNumber(zekeRobotCost));
-
-    // Prestige Currencies
-    setHTML("tokenCount", formatNumber(rebirthTokens));
-    setHTML("apCount", formatNumber(ascensionPoints));
-    
-    if(rebirthTokens > 0 || totalRebirths > 0 || totalAscensions > 0) {
-        setDisplay("token-display", "block");
-        setDisplay("rebirth-shop-container", "block");
-    }
-    if(ascensionPoints > 0 || totalAscensions > 0) {
-        setDisplay("ap-display", "block");
-        setDisplay("ascension-shop-container", "block");
-        setDisplay("transcension-shop-container", "block");
-    }
-
-    // Rebirth Shop Values
-    setHTML("rbPowerCount", rebirthPowerLevel);
-    setHTML("rbPowerCost", rbPowerCost);
-    setHTML("rbAutoCount", rebirthAutoLevel);
-    setHTML("rbAutoCost", rbAutoCost);
-
-    // Ascension Shop Values
-    setHTML("ascPowerCount", ascensionPowerLevel);
-    setHTML("ascPowerCost", ascPowerCost);
-    setHTML("ascAutoCount", ascensionAutoLevel);
-    setHTML("ascAutoCost", ascAutoCost);
-
-    if (ascensionAutoRebirth) {
-        setDisplay('autoRebirthBuyBox', 'none');
-        setDisplay('auto-rebirth-container', 'block');
-    }
-
-    // Transcension Shop Values
-    if (transcensionPartOne) setDisplay('partOneBox', 'none');
-    if (transcensionPartTwo) setDisplay('partTwoBox', 'none');
-
-    // Prestige Buttons Logic
-    let pendingTokens = calculatePendingTokens();
-    let rebirthBtn = document.getElementById('rebirth-trigger-btn');
-    if (rebirthBtn) {
-        if (zekes >= REBIRTH_THRESHOLD || totalRebirths > 0 || totalAscensions > 0) {
-            rebirthBtn.style.display = "inline-block";
-            if (pendingTokens > 0) {
-                rebirthBtn.disabled = false;
-                rebirthBtn.classList.remove("btn-disabled");
-                setHTML('pendingTokensBtn', formatNumber(pendingTokens));
-                rebirthBtn.innerText = `Rebirth (+${formatNumber(pendingTokens)} Tokens)`;
-            } else {
-                rebirthBtn.disabled = true;
-                rebirthBtn.classList.add("btn-disabled");
-                rebirthBtn.innerText = `Rebirth (Need ${formatNumber(REBIRTH_THRESHOLD)} Zekes)`;
-            }
-        }
-    }
-
-    let pendingAP = calculatePendingAP();
-    let ascendBtn = document.getElementById('ascend-trigger-btn');
-    if (ascendBtn) {
-        if (rebirthTokens >= ASCENSION_THRESHOLD || totalAscensions > 0) {
-            ascendBtn.style.display = "inline-block";
-            if (pendingAP > 0) {
-                ascendBtn.disabled = false;
-                ascendBtn.classList.remove("btn-disabled");
-                setHTML('pendingAPBtn', formatNumber(pendingAP));
-                ascendBtn.innerText = `ASCEND (+${formatNumber(pendingAP)} AP)`;
-            } else {
-                ascendBtn.disabled = true;
-                ascendBtn.classList.add("btn-disabled");
-                ascendBtn.innerText = `ASCEND (Need ${ASCENSION_THRESHOLD} Tokens)`;
-            }
-        }
-    }
-}
-
-function gainZeke(amount) { zekes += amount; updateAll(); } 
-function gainZekesAutoCount() { 
-    let rpMult = Math.max(1, rebirthPowerLevel * 2);
-    let apMult = Math.pow(5, ascensionPowerLevel);
-    gainZeke((baseClickGain * rpMult * apMult) * clickBuffMultiplier); 
-} 
-
-// Save/Load
-function setCookie(name, value, days) {
-    let expires = "";
-    if (days) {
-        let date = new Date();
-        date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
-        expires = "; expires=" + date.toUTCString();
-    }
-    document.cookie = name + "=" + encodeURIComponent(value) + expires + "; path=/";
-}
-
-function getCookie(name) {
-    let nameEQ = name + "=";
-    let ca = document.cookie.split(';');
-    for(let i = 0; i < ca.length; i++) {
-        let c = ca[i];
-        while (c.charAt(0) == ' ') c = c.substring(1, c.length);
-        if (c.indexOf(nameEQ) == 0) return decodeURIComponent(c.substring(nameEQ.length, c.length));
-    }
-    return null;
-}
-
+// ==========================================
+// 7. SAVE / LOAD
+// ==========================================
 function saveGame() {
-    let gameState = {
-        zekes, baseClickGain, baseIdleZekes,
-        zekeFingerCost, zekeToeCost, zekeFootCost, zekeArmCost, zekeLegCost,
-        zekeShoeCost, zekeGlassesCost, zekeBackpackCost, zekeLiverCost, zekeRobotCost,
-        zekeFingerCount, zekeFootCount, zekeToeCount, zekeArmCount, zekeLegCount,
-        zekeShoeCount, zekeGlassesCount, zekeBackpackCount, zekeLiverCount, zekeRobotCount,
-        rebirthTokens, totalRebirths, rebirthPowerLevel, rebirthAutoLevel, rbPowerCost, rbAutoCost,
-        ascensionPoints, totalAscensions, ascensionAutoRebirth, ascensionPowerLevel, ascensionAutoLevel, ascPowerCost, ascAutoCost,
-        transcensionPartOne, transcensionPartTwo
-    };
-    setCookie("zekeClickerSave_v4", JSON.stringify(gameState), 365);
+    let saveObj = { game, buildings, upgrades, rebirthTree, ascensionTree };
+    localStorage.setItem("zekeClickerSave_v6", JSON.stringify(saveObj));
 }
 
 function loadGame() {
-    let savedData = getCookie("zekeClickerSave_v4");
-    if (savedData) {
+    let saveStr = localStorage.getItem("zekeClickerSave_v6");
+    if (saveStr) {
         try {
-            let data = JSON.parse(savedData);
-            zekes = data.zekes ?? zekes;
-            baseClickGain = data.baseClickGain ?? baseClickGain;
-            baseIdleZekes = data.baseIdleZekes ?? baseIdleZekes;
+            let data = JSON.parse(saveStr);
+            game = { ...game, ...data.game };
             
-            zekeFingerCost = data.zekeFingerCost ?? zekeFingerCost; zekeFingerCount = data.zekeFingerCount ?? zekeFingerCount;
-            zekeToeCost = data.zekeToeCost ?? zekeToeCost; zekeToeCount = data.zekeToeCount ?? zekeToeCount;
-            zekeFootCost = data.zekeFootCost ?? zekeFootCost; zekeFootCount = data.zekeFootCount ?? zekeFootCount;
-            zekeArmCost = data.zekeArmCost ?? zekeArmCost; zekeArmCount = data.zekeArmCount ?? zekeArmCount;
-            zekeLegCost = data.zekeLegCost ?? zekeLegCost; zekeLegCount = data.zekeLegCount ?? zekeLegCount;
-            
-            zekeShoeCost = data.zekeShoeCost ?? zekeShoeCost; zekeShoeCount = data.zekeShoeCount ?? zekeShoeCount;
-            zekeGlassesCost = data.zekeGlassesCost ?? zekeGlassesCost; zekeGlassesCount = data.zekeGlassesCount ?? zekeGlassesCount;
-            zekeBackpackCost = data.zekeBackpackCost ?? zekeBackpackCost; zekeBackpackCount = data.zekeBackpackCount ?? zekeBackpackCount;
-            zekeLiverCost = data.zekeLiverCost ?? zekeLiverCost; zekeLiverCount = data.zekeLiverCount ?? zekeLiverCount;
-            zekeRobotCost = data.zekeRobotCost ?? zekeRobotCost; zekeRobotCount = data.zekeRobotCount ?? zekeRobotCount;
-            
-            rebirthTokens = data.rebirthTokens ?? rebirthTokens;
-            totalRebirths = data.totalRebirths ?? totalRebirths;
-            rebirthPowerLevel = data.rebirthPowerLevel ?? rebirthPowerLevel;
-            rebirthAutoLevel = data.rebirthAutoLevel ?? rebirthAutoLevel;
-            rbPowerCost = data.rbPowerCost ?? rbPowerCost;
-            rbAutoCost = data.rbAutoCost ?? rbAutoCost;
-            
-            ascensionPoints = data.ascensionPoints ?? ascensionPoints;
-            totalAscensions = data.totalAscensions ?? totalAscensions;
-            ascensionAutoRebirth = data.ascensionAutoRebirth ?? ascensionAutoRebirth;
-            ascensionPowerLevel = data.ascensionPowerLevel ?? ascensionPowerLevel;
-            ascensionAutoLevel = data.ascensionAutoLevel ?? ascensionAutoLevel;
-            ascPowerCost = data.ascPowerCost ?? ascPowerCost;
-            ascAutoCost = data.ascAutoCost ?? ascAutoCost;
-            
-            transcensionPartOne = data.transcensionPartOne ?? transcensionPartOne;
-            transcensionPartTwo = data.transcensionPartTwo ?? transcensionPartTwo;
-        } catch (e) {}
+            // Merge arrays to persist state while allowing new code additions
+            data.buildings.forEach(savedB => { let b = getBld(savedB.id); if (b) b.count = savedB.count; });
+            data.upgrades.forEach(savedU => { let u = getUpg(savedU.id); if (u) u.bought = savedU.bought; });
+            data.rebirthTree.forEach(savedU => { let u = getRT(savedU.id); if (u) u.bought = savedU.bought; });
+            data.ascensionTree.forEach(savedU => { let u = getAT(savedU.id); if (u) u.bought = savedU.bought; });
+        } catch (e) { console.error("Save load failed", e); }
     }
-    updateAll();
+    calculateStats();
+    buildStore();
+    buildPrestigeTrees();
+    updateUI();
 }
 
 function restartGame() {
-    if (confirm("Are you sure you want to HARD RESET? All progress, rebirths, and ascensions will be permanently lost!")) {
-        document.cookie = "zekeClickerSave_v4=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+    if (confirm("Are you sure you want to HARD RESET? Everything is wiped!")) {
+        localStorage.removeItem("zekeClickerSave_v6");
         location.reload();
     }
 }
 
-window.onload = function() { loadGame(); };
+// Init
+window.onload = loadGame;
+setInterval(saveGame, 5000); // Auto save every 5s
