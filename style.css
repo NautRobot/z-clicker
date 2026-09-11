@@ -26,18 +26,23 @@ body {
     text-shadow: 0 0 10px rgba(0,255,255,0.5);
 }
 
+/* Responsive Main Layout */
 .main-layout {
     display: flex;
+    flex-wrap: wrap;
     justify-content: center;
+    align-items: flex-start;
     width: 100%;
-    max-width: 1200px;
+    max-width: 1400px;
     margin-top: 20px;
     gap: 20px;
     padding: 0 20px;
+    box-sizing: border-box;
 }
 
 .left-sidebar, .right-sidebar {
-    width: 250px;
+    flex: 1 1 250px;
+    max-width: 350px;
     background-color: #1a1a1a;
     padding: 15px;
     border: 1px solid #333;
@@ -45,79 +50,26 @@ body {
     display: flex;
     flex-direction: column;
     gap: 10px;
+    max-height: 85vh;
+    overflow-y: auto;
 }
 
-.left-sidebar h3, .right-sidebar h3 {
-    margin-top: 0;
-    text-align: center;
-    color: #00ffff;
-    border-bottom: 1px solid #333;
-    padding-bottom: 10px;
+/* Custom Scrollbar for Sidebars */
+.left-sidebar::-webkit-scrollbar, .right-sidebar::-webkit-scrollbar {
+    width: 8px;
 }
-
-.upgrade-box, .upgrade-box-win, .rebirth-shop-box {
-    background-color: #242424;
-    padding: 10px;
-    border-radius: 6px;
-    border: 1px solid #444;
-    transition: transform 0.1s;
-}
-
-.upgrade-box:hover, .rebirth-shop-box:hover {
-    transform: translateY(-2px);
-    border-color: #666;
-}
-
-.upgrade-box-win {
-    border-color: #ff007f;
-    box-shadow: 0 0 5px rgba(255,0,127,0.3);
-}
-
-.upgrade-box button, .upgrade-box-win button, .rebirth-shop-box button {
-    width: 100%;
-    background-color: #2a2a2a;
-    color: #00ffff;
-    border: 1px solid #00ffff;
-    padding: 8px;
+.left-sidebar::-webkit-scrollbar-track, .right-sidebar::-webkit-scrollbar-track {
+    background: #111;
     border-radius: 4px;
-    cursor: pointer;
-    font-weight: bold;
-    transition: background-color 0.2s, color 0.2s;
 }
-
-.upgrade-box-win button {
-    border-color: #ff007f;
-    color: #ff007f;
-}
-
-.rebirth-shop-box button {
-    border-color: #ff00ff;
-    color: #ff00ff;
-}
-
-.upgrade-box button:hover {
-    background-color: #00ffff;
-    color: #000;
-}
-
-.upgrade-box-win button:hover {
+.left-sidebar::-webkit-scrollbar-thumb, .right-sidebar::-webkit-scrollbar-thumb {
     background-color: #ff007f;
-    color: #fff;
-}
-
-.rebirth-shop-box button:hover {
-    background-color: #ff00ff;
-    color: #fff;
-}
-
-.upgrade-box p, .upgrade-box-win p, .rebirth-shop-box p {
-    margin: 5px 0 0 0;
-    font-size: 0.85rem;
-    color: #aaa;
+    border-radius: 4px;
 }
 
 .game-container {
-    flex-grow: 1;
+    flex: 2 1 400px;
+    max-width: 600px;
     background-color: #1a1a1a;
     border: 1px solid #333;
     border-radius: 8px;
@@ -130,13 +82,94 @@ body {
     box-shadow: 0 0 20px rgba(0,0,0,0.5) inset;
 }
 
+/* Mobile Stack Reordering */
+@media (max-width: 768px) {
+    .game-container {
+        order: -1;
+    }
+    .left-sidebar, .right-sidebar {
+        max-width: 100%;
+        max-height: none;
+        overflow-y: visible;
+    }
+}
+
+.left-sidebar h3, .right-sidebar h3 {
+    margin-top: 0;
+    text-align: center;
+    color: #00ffff;
+    border-bottom: 1px solid #333;
+    padding-bottom: 10px;
+}
+
+/* Upgrade Boxes */
+.upgrade-box, .upgrade-box-win, .rebirth-shop-box, .ascension-shop-box {
+    background-color: #242424;
+    padding: 10px;
+    border-radius: 6px;
+    border: 1px solid #444;
+    transition: transform 0.1s;
+}
+
+.upgrade-box:hover, .rebirth-shop-box:hover, .ascension-shop-box:hover {
+    transform: translateY(-2px);
+    border-color: #666;
+}
+
+.upgrade-box-win {
+    border-color: #00ffff;
+    box-shadow: 0 0 5px rgba(0,255,255,0.3);
+}
+
+.upgrade-box button, .upgrade-box-win button, .rebirth-shop-box button, .ascension-shop-box button {
+    width: 100%;
+    background-color: #2a2a2a;
+    color: #00ffff;
+    border: 1px solid #00ffff;
+    padding: 8px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: background-color 0.2s, color 0.2s;
+}
+
+.upgrade-box-win button {
+    border-color: #00ffff;
+    color: #00ffff;
+}
+
+.rebirth-shop-box button {
+    border-color: #ff00ff;
+    color: #ff00ff;
+}
+
+.ascension-shop-box button {
+    border-color: #ffd700;
+    color: #ffd700;
+}
+
+.upgrade-box button:hover { background-color: #00ffff; color: #000; }
+.upgrade-box-win button:hover { background-color: #00ffff; color: #000; }
+.rebirth-shop-box button:hover { background-color: #ff00ff; color: #fff; }
+.ascension-shop-box button:hover { background-color: #ffd700; color: #000; }
+
+.upgrade-box p, .upgrade-box-win p, .rebirth-shop-box p, .ascension-shop-box p {
+    margin: 5px 0 0 0;
+    font-size: 0.85rem;
+    color: #aaa;
+}
+
+/* Score Board */
 .score-board {
     background: #111;
     padding: 15px 40px;
     border-radius: 10px;
     border: 1px solid #333;
     margin-bottom: 10px;
+    width: 80%;
 }
+.score-main { font-size: 2rem; font-weight: bold; color: #fff; margin: 5px 0; }
+.score-sub { font-size: 1.3rem; font-weight: bold; margin: 5px 0; }
 
 #zeke {
     width: 250px;
@@ -150,19 +183,48 @@ body {
     user-select: none;
     -webkit-user-drag: none;
 }
-
-#zeke:active {
-    transform: scale(0.92);
-}
+#zeke:active { transform: scale(0.92); }
 
 .click-animation {
     animation: pulse 0.1s;
 }
-
 @keyframes pulse {
     0% { transform: scale(1); }
     50% { transform: scale(1.05); }
     100% { transform: scale(1); }
+}
+
+/* Prestige Buttons */
+.prestige-btn {
+    margin-top: 20px;
+    padding: 12px 24px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 1.2rem;
+    font-weight: bold;
+    width: 80%;
+    transition: transform 0.2s;
+}
+.prestige-btn:hover:not(:disabled) { transform: scale(1.05); }
+
+.rebirth-btn {
+    background: #ff007f;
+    color: #fff;
+    border: 2px solid #ff00ff;
+    box-shadow: 0 0 10px #ff007f;
+}
+.ascend-btn {
+    background: #b8860b;
+    color: #fff;
+    border: 2px solid #ffd700;
+    box-shadow: 0 0 15px #ffd700;
+}
+.btn-disabled {
+    background: #555 !important;
+    border-color: #333 !important;
+    color: #aaa !important;
+    box-shadow: none !important;
+    cursor: not-allowed !important;
 }
 
 /* Win Screen Styling */
@@ -170,41 +232,33 @@ body {
     display: none;
     position: absolute;
     top: 0; left: 0; width: 100%; height: 100%;
-    background: rgba(0,0,0,0.9);
+    background: rgba(0,0,0,0.95);
     flex-direction: column;
     justify-content: center;
     align-items: center;
     z-index: 10;
     border-radius: 8px;
-    backdrop-filter: blur(4px);
+    backdrop-filter: blur(5px);
 }
-
 #win-screen h2 {
-    color: #ff007f;
+    color: #00ffff;
     font-size: 3rem;
-    text-shadow: 0 0 20px #ff007f;
+    text-shadow: 0 0 30px #00ffff;
+    margin-bottom: 10px;
 }
-
 #win-screen button {
-    background: #ff00ff;
-    color: #fff;
+    background: #00ffff;
+    color: #000;
     border: none;
     padding: 15px 30px;
     font-size: 1.5rem;
     font-weight: bold;
     border-radius: 8px;
     cursor: pointer;
-    box-shadow: 0 0 15px #ff00ff;
+    box-shadow: 0 0 15px #00ffff;
+    margin-top: 20px;
 }
-
-#win-screen button:hover {
-    background: #e600e6;
-}
-
-.win-image {
-    border-color: #ff00ff !important;
-    box-shadow: 0 0 40px #ff00ff !important;
-}
+#win-screen button:hover { background: #00cccc; }
 
 /* Golden Zeke Styling */
 .falling-golden-zeke {
@@ -220,13 +274,8 @@ body {
     animation: fall 6s linear forwards, spin 2s linear infinite;
     border: 2px solid white;
 }
-
-@keyframes fall {
-    to { transform: translateY(110vh) rotate(360deg); }
-}
-@keyframes spin {
-    100% { transform: rotate(360deg); }
-}
+@keyframes fall { to { transform: translateY(110vh) rotate(360deg); } }
+@keyframes spin { 100% { transform: rotate(360deg); } }
 
 /* Floating click text */
 .floating-text {
@@ -239,7 +288,6 @@ body {
     animation: floatUp 1s ease-out forwards;
     text-shadow: 0 0 5px #000;
 }
-
 @keyframes floatUp {
     0% { transform: translateY(0) scale(1); opacity: 1; }
     100% { transform: translateY(-50px) scale(1.2); opacity: 0; }
