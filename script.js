@@ -1,6 +1,12 @@
 // ==========================================
-// PREVENT PAGE SCROLL ON GAME KEYS
+// THEME & SCROLL LOCK
 // ==========================================
+function toggleTheme() {
+    document.body.classList.toggle('dark-mode');
+    localStorage.setItem('zekeThemeV18', document.body.classList.contains('dark-mode'));
+}
+if(localStorage.getItem('zekeThemeV18') === 'true') document.body.classList.add('dark-mode');
+
 window.addEventListener("keydown", function(e) {
     if(["Space", "ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight"].indexOf(e.code) > -1) {
         if(document.activeElement.tagName !== "TEXTAREA" && document.activeElement.tagName !== "INPUT") {
@@ -10,29 +16,29 @@ window.addEventListener("keydown", function(e) {
 }, false);
 
 // ==========================================
-// CORE DATA & LOGIC
+// CORE DATA & LOGIC (PHYSICAL FEATURES LORE)
 // ==========================================
 let zekes = 0; let cps = 0; let activeStoreTab = 'bld';
 
-// LORE: Buildings are Zeke Accessories
+// LORE: Buildings are Zeke's Physical Features
 const buildings = [
-    { id: 'b1', name: "Zeke's Finger", desc: "A severed digit that clicks autonomously.", baseCost: 15, cps: 0.5, count: 0 },
-    { id: 'b2', name: "Zeke's Leg", desc: "Stomps the ground to unearth hidden Zekes.", baseCost: 100, cps: 4, count: 0 },
-    { id: 'b3', name: "Zeke's Arm", desc: "Sweeps across the desk to gather Zekes.", baseCost: 1100, cps: 16, count: 0 },
-    { id: 'b4', name: "Zeke's Backpack", desc: "A massive bag that hoards thousands of Zekes.", baseCost: 12000, cps: 65, count: 0 },
-    { id: 'b5', name: "Zeke's Glasses", desc: "Reveals microscopic Zekes floating in the air.", baseCost: 130000, cps: 380, count: 0 },
-    { id: 'b6', name: "Zeke's Liver", desc: "Filters pure Zekes directly from the bloodstream.", baseCost: 1500000, cps: 2500, count: 0 },
-    { id: 'b7', name: "Zeke's Heart", desc: "Pumps liquid Zekes through the system.", baseCost: 20000000, cps: 15000, count: 0 },
-    { id: 'b8', name: "Zeke's Soul", desc: "Transcends reality to manifest Zekes from the void.", baseCost: 330000000, cps: 100000, count: 0 }
+    { id: 'b1', name: "Zeke's Fingers", desc: "Autonomously twitching to generate passive clicks.", baseCost: 15, cps: 0.5, count: 0 },
+    { id: 'b2', name: "Zeke's Arms", desc: "Powered by endless pushup routines to sweep Zekes.", baseCost: 100, cps: 4, count: 0 },
+    { id: 'b3', name: "Zeke's Legs", desc: "Conditioned from high-endurance distance running.", baseCost: 1100, cps: 16, count: 0 },
+    { id: 'b4', name: "Zeke's Lungs", desc: "Processing massive oxygen yields for extended stamina.", baseCost: 12000, cps: 65, count: 0 },
+    { id: 'b5', name: "Zeke's Eyes", desc: "Hyper-focused ocular tracking to spot hidden Zekes.", baseCost: 130000, cps: 380, count: 0 },
+    { id: 'b6', name: "Zeke's Brain", desc: "Prefrontal cortex optimized for calculating complex yields.", baseCost: 1500000, cps: 2500, count: 0 },
+    { id: 'b7', name: "Zeke's Heart", desc: "Pumping pure adrenaline through the central nervous system.", baseCost: 20000000, cps: 15000, count: 0 },
+    { id: 'b8', name: "Zeke's Nervous System", desc: "Firing electrical impulses at unquantifiable speeds.", baseCost: 330000000, cps: 100000, count: 0 }
 ];
 
-// LORE: Active Click Upgrades are School-themed Protocols
+// LORE: Upgrades are Physical Traits & Adaptations
 const clickUpgrades = [
-    { id: 'u1', name: "Cool Math Proxy", desc: "Clicking force increased by 200%.", cost: 500, bought: false },
-    { id: 'u2', name: "Kahoot Botter", desc: "Clicking force increased by 200%.", cost: 5000, bought: false },
-    { id: 'u3', name: "South-Doyle Wi-Fi", desc: "Clicking force increased by 200%.", cost: 50000, bought: false },
-    { id: 'u4', name: "Securly Bypass", desc: "Aggregate clicks yield +1% of global CPS.", cost: 250000, bought: false },
-    { id: 'u5', name: "Flash Drive VPN", desc: "Clicking force increased by 200%.", cost: 1000000, bought: false }
+    { id: 'u1', name: "Calloused Hands", desc: "Clicking force increased by 200%.", cost: 500, bought: false },
+    { id: 'u2', name: "Fast-Twitch Muscle Fibers", desc: "Clicking force increased by 200%.", cost: 5000, bought: false },
+    { id: 'u3', name: "Runner's High", desc: "Clicking force increased by 200%.", cost: 50000, bought: false },
+    { id: 'u4', name: "Sympathetic Neural Response", desc: "Aggregate clicks yield +1% of global CPS.", cost: 250000, bought: false },
+    { id: 'u5', name: "Hypertrophic Adaptation", desc: "Clicking force increased by 200%.", cost: 1000000, bought: false }
 ];
 
 function getBldCost(b) { return Math.floor(b.baseCost * Math.pow(1.15, b.count)); }
@@ -56,10 +62,10 @@ document.getElementById('main-zeke').addEventListener('mousedown', (e) => {
 });
 
 setInterval(() => { if(cps > 0) { zekes += cps / 10; updateUI(); } }, 100);
-setInterval(() => { localStorage.setItem('zekeClicker_Premium', JSON.stringify({ zekes, buildings, clickUpgrades })); }, 5000);
+setInterval(() => { localStorage.setItem('zekeClicker_V18', JSON.stringify({ zekes, buildings, clickUpgrades })); }, 5000);
 
 function loadGame() {
-    let save = JSON.parse(localStorage.getItem('zekeClicker_Premium'));
+    let save = JSON.parse(localStorage.getItem('zekeClicker_V18'));
     if(save) {
         zekes = save.zekes || 0;
         if(save.buildings) save.buildings.forEach((sb, i) => { if(buildings[i]) buildings[i].count = sb.count; });
@@ -86,7 +92,7 @@ function buildStore() {
             html += `
             <div class="inventory-item">
                 <div class="inv-details">
-                    <span class="inv-name">${b.name} <span style="font-weight:normal; color:var(--ink-light);">(${b.count})</span></span>
+                    <span class="inv-name">${b.name} <span style="font-weight:normal; color:var(--ink-muted);">(${b.count})</span></span>
                     <span class="inv-desc">${b.desc}</span>
                     <span class="inv-yield">+${formatNum(b.cps)} Z/sec</span>
                 </div>
@@ -112,7 +118,7 @@ function buildStore() {
                 </div>`;
             }
         });
-        if (html === '') html = '<p style="text-align:center; font-family:var(--font-mono); font-size:12px; color:var(--ink-light); margin-top:20px;">ALL PROTOCOLS ACQUIRED.</p>';
+        if (html === '') html = '<p style="text-align:center; font-family:var(--font-mono); font-size:12px; color:var(--ink-muted); margin-top:20px;">ALL TRAITS ACQUIRED.</p>';
     }
     document.getElementById('store-list').innerHTML = html;
 }
@@ -132,7 +138,7 @@ function formatNum(num) {
     return (num / 1000000000000).toFixed(2) + "T";
 }
 
-function restartGame() { if(confirm("CRITICAL WARNING: This will permanently purge local cache data. Proceed?")) { localStorage.removeItem('zekeClicker_Premium'); location.reload(); } }
+function restartGame() { if(confirm("CRITICAL WARNING: This will permanently purge local cache data. Proceed?")) { localStorage.removeItem('zekeClicker_V18'); location.reload(); } }
 
 // ==========================================
 // ARCADE HUB MODAL & GAMES
@@ -153,7 +159,7 @@ function openGame(tabId, element) {
     clearInterval(activeInterval); clearInterval(gameTimer);
 }
 
-// --- 1. SNAKE ---
+// --- 1. SNAKE (Neural Pathway) ---
 const sCanvas = document.getElementById("snakeCanvas"); const sCtx = sCanvas.getContext("2d"); const box = 15;
 let snake, food, goldenFood, d, snakeSpeed;
 function startSnake() {
@@ -169,10 +175,11 @@ document.addEventListener("keydown", (e) => {
     else if((e.code === "ArrowDown" || e.code === "KeyS") && d != "UP") d = "DOWN";
 });
 function snakeLoop() {
-    sCtx.fillStyle = "#F4F0EA"; sCtx.fillRect(0, 0, 300, 300);
+    let isDark = document.body.classList.contains('dark-mode');
+    sCtx.fillStyle = isDark ? "#1A1A1A" : "#FFFFFF"; sCtx.fillRect(0, 0, 300, 300);
     for(let i = 0; i < snake.length; i++) {
-        sCtx.fillStyle = i === 0 ? "#1018D5" : "#5A5A5A"; sCtx.fillRect(snake[i].x, snake[i].y, box, box);
-        sCtx.strokeStyle = "#111111"; sCtx.strokeRect(snake[i].x, snake[i].y, box, box);
+        sCtx.fillStyle = i === 0 ? (isDark ? "#4048FF" : "#1018D5") : (isDark ? "#5A5A5A" : "#5A5A5A"); sCtx.fillRect(snake[i].x, snake[i].y, box, box);
+        sCtx.strokeStyle = isDark ? "#F4F0EA" : "#111111"; sCtx.strokeRect(snake[i].x, snake[i].y, box, box);
     }
     sCtx.fillStyle = "#D53F2B"; sCtx.fillRect(food.x, food.y, box, box);
     if(goldenFood) { sCtx.fillStyle = "#FFD700"; sCtx.fillRect(goldenFood.x, goldenFood.y, box, box); }
@@ -198,7 +205,7 @@ function snakeLoop() {
     snake.unshift(newHead); activeInterval = setTimeout(snakeLoop, snakeSpeed);
 }
 
-// --- 2. JUMP ---
+// --- 2. JUMP (Cardio Sprint) ---
 const jumper = document.getElementById("jumper"); const obs = document.getElementById("obstacle"); const coin = document.getElementById("jump-coin");
 let jScore = 0, oLeft = 420, cLeft = -50, isJumping = false, canDoubleJump = false, obsType = 0;
 
@@ -248,8 +255,8 @@ function doJump() {
     }
 }
 
-// --- 3. ASSEMBLY ---
-const ings = ["DOUGH", "SAUCE", "CHEESE", "ZEKE"];
+// --- 3. MUSCLE MEMORY ---
+const ings = ["REFLEX", "STAMINA", "POWER", "FOCUS"];
 let target = [], current = [], papaTime = 0, papaCombo = 1, totalPapaScore = 0;
 function startPapa() {
     clearInterval(gameTimer); papaTime = 60; papaCombo = 1; totalPapaScore = 0;
@@ -259,7 +266,7 @@ function startPapa() {
         papaTime--; document.getElementById('papa-time').innerText = papaTime;
         if(papaTime <= 0) {
             clearInterval(gameTimer); let reward = totalPapaScore * getGameMult();
-            alert("ASSEMBLY COMPLETE. Yield: " + formatNum(reward) + " Zekes!"); zekes += reward; updateUI();
+            alert("ROUTINE COMPLETE. Yield: " + formatNum(reward) + " Zekes!"); zekes += reward; updateUI();
             document.getElementById('papa-order').innerText = "AWAITING INITIALIZATION"; document.getElementById('papa-current').innerText = "";
         }
     }, 1000);
@@ -279,7 +286,7 @@ function addIng(ing) {
     }
 }
 
-// --- 4. GRIDSHOT ---
+// --- 4. OCULAR TRACKING ---
 let aimHits = 0, aimTime = 0;
 function startAim() {
     clearInterval(gameTimer); aimHits = 0; aimTime = 30; 
