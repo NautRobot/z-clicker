@@ -13,15 +13,15 @@ let game = {
 
 const COST_SCALAR = 1.15; 
 
-// --- BUILDINGS ---
+// --- BUILDINGS (Added Lore/Flavor Text!) ---
 const buildings = [
-    { id: 'b_finger', name: "Zeke's Finger", baseCost: 15, baseCPS: 0.2, count: 0 },
-    { id: 'b_toe', name: "Zeke's Toe", baseCost: 100, baseCPS: 1, count: 0 },
-    { id: 'b_shoe', name: "Zeke's Shoe", baseCost: 1100, baseCPS: 8, count: 0 },
-    { id: 'b_glasses', name: "Zeke's Glasses", baseCost: 12000, baseCPS: 47, count: 0 },
-    { id: 'b_backpack', name: "Zeke's Backpack", baseCost: 130000, baseCPS: 260, count: 0 },
-    { id: 'b_liver', name: "Zeke's Liver", baseCost: 1400000, baseCPS: 1400, count: 0 },
-    { id: 'b_clone', name: "Zeke Clone", baseCost: 20000000, baseCPS: 7800, count: 0 }
+    { id: 'b_finger', name: "Zeke's Finger", baseCost: 15, baseCPS: 0.2, count: 0, desc: "A severed finger that clicks for you. Best not to ask where it came from." },
+    { id: 'b_toe', name: "Zeke's Toe", baseCost: 100, baseCPS: 1, count: 0, desc: "Slightly more surface area than a finger. Very gross." },
+    { id: 'b_shoe', name: "Zeke's Shoe", baseCost: 1100, baseCPS: 8, count: 0, desc: "A well-worn shoe that stomps the ground to unearth hidden Zekes." },
+    { id: 'b_glasses', name: "Zeke's Glasses", baseCost: 12000, baseCPS: 47, count: 0, desc: "Reveals the microscopic Zekes floating in the air around you." },
+    { id: 'b_backpack', name: "Zeke's Backpack", baseCost: 130000, baseCPS: 260, count: 0, desc: "A massive, heavy bag used to hoard thousands of Zekes at once." },
+    { id: 'b_liver', name: "Zeke's Liver", baseCost: 1400000, baseCPS: 1400, count: 0, desc: "Filters your bloodstream to produce pure, highly-refined Zekes." },
+    { id: 'b_clone', name: "Zeke Clone", baseCost: 20000000, baseCPS: 7800, count: 0, desc: "A perfect genetic replica designed for the sole purpose of gathering more Zekes." }
 ];
 
 // --- NORMAL UPGRADES ---
@@ -38,7 +38,7 @@ const upgrades = [
 // --- PRESTIGE TREES ---
 const rebirthTree = [
     { id: 'rt_1', name: 'Better Base', desc: 'Base click value +5.', cost: 1, bought: false },
-    { id: 'rt_2', name: 'Synergy Core', desc: 'Fingers boost Shoes by 1% each.', cost: 5, bought: false },
+    { id: 'rt_2', name: 'Synergy Core', desc: 'Fingers boost Shoes by +1% each.', cost: 5, bought: false },
 ];
 
 const ascensionTree = [
@@ -90,7 +90,7 @@ function calculateStats() {
     game.clickValue = (clickBase + synergyBonus) * memoryMultiplier * astralMultiplier;
 }
 
-// Tick loop (Runs incredibly smooth now, separates DOM creation from text updates)
+// Tick loop 
 let tickCount = 0;
 setInterval(() => {
     if (game.cps > 0) {
@@ -102,7 +102,7 @@ setInterval(() => {
     
     tickCount++;
     if (tickCount % 10 === 0) {
-        refreshUpgradesDOM(); // Checks for newly unlocked upgrades 1x per sec
+        refreshUpgradesDOM();
     }
 }, 100);
 
@@ -164,7 +164,6 @@ function buyUpgrade(id) {
         u.bought = true;
         calculateStats();
         
-        // Remove from DOM safely
         let el = document.getElementById(`upg_${id}`);
         if(el) el.remove();
         
@@ -199,7 +198,7 @@ function triggerRebirth() {
     upgrades.forEach(u => u.bought = false);
     
     calculateStats();
-    refreshUpgradesDOM(true); // Force wipe upgrades
+    refreshUpgradesDOM(true); 
     updateUIText();
 }
 
@@ -245,19 +244,46 @@ function buyTreeUpgrade(tree, id) {
 }
 
 // ==========================================
-// 5. UI BUILDERS (DOM DIFFING = NO MORE STORE BUGS)
+// 5. UI BUILDERS & TOOLTIPS
 // ==========================================
 const tooltip = document.getElementById('tooltip');
+
+// Allows cost to be optional (null) so we can use tooltips on standard text
 function showTooltip(e, name, cost, desc, currencySymbol = 'Zekes') {
-    tooltip.innerHTML = `<h4>${name}</h4><span class="tt-cost">Cost: ${formatNumber(cost)} ${currencySymbol}</span><div>${desc}</div>`;
+    let costHtml = (cost !== null && cost !== undefined) ? `<span class="tt-cost">Cost: ${formatNumber(cost)} ${currencySymbol}</span>` : '';
+    tooltip.innerHTML = `<h4>${name}</h4>${costHtml}<div>${desc}</div>`;
     tooltip.style.display = 'block';
+    
     let x = e.pageX + 15, y = e.pageY + 15;
-    if (x + 200 > window.innerWidth) x = e.pageX - 215;
-    tooltip.style.left = x + 'px'; tooltip.style.top = y + 'px';
+    if (x + 230 > window.innerWidth) x = e.pageX - 240; // Keep on screen
+    tooltip.style.left = x + 'px'; 
+    tooltip.style.top = y + 'px';
 }
 function hideTooltip() { tooltip.style.display = 'none'; }
 
-// Run ONCE on load to create the building rows
+// Attach informational tooltips to standard UI elements
+function initUITooltips() {
+    const attachTT = (id, name, desc) => {
+        let el = document.getElementById(id);
+        if(el) {
+            el.onmouseenter = (e) => showTooltip(e, name, null, desc);
+            el.onmousemove = (e) => showTooltip(e, name, null, desc);
+            el.onmouseleave = hideTooltip;
+        }
+    };
+
+    attachTT('cpsWrapper', 'Zekes Per Second (CPS)', 'Your total automated Zeke generation every second. Boosted directly by buildings and prestige multipliers.');
+    attachTT('clickWrapper', 'Click Value', 'The amount of Zekes generated per manual click. Synergizes with upgrades and total CPS.');
+    attachTT('critDisplay', 'Critical Strikes', 'You have a chance on every click to deal massive x5 damage!');
+    
+    attachTT('btn-rebirth', 'Rebirth (Soft Reset)', 'Destroys all current Zekes, Buildings, and Upgrades. Grants Memory Fragments based on your All-Time Zekes gathered.');
+    attachTT('btn-ascend', 'Ascension (Hard Reset)', 'Destroys EVERYTHING (including Rebirth Memories and progress). Grants Astral Zekes based on your total Memories.');
+    
+    attachTT('memoryWrapper', 'Memory Fragments', 'Remnants of past lives. Each unspent fragment grants a permanent +1% passive boost to all production.');
+    attachTT('astralWrapper', 'Astral Zekes', 'Pure cosmic energy. Each unspent Astral Zeke grants a massive +50% global production multiplier.');
+    attachTT('btn-hard-reset', 'Danger Zone', 'Instantly wipes all your save data, cookies, and progress. There is no going back.');
+}
+
 function initBuildings() {
     const bldContainer = document.getElementById('buildings-container');
     bldContainer.innerHTML = '';
@@ -265,7 +291,18 @@ function initBuildings() {
         let el = document.createElement('div');
         el.className = 'building-row';
         el.id = `ui_${b.id}`;
-        el.onclick = () => buyBuilding(b.id);
+        
+        // Advanced Building Tooltip (Shows description and base CPS)
+        let bldDesc = `<span style="color:#aaa;">Produces ${formatNumber(b.baseCPS)} base Zekes per sec.</span><br><br><i>"${b.desc}"</i>`;
+        el.onmouseenter = (e) => showTooltip(e, b.name, getBldCost(b), bldDesc);
+        el.onmousemove = (e) => showTooltip(e, b.name, getBldCost(b), bldDesc);
+        el.onmouseleave = hideTooltip;
+        el.onclick = () => {
+            buyBuilding(b.id);
+            // Re-fire tooltip to instantly update cost
+            showTooltip(window.event, b.name, getBldCost(b), bldDesc);
+        };
+        
         el.innerHTML = `
             <div class="bld-info">
                 <span class="bld-name">${b.name}</span>
@@ -277,7 +314,6 @@ function initBuildings() {
     });
 }
 
-// Safely adds new upgrades to the DOM without destroying existing ones
 function refreshUpgradesDOM(forceWipe = false) {
     const upgContainer = document.getElementById('upgrades-container');
     if (forceWipe) upgContainer.innerHTML = '';
@@ -302,7 +338,6 @@ function refreshUpgradesDOM(forceWipe = false) {
     });
 }
 
-// Run ONCE to build tree HTML structures
 function initPrestigeTrees() {
     const rtContainer = document.getElementById('rebirth-tree');
     rtContainer.innerHTML = '';
@@ -330,7 +365,6 @@ function initPrestigeTrees() {
     updatePrestigeTreesUI();
 }
 
-// Safely updates button states in prestige trees
 function updatePrestigeTreesUI() {
     rebirthTree.forEach(u => {
         let el = document.getElementById(`rt_ui_${u.id}`);
@@ -364,7 +398,6 @@ function updateUIText() {
     document.getElementById('cpsDisplay').innerText = formatNumber(game.cps);
     document.getElementById('clickValueDisplay').innerText = formatNumber(game.clickValue);
 
-    // Update Building Costs dynamically WITHOUT destroying the HTML
     buildings.forEach(b => {
         let costEl = document.getElementById(`cost_${b.id}`);
         let countEl = document.getElementById(`count_${b.id}`);
@@ -377,7 +410,6 @@ function updateUIText() {
         }
     });
     
-    // Prestige UI
     document.getElementById('memoryCount').innerText = game.memories.toLocaleString();
     let memoryBoostValue = getAT('at_2').bought ? 2 : 1;
     document.getElementById('memoryBoost').innerText = (game.memories * memoryBoostValue).toLocaleString();
@@ -408,7 +440,6 @@ function formatNumber(num) {
 // ==========================================
 // 6. SAVE / LOAD & MIGRATION
 // ==========================================
-
 function getCookie(name) {
     let nameEQ = name + "=";
     let ca = document.cookie.split(';');
@@ -420,14 +451,13 @@ function getCookie(name) {
     return null;
 }
 
-// MIGRATION SCRIPT: Automatically converts v4 and v5 cookies into the new v7 save format!
 function migrateOldSaves() {
     let oldSaveData = getCookie("zekeClickerSave_v5") || getCookie("zekeClickerSave_v4") || getCookie("zekeClickerSave_v3");
     if (oldSaveData) {
         try {
             let old = JSON.parse(oldSaveData);
             game.zekes = old.zekes || 0;
-            game.allTimeZekes = old.zekes || 0; // Estimate
+            game.allTimeZekes = old.zekes || 0; 
             game.memories = old.rebirthTokens || 0;
             game.astralZekes = old.ascensionPoints || 0;
             
@@ -445,27 +475,23 @@ function migrateOldSaves() {
                 if (bMap[b.id] !== undefined) b.count = bMap[b.id];
             });
             
-            // Delete old cookies so migration doesn't run again
             document.cookie = "zekeClickerSave_v5=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
             document.cookie = "zekeClickerSave_v4=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
-            console.log("Successfully migrated old save!");
         } catch(e) { console.error("Migration failed", e); }
     }
 }
 
 function saveGame() {
     let saveObj = { game, buildings, upgrades, rebirthTree, ascensionTree };
-    localStorage.setItem("zekeClickerSave_v8", JSON.stringify(saveObj));
+    localStorage.setItem("zekeClickerSave_v9", JSON.stringify(saveObj));
 }
 
 function loadGame() {
-    // 1. Try to migrate if needed
-    if (!localStorage.getItem("zekeClickerSave_v8")) {
+    if (!localStorage.getItem("zekeClickerSave_v9")) {
         migrateOldSaves();
     }
     
-    // 2. Load v8 Save (or fallback to v7)
-    let saveStr = localStorage.getItem("zekeClickerSave_v8") || localStorage.getItem("zekeClickerSave_v7");
+    let saveStr = localStorage.getItem("zekeClickerSave_v9") || localStorage.getItem("zekeClickerSave_v8") || localStorage.getItem("zekeClickerSave_v7");
     if (saveStr) {
         try {
             let data = JSON.parse(saveStr);
@@ -477,11 +503,10 @@ function loadGame() {
         } catch (e) { console.error("Save load failed", e); }
     }
     
-    // 3. Initialize DOM structures ONCE
     initBuildings();
     initPrestigeTrees();
+    initUITooltips();
     
-    // 4. Update data
     calculateStats();
     refreshUpgradesDOM();
     updateUIText();
@@ -489,8 +514,27 @@ function loadGame() {
 
 function restartGame() {
     if (confirm("Are you sure you want to HARD RESET? Everything is wiped!")) {
+        game.zekes = 0;
+        game.allTimeZekes = 0;
+        game.memories = 0;
+        game.spentMemories = 0;
+        game.astralZekes = 0;
+        game.cps = 0;
+        game.clickValue = 1;
+        
+        buildings.forEach(b => b.count = 0);
+        upgrades.forEach(u => u.bought = false);
+        rebirthTree.forEach(u => u.bought = false);
+        ascensionTree.forEach(u => u.bought = false);
+        
+        updateUIText();
+        refreshUpgradesDOM(true);
+        updatePrestigeTreesUI();
+
+        localStorage.removeItem("zekeClickerSave_v9");
         localStorage.removeItem("zekeClickerSave_v8");
         localStorage.removeItem("zekeClickerSave_v7");
+        
         location.reload();
     }
 }
