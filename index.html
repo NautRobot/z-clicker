@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <title>Zeke Clicker</title>
-<link href="https://googleapis.com" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -16,45 +16,45 @@
     <h3>Click Upgrades</h3>
     <div class="upgrade-box">
       <button id="buyZekeFinger" onclick="buyUpgrade('zekeFinger')">
-        Buy Zeke's Finger (Cost: <span id="fingerCost">15</span>)
+        Zeke's Finger (Cost: <span id="fingerCost">15</span>)
       </button>
-      <p>Add +1 Click Value.</p>
+      <p>+1 Click Value.</p>
       <p>Owned: <span id="fingerCount">0</span></p>
     </div>
     <div class="upgrade-box">
       <button id="buyZekeToe" onclick="buyUpgrade('zekeToe')">
-        Buy Zeke's Toe (Cost: <span id="toeCost">120</span>)
+        Zeke's Toe (Cost: <span id="toeCost">120</span>)
       </button>
-      <p>Add +4 Click Value.</p>
+      <p>+4 Click Value.</p>
       <p>Owned: <span id="toeCount">0</span></p>
     </div>
     <div class="upgrade-box">
       <button id="buyZekeFoot" onclick="buyUpgrade('zekeFoot')">
-        Buy Zeke's Foot (Cost: <span id="footCost">900</span>)
+        Zeke's Foot (Cost: <span id="footCost">900</span>)
       </button>
-      <p>Add +15 Click Value.</p>
+      <p>+15 Click Value.</p>
       <p>Owned: <span id="footCount">0</span></p>
     </div>
     <div class="upgrade-box">
       <button id="buyZekeArm" onclick="buyUpgrade('zekeArm')">
-        Buy Zeke's Arm (Cost: <span id="armCost">7500</span>)
+        Zeke's Arm (Cost: <span id="armCost">7500</span>)
       </button>
-      <p>Add +60 Click Value.</p>
+      <p>+60 Click Value.</p>
       <p>Owned: <span id="armCount">0</span></p>
     </div>
     <div class="upgrade-box">
       <button id="buyZekeLeg" onclick="buyUpgrade('zekeLeg')">
-        Buy Zeke's Leg (Cost: <span id="legCost">50000</span>)
+        Zeke's Leg (Cost: <span id="legCost">50000</span>)
       </button>
-      <p>Add +250 Click Value.</p>
+      <p>+250 Click Value.</p>
       <p>Owned: <span id="legCount">0</span></p>
     </div>
   </div>
 
   <!-- Rebirth Sidebar -->
   <div class="left-sidebar" id="rebirth-sidebar" style="display: none;">
-    <h3>Rebirth Shop</h3>
-    <p style="color: #ff00ff; text-align:center;">Tokens: <span id="tokenCount">0</span></p>
+    <h3 style="color: #ff00ff;">Rebirth Shop</h3>
+    <p style="color: #ff00ff; text-align:center; font-weight: bold;">Tokens: <span id="tokenCount">0</span></p>
     <div class="rebirth-shop-box">
       <button onclick="buyRebirthUpgrade('power')">Rebirth Power (Cost: <span id="rbPowerCost">1</span>)</button>
       <p>+2x Click Multiplier. Owned: <span id="rbPowerCount">0</span></p>
@@ -65,27 +65,33 @@
     </div>
   </div>
 
-<!-- Center Game Container -->
+  <!-- Center Game Container -->
   <div class="game-container" id="game-container">
     <div id="win-screen">
       <h2 id="win-title">ASCENSION READY!</h2>
       <button onclick="triggerRebirth()">Rebirth? (+<span id="pendingTokens">1</span> Tokens)</button>
     </div>
     <div id="active-buffs" style="color: #ffff00; font-weight: bold; min-height: 24px;"></div>
-    <p style="font-size: 1.5rem; font-weight: bold; cursor: pointer;" id="secret-click-target">Zekes Gathered: <span id="zekeCount">0</span></p>
-    <p style="color: #00ffff;">Zeke Click Value: <span id="zekeClickGain">1</span></p>
-    <p style="color: #00ffff;">Zekes Per Second: <span id="zekeIdleCount">0</span></p>
-    <div style="position: relative; display: inline-block;">
-      <img src="zeke.jpg" id="zeke" onclick="gainZekesAutoCount()" alt="Zeke">
+    
+    <div class="score-board">
+        <p style="font-size: 2rem; font-weight: bold; cursor: pointer; color: #fff;" id="secret-click-target">
+            Zekes: <span id="zekeCount">0</span>
+        </p>
+        <p style="color: #00ffff; margin: 5px 0;">Zeke Click Value: <span id="zekeClickGain">1</span></p>
+        <p style="color: #00ffff; margin: 5px 0;">Zekes Per Second: <span id="zekeIdleCount">0</span></p>
+    </div>
+
+    <div style="position: relative; display: inline-block; margin-top: 20px;">
+      <img src="zeke.jpg" id="zeke" alt="Zeke">
     </div>
     
     <!-- Single Rebirth Button (Hidden by default until unlocked) -->
-    <button id="rebirth-trigger-btn" style="display: none; margin-top: 15px; background: #ff007f; color: #fff; border: 1px solid #ff007f; padding: 8px 16px; border-radius: 6px; cursor: pointer;" onclick="triggerRebirth()">
+    <button id="rebirth-trigger-btn" style="display: none; margin-top: 25px; background: #ff007f; color: #fff; border: 2px solid #ff00ff; padding: 12px 24px; border-radius: 8px; cursor: pointer; font-size: 1.2rem; font-weight: bold; box-shadow: 0 0 10px #ff007f;">
       Rebirth (+<span id="pendingTokensBtn">1</span> Tokens)
     </button>
     <br>
-    <button onclick="restartGame()" style="margin-top: 10px; background: #800000; color: #fff; border: 1px solid #ff0000; padding: 6px 12px; border-radius: 6px; cursor: pointer;">
-      Hard Reset / Restart Game
+    <button onclick="restartGame()" style="margin-top: 20px; background: #800000; color: #fff; border: 1px solid #ff0000; padding: 6px 12px; border-radius: 6px; cursor: pointer;">
+      Hard Reset Game
     </button>
   </div>
 
@@ -94,57 +100,64 @@
     <h3>Gather Upgrades</h3>
     <div class="upgrade-box">
       <button id="buyZekeShoe" onclick="buyUpgrade('zekeShoe')">
-        Buy Zeke's Shoe (Cost: <span id="shoeCost">50</span>)
+        Zeke's Shoe (Cost: <span id="shoeCost">50</span>)
       </button>
-      <p>Add +1 Auto Value.</p>
+      <p>+1 Auto Value.</p>
       <p>Owned: <span id="shoeCount">0</span></p>
     </div>
     <div class="upgrade-box">
       <button id="buyZekeGlasses" onclick="buyUpgrade('zekeGlasses')">
-        Buy Zeke's Glasses (Cost: <span id="glassesCost">400</span>)
+        Zeke's Glasses (Cost: <span id="glassesCost">400</span>)
       </button>
-      <p>Add +6 Auto Value.</p>
+      <p>+6 Auto Value.</p>
       <p>Owned: <span id="glassesCount">0</span></p>
     </div>
     <div class="upgrade-box">
       <button id="buyZekeBackpack" onclick="buyUpgrade('zekeBackpack')">
-        Buy Zeke's Backpack (Cost: <span id="backpackCost">3500</span>)
+        Zeke's Backpack (Cost: <span id="backpackCost">3500</span>)
       </button>
-      <p>Add +35 Auto Value.</p>
+      <p>+35 Auto Value.</p>
       <p>Owned: <span id="backpackCount">0</span></p>
     </div>
     <div class="upgrade-box">
       <button id="buyZekeLiver" onclick="buyUpgrade('zekeLiver')">
-        Buy Zeke's Liver (Cost: <span id="liverCost">25000</span>)
+        Zeke's Liver (Cost: <span id="liverCost">25000</span>)
       </button>
-      <p>Add +150 Auto Value.</p>
+      <p>+150 Auto Value.</p>
       <p>Owned: <span id="liverCount">0</span></p>
     </div>
     <div class="upgrade-box">
       <button id="buyZekeRobot" onclick="buyUpgrade('zekeRobot')">
-        Buy Zeke's Robot (Cost: <span id="robotCost">150000</span>)
+        Zeke's Robot (Cost: <span id="robotCost">150000</span>)
       </button>
-      <p>Add +800 Auto Value.</p>
+      <p>+800 Auto Value.</p>
       <p>Owned: <span id="robotCount">0</span></p>
+    </div>
+
+    <!-- Ascension Parts (These were missing before!) -->
+    <h3 style="color: #ff007f; margin-top: 20px;">Ascension Parts</h3>
+    <div class="upgrade-box-win" id="partOneBox">
+      <button onclick="buyUpgrade('zekePartOne')">
+        Divine Core (Cost: <span id="partOneCostDisplay">1000000</span>)
+      </button>
+      <p>Part 1 of Ascension.</p>
+    </div>
+    <div class="upgrade-box-win" id="partTwoBox">
+      <button onclick="buyUpgrade('zekePartTwo')">
+        Astral Crown (Cost: <span id="partTwoCostDisplay">5000000</span>)
+      </button>
+      <p>Part 2 of Ascension.</p>
     </div>
   </div>
 </div>
 
 <!-- Secret Dev Panel Modal -->
-<div id="dev-panel" style="display:none; position:fixed; top:20%; left:50%; transform:translateX(-50%); background:#111; border:2px solid #00ffff; padding:20px; z-index:9999; border-radius:10px; color:#fff; text-align:center; cursor:move;" onmousedown="dragMouseDown(event)">
+<div id="dev-panel" style="display:none; position:fixed; top:20%; left:50%; transform:translateX(-50%); background:#111; border:2px solid #00ffff; padding:20px; z-index:9999; border-radius:10px; color:#fff; text-align:center; cursor:move;">
   <h3 style="margin-top:0;">🛠️ Secret Dev Panel</h3>
   <p>Modify game state easily:</p>
   <button onclick="devAddZekes()" style="background:#ff007f; color:#fff; border:none; padding:8px 12px; margin:5px; border-radius:5px; cursor:pointer;">+1,000,000 Zekes</button><br>
   <button onclick="devAddTokens()" style="background:#8a2be2; color:#fff; border:none; padding:8px 12px; margin:5px; border-radius:5px; cursor:pointer;">+10 Rebirth Tokens</button><br>
   <button onclick="document.getElementById('dev-panel').style.display='none'" style="background:#333; color:#fff; border:none; padding:6px 12px; margin-top:10px; border-radius:5px; cursor:pointer;">Close</button>
-</div>
-
-<!-- Password Trigger Modal/Container -->
-<div id="dev-password-modal" style="display:none; position:fixed; top:30%; left:50%; transform:translateX(-50%); background:#222; border:2px solid #ff007f; padding:20px; z-index:9998; border-radius:10px; color:#fff; text-align:center;">
-  <h3>🔒 Enter Dev Password</h3>
-  <input type="password" id="dev-password-input" placeholder="Type super long password..." style="padding: 8px; width: 250px; border-radius: 4px; border: 1px solid #555; background: #111; color: #fff;"><br><br>
-  <button onclick="checkDevPassword()" style="background:#00ffff; color:#000; font-weight:bold; border:none; padding:6px 14px; border-radius:5px; cursor:pointer;">Submit</button>
-  <button onclick="document.getElementById('dev-password-modal').style.display='none'" style="background:#444; color:#fff; border:none; padding:6px 14px; margin-left: 5px; border-radius:5px; cursor:pointer;">Cancel</button>
 </div>
 
 <script src="script.js"></script>
