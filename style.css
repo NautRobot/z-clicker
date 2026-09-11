@@ -1,12 +1,13 @@
 body {
     background-color: #121212;
     color: #e0e0e0;
-    font-family: Arial, sans-serif;
+    font-family: 'Roboto', Arial, sans-serif;
     margin: 0;
     padding: 0;
     display: flex;
     flex-direction: column;
     align-items: center;
+    overflow-x: hidden;
 }
 
 .banner {
@@ -15,12 +16,14 @@ body {
     text-align: center;
     padding: 15px 0;
     border-bottom: 2px solid #333;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.5);
 }
 
 .banner h1 {
     margin: 0;
-    color: #ff007f;
+    color: #00ffff;
     letter-spacing: 2px;
+    text-shadow: 0 0 10px rgba(0,255,255,0.5);
 }
 
 .main-layout {
@@ -30,6 +33,7 @@ body {
     max-width: 1200px;
     margin-top: 20px;
     gap: 20px;
+    padding: 0 20px;
 }
 
 .left-sidebar, .right-sidebar {
@@ -47,6 +51,8 @@ body {
     margin-top: 0;
     text-align: center;
     color: #00ffff;
+    border-bottom: 1px solid #333;
+    padding-bottom: 10px;
 }
 
 .upgrade-box, .upgrade-box-win, .rebirth-shop-box {
@@ -54,25 +60,60 @@ body {
     padding: 10px;
     border-radius: 6px;
     border: 1px solid #444;
+    transition: transform 0.1s;
+}
+
+.upgrade-box:hover, .rebirth-shop-box:hover {
+    transform: translateY(-2px);
+    border-color: #666;
 }
 
 .upgrade-box-win {
     border-color: #ff007f;
+    box-shadow: 0 0 5px rgba(255,0,127,0.3);
 }
 
 .upgrade-box button, .upgrade-box-win button, .rebirth-shop-box button {
     width: 100%;
-    background-color: #ff007f;
-    color: white;
-    border: none;
+    background-color: #2a2a2a;
+    color: #00ffff;
+    border: 1px solid #00ffff;
     padding: 8px;
     border-radius: 4px;
     cursor: pointer;
     font-weight: bold;
+    transition: background-color 0.2s, color 0.2s;
 }
 
-.upgrade-box button:hover, .upgrade-box-win button:hover {
-    background-color: #e0006e;
+.upgrade-box-win button {
+    border-color: #ff007f;
+    color: #ff007f;
+}
+
+.rebirth-shop-box button {
+    border-color: #ff00ff;
+    color: #ff00ff;
+}
+
+.upgrade-box button:hover {
+    background-color: #00ffff;
+    color: #000;
+}
+
+.upgrade-box-win button:hover {
+    background-color: #ff007f;
+    color: #fff;
+}
+
+.rebirth-shop-box button:hover {
+    background-color: #ff00ff;
+    color: #fff;
+}
+
+.upgrade-box p, .upgrade-box-win p, .rebirth-shop-box p {
+    margin: 5px 0 0 0;
+    font-size: 0.85rem;
+    color: #aaa;
 }
 
 .game-container {
@@ -86,20 +127,32 @@ body {
     flex-direction: column;
     align-items: center;
     position: relative;
+    box-shadow: 0 0 20px rgba(0,0,0,0.5) inset;
+}
+
+.score-board {
+    background: #111;
+    padding: 15px 40px;
+    border-radius: 10px;
+    border: 1px solid #333;
+    margin-bottom: 10px;
 }
 
 #zeke {
-    width: 200px;
-    height: 200px;
+    width: 250px;
+    height: 250px;
     border-radius: 50%;
     object-fit: cover;
     cursor: pointer;
-    border: 4px solid #00ffff;
-    transition: transform 0.1s ease;
+    border: 6px solid #00ffff;
+    transition: transform 0.05s ease;
+    box-shadow: 0 0 20px rgba(0, 255, 255, 0.4);
+    user-select: none;
+    -webkit-user-drag: none;
 }
 
 #zeke:active {
-    transform: scale(0.95);
+    transform: scale(0.92);
 }
 
 .click-animation {
@@ -108,39 +161,86 @@ body {
 
 @keyframes pulse {
     0% { transform: scale(1); }
-    50% { transform: scale(1.1); }
+    50% { transform: scale(1.05); }
     100% { transform: scale(1); }
 }
 
+/* Win Screen Styling */
 #win-screen {
     display: none;
     position: absolute;
     top: 0; left: 0; width: 100%; height: 100%;
-    background: rgba(0,0,0,0.85);
+    background: rgba(0,0,0,0.9);
     flex-direction: column;
     justify-content: center;
     align-items: center;
     z-index: 10;
     border-radius: 8px;
+    backdrop-filter: blur(4px);
+}
+
+#win-screen h2 {
+    color: #ff007f;
+    font-size: 3rem;
+    text-shadow: 0 0 20px #ff007f;
+}
+
+#win-screen button {
+    background: #ff00ff;
+    color: #fff;
+    border: none;
+    padding: 15px 30px;
+    font-size: 1.5rem;
+    font-weight: bold;
+    border-radius: 8px;
+    cursor: pointer;
+    box-shadow: 0 0 15px #ff00ff;
+}
+
+#win-screen button:hover {
+    background: #e600e6;
 }
 
 .win-image {
     border-color: #ff00ff !important;
-    box-shadow: 0 0 20px #ff00ff;
+    box-shadow: 0 0 40px #ff00ff !important;
 }
 
+/* Golden Zeke Styling */
 .falling-golden-zeke {
     position: fixed;
     top: -50px;
-    width: 40px;
-    height: 40px;
-    background-color: gold;
+    width: 50px;
+    height: 50px;
+    background: radial-gradient(circle, #fff7a1 10%, #ffcc00 40%, #ff9900 90%);
     border-radius: 50%;
     cursor: pointer;
     z-index: 999;
-    animation: fall 7s linear forwards;
+    box-shadow: 0 0 20px gold;
+    animation: fall 6s linear forwards, spin 2s linear infinite;
+    border: 2px solid white;
 }
 
 @keyframes fall {
-    to { transform: translateY(105vh); }
+    to { transform: translateY(110vh) rotate(360deg); }
+}
+@keyframes spin {
+    100% { transform: rotate(360deg); }
+}
+
+/* Floating click text */
+.floating-text {
+    position: fixed;
+    color: #00ffff;
+    font-weight: bold;
+    font-size: 1.5rem;
+    pointer-events: none;
+    z-index: 9999;
+    animation: floatUp 1s ease-out forwards;
+    text-shadow: 0 0 5px #000;
+}
+
+@keyframes floatUp {
+    0% { transform: translateY(0) scale(1); opacity: 1; }
+    100% { transform: translateY(-50px) scale(1.2); opacity: 0; }
 }
