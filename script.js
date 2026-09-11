@@ -1,5 +1,5 @@
 // ==========================================
-// THE PANIC BUTTON (BOSS KEY)
+// THE PANIC BUTTON (MS. INMAN)
 // ==========================================
 let isPanicking = false;
 document.addEventListener('keydown', (e) => {
@@ -16,25 +16,24 @@ document.addEventListener('keydown', (e) => {
 let zekes = 0;
 let cps = 0;
 
+// Replaced generic names with lore-accurate unblocked/high school themes
 const upgrades = [
-    { id: 'u1', name: "Bathroom Pass", desc: "Adds +1 Zekes/sec. Take the whole period.", baseCost: 15, cps: 1, count: 0 },
-    { id: 'u2', name: "Cool Math Games Proxy", desc: "Adds +5 Zekes/sec. Bypass the firewall.", baseCost: 100, cps: 5, count: 0 },
-    { id: 'u3', name: "Kahoot Bot", desc: "Adds +20 Zekes/sec. Spam the lobby.", baseCost: 1000, cps: 20, count: 0 },
-    { id: 'u4', name: "Stolen Wifi Password", desc: "Adds +100 Zekes/sec. Teacher's lounge access.", baseCost: 12000, cps: 100, count: 0 },
-    { id: 'u5', name: "Ctrl+C Ctrl+V", desc: "Adds +500 Zekes/sec. Plagiarize your essays.", baseCost: 100000, cps: 500, count: 0 },
-    { id: 'u6', name: "Inspect Element Hack", desc: "Adds +3000 Zekes/sec. Change your grades to A+.", baseCost: 1500000, cps: 3000, count: 0 }
+    { id: 'u1', name: "Bathroom Pass", desc: "Wander the halls. +1 Z/s", baseCost: 15, cps: 1, count: 0 },
+    { id: 'u2', name: "South-Doyle Wi-Fi", desc: "Connect to the guest network. +5 Z/s", baseCost: 100, cps: 5, count: 0 },
+    { id: 'u3', name: "Bazzite Linux Proxy", desc: "Bypass the school firewall. +20 Z/s", baseCost: 1000, cps: 20, count: 0 },
+    { id: 'u4', name: "Cool Math Games", desc: "Keep a tab open in the background. +100 Z/s", baseCost: 12000, cps: 100, count: 0 },
+    { id: 'u5', name: "WPILib Auto-Clicker", desc: "Robot code clicking for you. +500 Z/s", baseCost: 100000, cps: 500, count: 0 },
+    { id: 'u6', name: "Inspect Element Hack", desc: "Change your grades to A+. +3000 Z/s", baseCost: 1500000, cps: 3000, count: 0 }
 ];
 
 function getCost(u) { return Math.floor(u.baseCost * Math.pow(1.15, u.count)); }
-function getClickPower() { return 1 + Math.floor(cps * 0.1); } // Clicks are worth 1 + 10% of CPS
+function getClickPower() { return 1 + Math.floor(cps * 0.1); } 
 
-// The mighty click
 const zekeImg = document.getElementById('main-zeke');
 zekeImg.addEventListener('mousedown', (e) => {
     let power = getClickPower();
     zekes += power;
     
-    // Floating text
     let f = document.createElement('div');
     f.className = 'float-txt';
     f.innerText = '+' + power;
@@ -46,7 +45,6 @@ zekeImg.addEventListener('mousedown', (e) => {
     updateUI();
 });
 
-// Game Loop
 setInterval(() => {
     if(!isPanicking && cps > 0) {
         zekes += cps / 10;
@@ -54,111 +52,80 @@ setInterval(() => {
     }
 }, 100);
 
-// Auto Save
-setInterval(() => {
-    localStorage.setItem('shittyZekeSave', JSON.stringify({ zekes, upgrades }));
-}, 5000);
+setInterval(() => { localStorage.setItem('unblockedZekeSave', JSON.stringify({ zekes, upgrades })); }, 5000);
 
 function loadGame() {
-    let save = JSON.parse(localStorage.getItem('shittyZekeSave'));
+    let save = JSON.parse(localStorage.getItem('unblockedZekeSave'));
     if(save) {
         zekes = save.zekes || 0;
-        if(save.upgrades) {
-            save.upgrades.forEach((savedU, i) => { if(upgrades[i]) upgrades[i].count = savedU.count; });
-        }
+        if(save.upgrades) { save.upgrades.forEach((savedU, i) => { if(upgrades[i]) upgrades[i].count = savedU.count; }); }
     }
-    recalcCPS();
-    buildStore();
-    updateUI();
+    recalcCPS(); buildStore(); updateUI();
 }
 
 function recalcCPS() {
-    cps = 0;
-    upgrades.forEach(u => cps += u.cps * u.count);
-    // Spin Zeke faster if high CPS
-    zekeImg.style.animationDuration = Math.max(0.5, 10 - (cps/100)) + 's';
+    cps = 0; upgrades.forEach(u => cps += u.cps * u.count);
 }
 
 function buyUpgrade(idx) {
-    let u = upgrades[idx];
-    let cost = getCost(u);
-    if(zekes >= cost) {
-        zekes -= cost;
-        u.count++;
-        recalcCPS();
-        buildStore();
-        updateUI();
-    }
+    let u = upgrades[idx]; let cost = getCost(u);
+    if(zekes >= cost) { zekes -= cost; u.count++; recalcCPS(); buildStore(); updateUI(); }
 }
 
 function buildStore() {
     let html = '';
     upgrades.forEach((u, i) => {
         let cost = getCost(u);
-        html += `<button class="upg-btn" ${zekes < cost ? 'disabled' : ''} onclick="buyUpgrade(${i})">
+        html += `<button class="upg-btn" id="btn-upg-${i}" onclick="buyUpgrade(${i})">
             <div>
-                <div style="font-size:18px;">${u.name} (Owned: ${u.count})</div>
-                <div style="font-size:12px; color:#aaa;">${u.desc}</div>
+                <div class="upg-name">${u.name} (${u.count})</div>
+                <div class="upg-desc">${u.desc}</div>
             </div>
-            <div style="color:#00ffff;">Cost: ${Math.floor(cost).toLocaleString()}</div>
+            <div class="upg-cost">${Math.floor(cost).toLocaleString()}</div>
         </button>`;
     });
-    document.getElementById('store').innerHTML = html;
+    document.getElementById('store-list').innerHTML = html;
 }
 
 function updateUI() {
     document.getElementById('zekeCount').innerText = Math.floor(zekes).toLocaleString();
     document.getElementById('cpsDisplay').innerText = Math.floor(cps).toLocaleString();
-    
-    // Enable/disable store buttons without rebuilding
     upgrades.forEach((u, i) => {
-        let btn = document.getElementById('store').children[i];
+        let btn = document.getElementById(`btn-upg-${i}`);
         if(btn) btn.disabled = zekes < getCost(u);
     });
 }
 
 function restartGame() {
-    if(confirm("DELETE EVERYTHING? FR? NO CAP?")) {
-        localStorage.removeItem('shittyZekeSave');
-        location.reload();
-    }
+    if(confirm("Erase all data?")) { localStorage.removeItem('unblockedZekeSave'); location.reload(); }
 }
 
 // ==========================================
-// MINIGAMES HUB LOGIC
+// ARCADE HUB LOGIC
 // ==========================================
+let activeInterval = null;
+
 function switchTab(tabId) {
-    // Hide all
-    document.querySelectorAll('.minigame').forEach(el => el.classList.remove('active-minigame'));
-    document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
-    
-    // Show specific
-    document.getElementById('game-' + tabId).classList.add('active-minigame');
-    document.querySelector(`.tab-btn[onclick="switchTab('${tabId}')"]`).classList.add('active');
-
-    // Kill running game loops to save CPU
-    clearInterval(snakeInterval);
-    clearInterval(jumpInterval);
+    document.querySelectorAll('.minigame-view').forEach(el => el.classList.remove('active-game'));
+    document.getElementById('game-' + tabId).classList.add('active-game');
+    clearInterval(activeInterval); // Kill any running game loop
 }
 
 // ------------------------------------------
-// 1. ZEKE SNAKE
+// 1. ZEKE SNAKE (300x300, 15px grid)
 // ------------------------------------------
-const canvas = document.getElementById("snakeCanvas");
-const ctx = canvas.getContext("2d");
-const box = 20;
-let snake, snakeFood, d, snakeInterval;
-
-let zekeImage = new Image();
-zekeImage.src = 'zeke.jpg'; // Tries to load zeke.jpg to draw on canvas
+const sCanvas = document.getElementById("snakeCanvas");
+const sCtx = sCanvas.getContext("2d");
+const box = 15;
+let snake, food, d;
+let zImg = new Image(); zImg.src = 'zeke.jpg';
 
 function startSnake() {
-    clearInterval(snakeInterval);
-    snake = [];
-    snake[0] = { x: 9 * box, y: 10 * box };
-    snakeFood = { x: Math.floor(Math.random() * 19 + 1) * box, y: Math.floor(Math.random() * 19 + 1) * box };
+    clearInterval(activeInterval);
+    snake = [{ x: 10 * box, y: 10 * box }];
+    food = { x: Math.floor(Math.random() * 19) * box, y: Math.floor(Math.random() * 19) * box };
     d = "RIGHT";
-    snakeInterval = setInterval(drawSnake, 100);
+    activeInterval = setInterval(drawSnake, 120);
 }
 
 document.addEventListener("keydown", (e) => {
@@ -169,151 +136,156 @@ document.addEventListener("keydown", (e) => {
     else if(key == 40 && d != "UP") d = "DOWN";
 });
 
-function collision(head, array) {
-    for(let i = 0; i < array.length; i++) {
-        if(head.x == array[i].x && head.y == array[i].y) return true;
-    }
-    return false;
-}
-
 function drawSnake() {
     if(isPanicking) return;
-    
-    ctx.fillStyle = "#000";
-    ctx.fillRect(0, 0, 400, 400);
+    sCtx.fillStyle = "#111"; sCtx.fillRect(0, 0, 300, 300);
 
     for(let i = 0; i < snake.length; i++) {
         if(i === 0) {
-            try { ctx.drawImage(zekeImage, snake[i].x, snake[i].y, box, box); } 
-            catch(e) { ctx.fillStyle = "yellow"; ctx.fillRect(snake[i].x, snake[i].y, box, box); }
-        } else {
-            ctx.fillStyle = "#ff00ff";
-            ctx.fillRect(snake[i].x, snake[i].y, box, box);
-        }
+            try { sCtx.drawImage(zImg, snake[i].x, snake[i].y, box, box); } 
+            catch(e) { sCtx.fillStyle = "yellow"; sCtx.fillRect(snake[i].x, snake[i].y, box, box); }
+        } else { sCtx.fillStyle = "#0f0"; sCtx.fillRect(snake[i].x, snake[i].y, box, box); }
     }
 
-    try { ctx.drawImage(zekeImage, snakeFood.x, snakeFood.y, box, box); } 
-    catch(e) { ctx.fillStyle = "red"; ctx.fillRect(snakeFood.x, snakeFood.y, box, box); }
+    try { sCtx.drawImage(zImg, food.x, food.y, box, box); } 
+    catch(e) { sCtx.fillStyle = "red"; sCtx.fillRect(food.x, food.y, box, box); }
 
-    let snakeX = snake[0].x;
-    let snakeY = snake[0].y;
+    let sX = snake[0].x, sY = snake[0].y;
+    if(d == "LEFT") sX -= box; if(d == "UP") sY -= box;
+    if(d == "RIGHT") sX += box; if(d == "DOWN") sY += box;
 
-    if(d == "LEFT") snakeX -= box;
-    if(d == "UP") snakeY -= box;
-    if(d == "RIGHT") snakeX += box;
-    if(d == "DOWN") snakeY += box;
+    if(sX == food.x && sY == food.y) {
+        food = { x: Math.floor(Math.random() * 19) * box, y: Math.floor(Math.random() * 19) * box };
+    } else { snake.pop(); }
 
-    if(snakeX == snakeFood.x && snakeY == snakeFood.y) {
-        snakeFood = { x: Math.floor(Math.random() * 19 + 1) * box, y: Math.floor(Math.random() * 19 + 1) * box };
-    } else {
-        snake.pop();
+    let newHead = { x: sX, y: sY };
+
+    if(sX < 0 || sX >= 300 || sY < 0 || sY >= 300 || snake.some(s => s.x === sX && s.y === sY)) {
+        clearInterval(activeInterval);
+        let reward = (snake.length - 1) * 300;
+        alert("Dead. Reward: " + reward + " Zekes.");
+        zekes += reward; updateUI(); return;
     }
-
-    let newHead = { x: snakeX, y: snakeY };
-
-    if(snakeX < 0 || snakeX >= 400 || snakeY < 0 || snakeY >= 400 || collision(newHead, snake)) {
-        clearInterval(snakeInterval);
-        let reward = (snake.length - 1) * 200;
-        alert("GAME OVER! You ate " + (snake.length-1) + " Zekes. Reward: " + reward + " Zekes.");
-        zekes += reward;
-        updateUI();
-        return;
-    }
-
     snake.unshift(newHead);
 }
 
 // ------------------------------------------
-// 2. ZEKE JUMP (DINO CLONE)
+// 2. ZEKE JUMP
 // ------------------------------------------
 const jumper = document.getElementById("jumper");
-const obstacle = document.getElementById("obstacle");
-let jumpScore = 0;
-let jumpInterval;
+const obs = document.getElementById("obstacle");
+let jScore = 0; let oLeft = 300;
 
 function startJump() {
-    clearInterval(jumpInterval);
-    jumpScore = 0;
-    obstacle.classList.add("obs-anim");
-    document.getElementById("jump-score").innerText = "Score: " + jumpScore;
+    clearInterval(activeInterval);
+    jScore = 0; oLeft = 300;
+    obs.style.left = '300px';
+    document.getElementById("jump-score").innerText = "Score: 0";
     
-    jumpInterval = setInterval(() => {
+    activeInterval = setInterval(() => {
         if(isPanicking) return;
-        
         let jTop = parseInt(window.getComputedStyle(jumper).getPropertyValue("bottom"));
-        let oLeft = parseInt(window.getComputedStyle(obstacle).getPropertyValue("left"));
+        
+        oLeft -= 15; // Move speed
+        if (oLeft < -20) { oLeft = 300; jScore++; document.getElementById("jump-score").innerText = "Score: " + jScore; }
+        obs.style.left = oLeft + 'px';
 
-        // Collision logic
-        if(oLeft > 50 && oLeft < 90 && jTop <= 50) {
-            obstacle.classList.remove("obs-anim");
-            clearInterval(jumpInterval);
-            let reward = jumpScore * 50;
-            alert("BONK! You hit a desk. Reward: " + reward + " Zekes.");
-            zekes += reward;
-            updateUI();
-        } else if (oLeft < 10 && oLeft > -10) {
-            jumpScore++;
-            document.getElementById("jump-score").innerText = "Score: " + jumpScore;
+        if(oLeft > 30 && oLeft < 50 && jTop <= 30) {
+            clearInterval(activeInterval);
+            let reward = jScore * 100;
+            alert("Crash! Reward: " + reward + " Zekes.");
+            zekes += reward; updateUI();
         }
-    }, 50);
+    }, 40);
 }
 
-// Jump controls
-document.addEventListener("keydown", (e) => {
-    if(e.code === "Space" && document.getElementById('game-jump').classList.contains('active-minigame')) {
-        doJump();
-    }
-});
+document.addEventListener("keydown", (e) => { if((e.code === "Space" || e.code === "ArrowUp") && document.getElementById('game-jump').classList.contains('active-game')) doJump(); });
 document.getElementById('jump-world').addEventListener("mousedown", doJump);
 
 function doJump() {
     if(jumper.classList.contains("jump-anim")) return;
     jumper.classList.add("jump-anim");
-    setTimeout(() => { jumper.classList.remove("jump-anim"); }, 500);
+    setTimeout(() => { jumper.classList.remove("jump-anim"); }, 600);
 }
 
 // ------------------------------------------
-// 3. PAPA ZEKE'S PIZZERIA
+// 3. PAPA'S PIZZERIA
 // ------------------------------------------
-const allIngs = ["Dough", "Sauce", "Cheese", "Zeke"];
-let targetOrder = [];
-let currentBuild = [];
+const ings = ["Dough", "Sauce", "Cheese", "Zeke"];
+let target = [], current = [];
 
 function startPapa() {
-    currentBuild = [];
-    targetOrder = [];
-    let len = Math.floor(Math.random() * 3) + 3; // Orders are 3-5 items long
-    for(let i=0; i<len; i++) {
-        targetOrder.push(allIngs[Math.floor(Math.random()*allIngs.length)]);
-    }
-    document.getElementById('current-order').innerText = targetOrder.join(" ➔ ");
+    current = []; target = [];
+    let len = Math.floor(Math.random() * 3) + 3; 
+    for(let i=0; i<len; i++) target.push(ings[Math.floor(Math.random()*ings.length)]);
+    document.getElementById('papa-order').innerText = target.join(" + ");
     document.getElementById('papa-current').innerText = "";
 }
 
 function addIng(ing) {
-    if(targetOrder.length === 0) return; // Game not started
-    
-    currentBuild.push(ing);
-    document.getElementById('papa-current').innerText = currentBuild.join(" - ");
-
-    // Check if correct so far
-    for(let i=0; i<currentBuild.length; i++) {
-        if(currentBuild[i] !== targetOrder[i]) {
-            alert("YOU RUINED THE PIZZA! Start over.");
-            startPapa();
-            return;
-        }
+    if(target.length === 0) return; 
+    current.push(ing);
+    document.getElementById('papa-current').innerText = current.join(" - ");
+    for(let i=0; i<current.length; i++) {
+        if(current[i] !== target[i]) { alert("TRASH! Start over."); startPapa(); return; }
     }
-
-    // Check if finished
-    if(currentBuild.length === targetOrder.length) {
-        let reward = targetOrder.length * 500;
-        alert("PERFECT PIZZA! Mama mia! Reward: " + reward + " Zekes!");
-        zekes += reward;
-        updateUI();
-        startPapa(); // Next order
+    if(current.length === target.length) {
+        let reward = target.length * 400;
+        alert("Order done! Earned: " + reward);
+        zekes += reward; updateUI(); startPapa();
     }
 }
 
-// Init
+// ------------------------------------------
+// 4. AIM TRAINER
+// ------------------------------------------
+const targetEl = document.getElementById("aim-target");
+let aimHits = 0;
+
+function startAim() {
+    clearInterval(activeInterval);
+    aimHits = 0; document.getElementById("aim-score").innerText = "Hits: 0";
+    targetEl.style.display = "block";
+    
+    activeInterval = setInterval(() => {
+        if(isPanicking) return;
+        targetEl.style.left = Math.floor(Math.random() * 260) + "px";
+        targetEl.style.top = Math.floor(Math.random() * 160) + "px";
+    }, 800); // Moves every 800ms
+}
+
+function hitTarget(e) {
+    aimHits++; document.getElementById("aim-score").innerText = "Hits: " + aimHits;
+    zekes += 150; updateUI();
+    // Force move immediately
+    targetEl.style.left = Math.floor(Math.random() * 260) + "px";
+    targetEl.style.top = Math.floor(Math.random() * 160) + "px";
+}
+
+// ------------------------------------------
+// 5. ZEKE RNG CASINO
+// ------------------------------------------
+const ems = ["💀", "🔥", "💯", "🍕", "🤖"];
+function spinRNG() {
+    if(zekes < 500) { alert("You broke."); return; }
+    zekes -= 500; updateUI();
+    
+    let a = ems[Math.floor(Math.random() * ems.length)];
+    let b = ems[Math.floor(Math.random() * ems.length)];
+    let c = ems[Math.floor(Math.random() * ems.length)];
+    
+    document.getElementById('slot-machine').innerText = `${a} ${b} ${c}`;
+    
+    if(a === b && b === c) {
+        document.getElementById('slot-result').innerText = "JACKPOT! +5000 Zekes!";
+        zekes += 5000;
+    } else if (a === b || b === c || a === c) {
+        document.getElementById('slot-result').innerText = "Mini win! +800 Zekes";
+        zekes += 800;
+    } else {
+        document.getElementById('slot-result').innerText = "L. Try again.";
+    }
+    updateUI();
+}
+
 window.onload = loadGame;
