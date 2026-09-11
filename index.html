@@ -5,17 +5,64 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Zeke Clicker</title>
 <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=7">
+<link rel="stylesheet" href="style.css?v=8">
 </head>
 <body>
-<!-- Firebase SDK (For Real Player Tracking - see script.js) -->
-<script type="module" src="https://www.gstatic.com/firebasejs/10.5.0/firebase-app.js"></script>
-<script type="module" src="https://www.gstatic.com/firebasejs/10.5.0/firebase-database.js"></script>
+
+<!-- REAL FIREBASE TRACKING MODULE -->
+<script type="module">
+  // Import Firebase components via CDN
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+  import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-analytics.js";
+  import { getDatabase, ref, onValue, onDisconnect, set, increment } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyCyD2K3TT7hOfakFPgJ9mMjTEM8Jim9_rA",
+    authDomain: "z-clicker-97488.firebaseapp.com",
+    projectId: "z-clicker-97488",
+    storageBucket: "z-clicker-97488.firebasestorage.app",
+    messagingSenderId: "686862323992",
+    appId: "1:686862323992:web:e25c46b7deb67254278e6d",
+    measurementId: "G-Y92C3EM9E1",
+    // Added your default database URL to ensure connection works
+    databaseURL: "https://z-clicker-97488-default-rtdb.firebaseio.com" 
+  };
+
+  // Initialize Firebase
+  const app = initializeApp(firebaseConfig);
+  const analytics = getAnalytics(app);
+  const db = getDatabase(app);
+
+  // 1. LIVE USER TRACKING
+  // Generate a random unique ID for this browser tab
+  const sessionId = Date.now() + Math.random().toString(36).substring(2);
+  const sessionRef = ref(db, 'online_users/' + sessionId);
+
+  // Add this user to database, and auto-delete them when they close the tab
+  set(sessionRef, true);
+  onDisconnect(sessionRef).remove();
+
+  // Listen for the total number of online users
+  const usersRef = ref(db, 'online_users');
+  onValue(usersRef, (snapshot) => {
+      let count = snapshot.size || 0;
+      document.getElementById('realLiveUsers').innerText = count;
+  });
+
+  // 2. TOTAL VISITS TRACKING
+  const visitsRef = ref(db, 'total_visits');
+  set(visitsRef, increment(1)); // Add +1 to total visits every time page loads
+  
+  onValue(visitsRef, (snapshot) => {
+      let total = snapshot.val() || 0;
+      document.getElementById('realTotalVisits').innerText = total.toLocaleString();
+  });
+</script>
 
 <header class="banner">
   <h1>ZEKE CLICKER</h1>
   <div class="live-stats">
-    <div><span class="pulse-dot"></span>Online Now: <span id="realLiveUsers" class="stat-number">1 (You)</span></div>
+    <div><span class="pulse-dot"></span>Online Now: <span id="realLiveUsers" class="stat-number">Loading...</span></div>
     <div style="margin-top: 5px;">👁️ Total Visits: <span id="realTotalVisits" class="stat-number">Loading...</span></div>
   </div>
 </header>
@@ -97,6 +144,6 @@
   </div>
 </div>
 
-<script src="script.js?v=7"></script>
+<script src="script.js?v=8"></script>
 </body>
 </html>
