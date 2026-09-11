@@ -9,23 +9,25 @@ let rbAutoCost = 2;
 let zekes = 0; 
 let baseClickGain = 1; 
 let baseIdleZekes = 0; 
-const costMultiplier = 2.5; 
 
-// Costs
+// RE-BALANCED SCALING MULTIPLIER (1.15 = standard 15% increase per purchase)
+const costMultiplier = 1.15; 
+
+// Balanced Base Costs & Progression
 let zekeFingerCost = 15; 
 let zekeToeCost = 100; 
 let zekeFootCost = 500; 
-let zekeArmCost = 2500;
-let zekeLegCost = 10000;
+let zekeArmCost = 3000;
+let zekeLegCost = 20000;
 
-let zekeShoeCost = 100; 
-let zekeGlassesCost = 1000;
-let zekeBackpackCost = 10000;
-let zekeLiverCost = 100000;
-let zekeRobotCost = 1000000;
+let zekeShoeCost = 50; 
+let zekeGlassesCost = 300;
+let zekeBackpackCost = 2000;
+let zekeLiverCost = 15000;
+let zekeRobotCost = 100000;
 
-let zekePartOneCost = 1000000000;
-let zekePartTwoCost = 10000000000;
+let zekePartOneCost = 5000000;    // 5 Million
+let zekePartTwoCost = 25000000;   // 25 Million
 
 // Counts
 let zekeFingerCount = 0; 
@@ -45,15 +47,17 @@ let zekePartTwo = false;
 
 const image = document.getElementById('zeke'); 
 
-image.addEventListener('click', () => { 
-    image.classList.add('click-animation'); 
-}); 
+if (image) {
+    image.addEventListener('click', () => { 
+        image.classList.add('click-animation'); 
+    }); 
 
-image.addEventListener('animationend', () => { 
-    image.classList.remove('click-animation'); 
-}); 
+    image.addEventListener('animationend', () => { 
+        image.classList.remove('click-animation'); 
+    }); 
+}
 
-// Auto generate loop
+// Auto generate loop (Passive Income)
 setInterval(() => {
     let totalIdle = baseIdleZekes * (1 + rebirthAutoLevel);
     if (totalIdle > 0) {
@@ -88,7 +92,7 @@ function buyUpgrade(upgradeName) {
         case 'zekeFoot': 
             if (zekes >= zekeFootCost) { 
                 zekes -= zekeFootCost; 
-                baseClickGain += 10 * Math.max(1, rebirthPowerLevel); 
+                baseClickGain += 20 * Math.max(1, rebirthPowerLevel); 
                 zekeFootCount++; 
                 zekeFootCost = Math.floor(zekeFootCost * costMultiplier); 
             } 
@@ -96,7 +100,7 @@ function buyUpgrade(upgradeName) {
         case 'zekeArm': 
             if (zekes >= zekeArmCost) { 
                 zekes -= zekeArmCost; 
-                baseClickGain += 25 * Math.max(1, rebirthPowerLevel); 
+                baseClickGain += 100 * Math.max(1, rebirthPowerLevel); 
                 zekeArmCount++; 
                 zekeArmCost = Math.floor(zekeArmCost * costMultiplier); 
             } 
@@ -104,7 +108,7 @@ function buyUpgrade(upgradeName) {
         case 'zekeLeg': 
             if (zekes >= zekeLegCost) { 
                 zekes -= zekeLegCost; 
-                baseClickGain += 100 * Math.max(1, rebirthPowerLevel); 
+                baseClickGain += 500 * Math.max(1, rebirthPowerLevel); 
                 zekeLegCount++; 
                 zekeLegCost = Math.floor(zekeLegCost * costMultiplier); 
             } 
@@ -120,7 +124,7 @@ function buyUpgrade(upgradeName) {
         case 'zekeGlasses': 
             if (zekes >= zekeGlassesCost) { 
                 zekes -= zekeGlassesCost; 
-                baseIdleZekes += 5 * Math.max(1, rebirthAutoLevel);
+                baseIdleZekes += 8 * Math.max(1, rebirthAutoLevel);
                 zekeGlassesCount++; 
                 zekeGlassesCost = Math.floor(zekeGlassesCost * costMultiplier); 
             } 
@@ -128,7 +132,7 @@ function buyUpgrade(upgradeName) {
         case 'zekeBackpack': 
             if (zekes >= zekeBackpackCost) { 
                 zekes -= zekeBackpackCost; 
-                baseIdleZekes += 50 * Math.max(1, rebirthAutoLevel);
+                baseIdleZekes += 45 * Math.max(1, rebirthAutoLevel);
                 zekeBackpackCount++; 
                 zekeBackpackCost = Math.floor(zekeBackpackCost * costMultiplier); 
             } 
@@ -136,7 +140,7 @@ function buyUpgrade(upgradeName) {
         case 'zekeLiver': 
             if (zekes >= zekeLiverCost) { 
                 zekes -= zekeLiverCost; 
-                baseIdleZekes += 100 * Math.max(1, rebirthAutoLevel);
+                baseIdleZekes += 250 * Math.max(1, rebirthAutoLevel);
                 zekeLiverCount++; 
                 zekeLiverCost = Math.floor(zekeLiverCost * costMultiplier); 
             } 
@@ -144,7 +148,7 @@ function buyUpgrade(upgradeName) {
         case 'zekeRobot': 
             if (zekes >= zekeRobotCost) { 
                 zekes -= zekeRobotCost; 
-                baseIdleZekes += 1000 * Math.max(1, rebirthAutoLevel);
+                baseIdleZekes += 1500 * Math.max(1, rebirthAutoLevel);
                 zekeRobotCount++; 
                 zekeRobotCost = Math.floor(zekeRobotCost * costMultiplier); 
             } 
@@ -153,16 +157,16 @@ function buyUpgrade(upgradeName) {
             if (zekes >= zekePartOneCost) { 
                 zekes -= zekePartOneCost; 
                 zekePartOne = true;
-                baseClickGain *= 1000;
+                baseClickGain *= 10;
                 updateAll();
-                document.getElementById('partOneBox').style.display = 'none';
+                if (document.getElementById('partOneBox')) document.getElementById('partOneBox').style.display = 'none';
             } 
             break; 
         case 'zekePartTwo': 
             if (zekes >= zekePartTwoCost) { 
                 zekes -= zekePartTwoCost; 
                 zekePartTwo = true;
-                document.getElementById('partTwoBox').style.display = 'none';
+                if (document.getElementById('partTwoBox')) document.getElementById('partTwoBox').style.display = 'none';
             } 
             break; 
     } 
@@ -176,13 +180,13 @@ function buyUpgrade(upgradeName) {
 } 
 
 function triggerWinState() {
-    image.classList.add('win-image');
-    document.getElementById('left-sidebar').style.display = 'none';
-    document.getElementById('right-sidebar').style.display = 'none';
-    document.getElementById('win-screen').style.display = 'flex';
+    if (image) image.classList.add('win-image');
+    if (document.getElementById('left-sidebar')) document.getElementById('left-sidebar').style.display = 'none';
+    if (document.getElementById('right-sidebar')) document.getElementById('right-sidebar').style.display = 'none';
+    if (document.getElementById('win-screen')) document.getElementById('win-screen').style.display = 'flex';
     
     let earnedTokens = Math.max(5, Math.floor(Math.log10(zekes + 1) * 5));
-    document.getElementById('pendingTokens').innerText = earnedTokens;
+    if (document.getElementById('pendingTokens')) document.getElementById('pendingTokens').innerText = earnedTokens;
 }
 
 function triggerRebirth() {
@@ -196,26 +200,26 @@ function triggerRebirth() {
     zekeFingerCost = 15; zekeFingerCount = 0;
     zekeToeCost = 100; zekeToeCount = 0;
     zekeFootCost = 500; zekeFootCount = 0;
-    zekeArmCost = 2500; zekeArmCount = 0;
-    zekeLegCost = 10000; zekeLegCount = 0;
+    zekeArmCost = 3000; zekeArmCount = 0;
+    zekeLegCost = 20000; zekeLegCount = 0;
 
-    zekeShoeCost = 100; zekeShoeCount = 0;
-    zekeGlassesCost = 1000; zekeGlassesCount = 0;
-    zekeBackpackCost = 10000; zekeBackpackCount = 0;
-    zekeLiverCost = 100000; zekeLiverCount = 0;
-    zekeRobotCost = 1000000; zekeRobotCount = 0;
+    zekeShoeCost = 50; zekeShoeCount = 0;
+    zekeGlassesCost = 300; zekeGlassesCount = 0;
+    zekeBackpackCost = 2000; zekeBackpackCount = 0;
+    zekeLiverCost = 15000; zekeLiverCount = 0;
+    zekeRobotCost = 100000; zekeRobotCount = 0;
 
     zekePartOne = false;
     zekePartTwo = false;
 
-    image.classList.remove('win-image');
-    document.getElementById('win-screen').style.display = 'none';
-    document.getElementById('partOneBox').style.display = 'block';
-    document.getElementById('partTwoBox').style.display = 'block';
+    if (image) image.classList.remove('win-image');
+    if (document.getElementById('win-screen')) document.getElementById('win-screen').style.display = 'none';
+    if (document.getElementById('partOneBox')) document.getElementById('partOneBox').style.display = 'block';
+    if (document.getElementById('partTwoBox')) document.getElementById('partTwoBox').style.display = 'block';
     
-    document.getElementById('left-sidebar').style.display = 'block';
-    document.getElementById('right-sidebar').style.display = 'block';
-    document.getElementById('rebirth-sidebar').style.display = 'block';
+    if (document.getElementById('left-sidebar')) document.getElementById('left-sidebar').style.display = 'block';
+    if (document.getElementById('right-sidebar')) document.getElementById('right-sidebar').style.display = 'block';
+    if (document.getElementById('rebirth-sidebar')) document.getElementById('rebirth-sidebar').style.display = 'block';
 
     updateAll();
     saveGame();
@@ -244,52 +248,52 @@ function updateAll() {
     let currentClickGain = (baseClickGain + rebirthPowerLevel) * tokenMultiplier;
     let currentIdleZekes = baseIdleZekes * (1 + rebirthAutoLevel);
 
-    document.getElementById("zekeCount").innerHTML = zekes; 
-    document.getElementById("zekeIdleCount").innerHTML = currentIdleZekes; 
-    document.getElementById("zekeClickGain").innerHTML = currentClickGain; 
+    if (document.getElementById("zekeCount")) document.getElementById("zekeCount").innerHTML = Math.floor(zekes).toLocaleString(); 
+    if (document.getElementById("zekeIdleCount")) document.getElementById("zekeIdleCount").innerHTML = Math.floor(currentIdleZekes).toLocaleString(); 
+    if (document.getElementById("zekeClickGain")) document.getElementById("zekeClickGain").innerHTML = Math.floor(currentClickGain).toLocaleString(); 
     
-    document.getElementById("fingerCount").innerHTML = zekeFingerCount; 
-    document.getElementById("fingerCost").innerHTML = zekeFingerCost; 
+    if (document.getElementById("fingerCount")) document.getElementById("fingerCount").innerHTML = zekeFingerCount; 
+    if (document.getElementById("fingerCost")) document.getElementById("fingerCost").innerHTML = zekeFingerCost.toLocaleString(); 
     
-    document.getElementById("toeCount").innerHTML = zekeToeCount; 
-    document.getElementById("toeCost").innerHTML = zekeToeCost; 
+    if (document.getElementById("toeCount")) document.getElementById("toeCount").innerHTML = zekeToeCount; 
+    if (document.getElementById("toeCost")) document.getElementById("toeCost").innerHTML = zekeToeCost.toLocaleString(); 
     
-    document.getElementById("footCount").innerHTML = zekeFootCount; 
-    document.getElementById("footCost").innerHTML = zekeFootCost; 
+    if (document.getElementById("footCount")) document.getElementById("footCount").innerHTML = zekeFootCount; 
+    if (document.getElementById("footCost")) document.getElementById("footCost").innerHTML = zekeFootCost.toLocaleString(); 
 
-    document.getElementById("armCount").innerHTML = zekeArmCount; 
-    document.getElementById("armCost").innerHTML = zekeArmCost; 
+    if (document.getElementById("armCount")) document.getElementById("armCount").innerHTML = zekeArmCount; 
+    if (document.getElementById("armCost")) document.getElementById("armCost").innerHTML = zekeArmCost.toLocaleString(); 
 
-    document.getElementById("legCount").innerHTML = zekeLegCount; 
-    document.getElementById("legCost").innerHTML = zekeLegCost; 
+    if (document.getElementById("legCount")) document.getElementById("legCount").innerHTML = zekeLegCount; 
+    if (document.getElementById("legCost")) document.getElementById("legCost").innerHTML = zekeLegCost.toLocaleString(); 
     
-    document.getElementById("shoeCount").innerHTML = zekeShoeCount; 
-    document.getElementById("shoeCost").innerHTML = zekeShoeCost; 
+    if (document.getElementById("shoeCount")) document.getElementById("shoeCount").innerHTML = zekeShoeCount; 
+    if (document.getElementById("shoeCost")) document.getElementById("shoeCost").innerHTML = zekeShoeCost.toLocaleString(); 
 
-    document.getElementById("glassesCount").innerHTML = zekeGlassesCount; 
-    document.getElementById("glassesCost").innerHTML = zekeGlassesCost; 
+    if (document.getElementById("glassesCount")) document.getElementById("glassesCount").innerHTML = zekeGlassesCount; 
+    if (document.getElementById("glassesCost")) document.getElementById("glassesCost").innerHTML = zekeGlassesCost.toLocaleString(); 
 
-    document.getElementById("backpackCount").innerHTML = zekeBackpackCount; 
-    document.getElementById("backpackCost").innerHTML = zekeBackpackCost; 
+    if (document.getElementById("backpackCount")) document.getElementById("backpackCount").innerHTML = zekeBackpackCount; 
+    if (document.getElementById("backpackCost")) document.getElementById("backpackCost").innerHTML = zekeBackpackCost.toLocaleString(); 
 
-    document.getElementById("liverCount").innerHTML = zekeLiverCount; 
-    document.getElementById("liverCost").innerHTML = zekeLiverCost; 
+    if (document.getElementById("liverCount")) document.getElementById("liverCount").innerHTML = zekeLiverCount; 
+    if (document.getElementById("liverCost")) document.getElementById("liverCost").innerHTML = zekeLiverCost.toLocaleString(); 
 
-    document.getElementById("robotCount").innerHTML = zekeRobotCount; 
-    document.getElementById("robotCost").innerHTML = zekeRobotCost; 
+    if (document.getElementById("robotCount")) document.getElementById("robotCount").innerHTML = zekeRobotCount; 
+    if (document.getElementById("robotCost")) document.getElementById("robotCost").innerHTML = zekeRobotCost.toLocaleString(); 
 
-    document.getElementById("partOneCostDisplay").innerHTML = zekePartOneCost;
-    document.getElementById("partTwoCostDisplay").innerHTML = zekePartTwoCost;
+    if (document.getElementById("partOneCostDisplay")) document.getElementById("partOneCostDisplay").innerHTML = zekePartOneCost.toLocaleString();
+    if (document.getElementById("partTwoCostDisplay")) document.getElementById("partTwoCostDisplay").innerHTML = zekePartTwoCost.toLocaleString();
 
-    document.getElementById("tokenCount").innerHTML = rebirthTokens;
-    document.getElementById("rbPowerCount").innerHTML = rebirthPowerLevel;
-    document.getElementById("rbPowerCost").innerHTML = rbPowerCost;
-    document.getElementById("rbAutoCount").innerHTML = rebirthAutoLevel;
-    document.getElementById("rbAutoCost").innerHTML = rbAutoCost;
+    if (document.getElementById("tokenCount")) document.getElementById("tokenCount").innerHTML = rebirthTokens.toLocaleString();
+    if (document.getElementById("rbPowerCount")) document.getElementById("rbPowerCount").innerHTML = rebirthPowerLevel;
+    if (document.getElementById("rbPowerCost")) document.getElementById("rbPowerCost").innerHTML = rbPowerCost.toLocaleString();
+    if (document.getElementById("rbAutoCount")) document.getElementById("rbAutoCount").innerHTML = rebirthAutoLevel;
+    if (document.getElementById("rbAutoCost")) document.getElementById("rbAutoCost").innerHTML = rbAutoCost.toLocaleString();
 
-    if (zekePartOne) document.getElementById('partOneBox').style.display = 'none';
-    if (zekePartTwo) document.getElementById('partTwoBox').style.display = 'none';
-    if (rebirthTokens > 0 || rebirthPowerLevel > 0 || rebirthAutoLevel > 0) {
+    if (zekePartOne && document.getElementById('partOneBox')) document.getElementById('partOneBox').style.display = 'none';
+    if (zekePartTwo && document.getElementById('partTwoBox')) document.getElementById('partTwoBox').style.display = 'none';
+    if ((rebirthTokens > 0 || rebirthPowerLevel > 0 || rebirthAutoLevel > 0) && document.getElementById('rebirth-sidebar')) {
         document.getElementById('rebirth-sidebar').style.display = 'block';
     }
 } 
@@ -382,7 +386,7 @@ function loadGame() {
 }
 
 window.addEventListener("keydown", function(e) {
-    if(["Space", "ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight"].indexOf(e.code) > -1 && document.getElementById('arcade-modal').style.display === 'flex') {
+    if(["Space", "ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight"].indexOf(e.code) > -1 && document.getElementById('arcade-modal') && document.getElementById('arcade-modal').style.display === 'flex') {
         e.preventDefault();
     }
 }, false);
@@ -393,7 +397,7 @@ window.addEventListener("keydown", function(e) {
    ========================================= */
 let activeInterval = null;
 let gameTimer = null;
-let aimMoveTimer = null; // Specially for aim trainer pacing
+let aimMoveTimer = null;
 
 function toggleArcade() {
     let modal = document.getElementById('arcade-modal');
@@ -413,7 +417,7 @@ function switchArcade(gameId) {
     
     let tabs = document.querySelectorAll('.arcade-tabs button');
     tabs.forEach(btn => btn.classList.remove('active-tab'));
-    event.target.classList.add('active-tab');
+    if (event && event.target) event.target.classList.add('active-tab');
 
     clearInterval(activeInterval);
     clearInterval(gameTimer);
@@ -425,23 +429,25 @@ function getGameReward() {
     return Math.max(10, Math.floor((baseClickGain + baseIdleZekes) * tokenMultiplier * 5));
 }
 
-// --- 1. FASTER SNAKE ---
+// --- 1. SNAKE ---
 const sCanvas = document.getElementById("snakeCanvas"); 
-const sCtx = sCanvas.getContext("2d"); 
+const sCtx = sCanvas ? sCanvas.getContext("2d") : null; 
 const box = 15;
 let snake, food, d, snakeSpeed;
 
 function startSnake() {
+    if (!sCtx) return;
     clearInterval(activeInterval); 
     snake = [{ x: 9 * box, y: 9 * box }]; 
     food = { x: Math.floor(Math.random() * 19) * box, y: Math.floor(Math.random() * 19) * box };
     d = "RIGHT"; 
-    snakeSpeed = 80; // Starts much faster
+    snakeSpeed = 80;
     activeInterval = setTimeout(snakeLoop, snakeSpeed);
 }
 
 document.addEventListener("keydown", (e) => {
-    if(document.getElementById('arcade-modal').style.display !== 'flex') return;
+    let modal = document.getElementById('arcade-modal');
+    if(!modal || modal.style.display !== 'flex') return;
     if((e.code === "ArrowLeft" || e.code === "KeyA") && d != "RIGHT") d = "LEFT";
     else if((e.code === "ArrowUp" || e.code === "KeyW") && d != "DOWN") d = "UP";
     else if((e.code === "ArrowRight" || e.code === "KeyD") && d != "LEFT") d = "RIGHT";
@@ -464,7 +470,7 @@ function snakeLoop() {
 
     if(sX == food.x && sY == food.y) {
         food = { x: Math.floor(Math.random() * 19) * box, y: Math.floor(Math.random() * 19) * box };
-        snakeSpeed = Math.max(30, snakeSpeed - 4); // Drops floor even lower, speed increases faster
+        snakeSpeed = Math.max(30, snakeSpeed - 4);
     } else { 
         snake.pop(); 
     }
@@ -480,7 +486,7 @@ function snakeLoop() {
     activeInterval = setTimeout(snakeLoop, snakeSpeed);
 }
 
-// --- 2. FASTER JUMP ---
+// --- 2. JUMP ---
 const jumper = document.getElementById("jumper"); 
 const obs = document.getElementById("obstacle"); 
 let jScore = 0, oLeft = 320, isJumping = false;
@@ -488,19 +494,20 @@ let jScore = 0, oLeft = 320, isJumping = false;
 function startJump() {
     clearInterval(activeInterval); 
     jScore = 0; oLeft = 320; 
-    obs.style.left = oLeft + 'px'; 
-    document.getElementById("jump-score").innerText = "0";
+    if (obs) obs.style.left = oLeft + 'px'; 
+    if (document.getElementById("jump-score")) document.getElementById("jump-score").innerText = "0";
     
     activeInterval = setInterval(() => {
+        if (!jumper || !obs) return;
         let jTop = parseInt(window.getComputedStyle(jumper).getPropertyValue("bottom"));
-        oLeft -= 10 + (jScore * 0.2); // Base speed faster, scales up faster
+        oLeft -= 10 + (jScore * 0.2); 
         
         if (oLeft < -20) { 
             oLeft = 300 + Math.random() * 100; 
             jScore += 5; 
         }
         obs.style.left = oLeft + 'px'; 
-        document.getElementById("jump-score").innerText = jScore;
+        if (document.getElementById("jump-score")) document.getElementById("jump-score").innerText = jScore;
 
         if (oLeft > 15 && oLeft < 50 && jTop <= 25) {
             clearInterval(activeInterval);
@@ -512,22 +519,22 @@ function startJump() {
 }
 
 document.addEventListener("keydown", (e) => { 
-    if((e.code === "Space" || e.code === "ArrowUp") && document.getElementById('game-jump').style.display === 'block') { 
+    if((e.code === "Space" || e.code === "ArrowUp") && document.getElementById('game-jump') && document.getElementById('game-jump').style.display === 'block') { 
         if(!isJumping) doJump(); 
     } 
 });
 
 function doJump() {
+    if (!jumper) return;
     isJumping = true; 
     jumper.classList.add('jump-anim');
-    setTimeout(() => { jumper.classList.remove('jump-anim'); isJumping = false; }, 350); // Matches the new fast CSS animation
+    setTimeout(() => { jumper.classList.remove('jump-anim'); isJumping = false; }, 350);
 }
 
-// --- 3. FASTER PAPA'S PIZZERIA (SVG VISUAL STACKING) ---
+// --- 3. PAPA'S PIZZERIA (SVG VISUAL STACKING) ---
 const ingredients = ["Dough", "Sauce", "Cheese", "Pepperoni"];
 let papaTarget = [], currentPapa = [], papaTime = 0, papaCombo = 1, totalPapaScore = 0;
 
-// SVG Visual Maps for rendering the pizza
 const svgMap = {
     "Dough": `<svg style="position:absolute; top:20px; left:20px; width:100px; height:100px; z-index:1;" viewBox="0 0 100 100"><circle cx="50" cy="50" r="48" fill="#f5d7b5" stroke="#d4b48f" stroke-width="2"/></svg>`,
     "Sauce": `<svg style="position:absolute; top:20px; left:20px; width:100px; height:100px; z-index:2;" viewBox="0 0 100 100"><circle cx="50" cy="50" r="42" fill="#d9381e"/></svg>`,
@@ -543,23 +550,23 @@ const svgMap = {
 
 function startPapa() {
     clearInterval(gameTimer); 
-    papaTime = 30; // Reduced from 60s for a fast paced shift!
+    papaTime = 30; 
     papaCombo = 1; 
     totalPapaScore = 0;
-    document.getElementById('papa-time').innerText = papaTime; 
-    document.getElementById('papa-combo').innerText = papaCombo;
+    if (document.getElementById('papa-time')) document.getElementById('papa-time').innerText = papaTime; 
+    if (document.getElementById('papa-combo')) document.getElementById('papa-combo').innerText = papaCombo;
     newPapaOrder();
     
     gameTimer = setInterval(() => {
         papaTime--; 
-        document.getElementById('papa-time').innerText = papaTime;
+        if (document.getElementById('papa-time')) document.getElementById('papa-time').innerText = papaTime;
         if(papaTime <= 0) {
             clearInterval(gameTimer); 
             let reward = totalPapaScore * getGameReward();
             alert("Shift Over! Earned: " + reward); 
             gainZeke(reward);
-            document.getElementById('papa-order').innerText = "Click Start"; 
-            document.getElementById('pizza-base').innerHTML = "Drag Ingredients Here!";
+            if (document.getElementById('papa-order')) document.getElementById('papa-order').innerText = "Click Start"; 
+            if (document.getElementById('pizza-base')) document.getElementById('pizza-base').innerHTML = "Drag Ingredients Here!";
         }
     }, 1000);
 }
@@ -573,8 +580,8 @@ function newPapaOrder() {
         if(randIng === "Dough") randIng = "Cheese"; 
         papaTarget.push(randIng);
     }
-    document.getElementById('papa-order').innerText = "Order: " + papaTarget.join(" -> "); 
-    document.getElementById('pizza-base').innerHTML = "Drop Here!";
+    if (document.getElementById('papa-order')) document.getElementById('papa-order').innerText = "Order: " + papaTarget.join(" -> "); 
+    if (document.getElementById('pizza-base')) document.getElementById('pizza-base').innerHTML = "Drop Here!";
 }
 
 function dragPapa(ev) {
@@ -591,65 +598,60 @@ function dropPapa(ev) {
     
     currentPapa.push(data);
     
-    // Clear out the "Drop Here!" text if it's the first ingredient
+    let pizzaBase = document.getElementById('pizza-base');
+    if (!pizzaBase) return;
+
     if(currentPapa.length === 1) {
-        document.getElementById('pizza-base').innerHTML = "";
+        pizzaBase.innerHTML = "";
     }
     
-    // Visually stack the SVG on the pizza!
-    document.getElementById('pizza-base').innerHTML += svgMap[data];
+    pizzaBase.innerHTML += svgMap[data];
     
-    // Check accuracy
     for(let i=0; i<currentPapa.length; i++) {
         if(currentPapa[i] !== papaTarget[i]) { 
             papaCombo = 1; 
-            document.getElementById('papa-combo').innerText = papaCombo; 
+            if (document.getElementById('papa-combo')) document.getElementById('papa-combo').innerText = papaCombo; 
             
-            // Visual error feedback
-            document.getElementById('pizza-base').style.borderColor = "red";
-            setTimeout(() => document.getElementById('pizza-base').style.borderColor = "#ff007f", 300);
+            pizzaBase.style.borderColor = "red";
+            setTimeout(() => pizzaBase.style.borderColor = "#ff007f", 300);
             
             newPapaOrder(); 
             return; 
         }
     }
     
-    // Successful pizza!
     if(currentPapa.length === papaTarget.length) {
         totalPapaScore += (papaTarget.length * papaCombo); 
         papaCombo++; 
-        document.getElementById('papa-combo').innerText = papaCombo; 
+        if (document.getElementById('papa-combo')) document.getElementById('papa-combo').innerText = papaCombo; 
         
-        // Visual success feedback
-        document.getElementById('pizza-base').style.borderColor = "#00ff00";
-        setTimeout(() => document.getElementById('pizza-base').style.borderColor = "#ff007f", 300);
+        pizzaBase.style.borderColor = "#00ff00";
+        setTimeout(() => pizzaBase.style.borderColor = "#ff007f", 300);
 
         newPapaOrder();
     }
 }
 
-// --- 4. FASTER AIM TRAINER ---
+// --- 4. AIM TRAINER ---
 let aimHits = 0, aimTime = 0;
 
 function startAim() {
     clearInterval(gameTimer); 
     clearInterval(aimMoveTimer);
-    aimHits = 0; aimTime = 15; // Cut down from 30s
-    document.getElementById("aim-score").innerText = "0"; 
-    document.getElementById("aim-time").innerText = aimTime;
+    aimHits = 0; aimTime = 15; 
+    if (document.getElementById("aim-score")) document.getElementById("aim-score").innerText = "0"; 
+    if (document.getElementById("aim-time")) document.getElementById("aim-time").innerText = aimTime;
     
     spawnTarget();
-    
-    // Automatically warp the target away if they don't click it fast enough! (0.6 seconds)
     aimMoveTimer = setInterval(spawnTarget, 600); 
     
     gameTimer = setInterval(() => {
         aimTime--; 
-        document.getElementById("aim-time").innerText = aimTime;
+        if (document.getElementById("aim-time")) document.getElementById("aim-time").innerText = aimTime;
         if(aimTime <= 0) {
             clearInterval(gameTimer); 
             clearInterval(aimMoveTimer);
-            document.getElementById("aim-target-1").style.display = 'none';
+            if (document.getElementById("aim-target-1")) document.getElementById("aim-target-1").style.display = 'none';
             let reward = aimHits * getGameReward();
             alert("Time's up! Hits: " + aimHits + " | Earned: " + reward); 
             gainZeke(reward);
@@ -659,6 +661,7 @@ function startAim() {
 
 function spawnTarget() {
     let t = document.getElementById("aim-target-1");
+    if (!t) return;
     t.style.display = "block"; 
     t.style.left = Math.floor(Math.random() * 260) + "px"; 
     t.style.top = Math.floor(Math.random() * 160) + "px";
@@ -668,15 +671,14 @@ function handleAimClick(e) {
     if(aimTime <= 0) return;
     if(e.target.classList.contains('aim-target')) {
         aimHits++; 
-        document.getElementById("aim-score").innerText = aimHits;
+        if (document.getElementById("aim-score")) document.getElementById("aim-score").innerText = aimHits;
         
-        // Reset the teleport timer since they successfully hit it
         clearInterval(aimMoveTimer);
         spawnTarget();
         aimMoveTimer = setInterval(spawnTarget, 600); 
     } else {
         aimHits = Math.max(0, aimHits - 1);
-        document.getElementById("aim-score").innerText = aimHits;
+        if (document.getElementById("aim-score")) document.getElementById("aim-score").innerText = aimHits;
     }
 }
 
@@ -685,81 +687,78 @@ function handleAimClick(e) {
    SECRET DEV PANEL LOGIC
    ========================================= */
 
-// Inject the dev panel HTML structure on load
-window.onload = function() {
-    loadGame();
-    
+function initDevPanel() {
+    if (document.getElementById('dev-panel')) return;
     const devPanelHTML = `
     <div id="dev-panel" style="display:none; position:fixed; top:20px; left:50%; transform:translateX(-50%); background:rgba(0,0,0,0.95); border:2px solid #ff00ff; padding:15px; z-index:9999; border-radius:10px; font-family:monospace; color:#00ffff; box-shadow:0 0 20px #ff00ff; width:260px; text-align:center;">
-        <h3 style="margin:0 0 10px 0; border-bottom:1px solid #ff00ff; padding-bottom:5px;">HACKER MENU</h3>
+        <h3 style="margin:0 0 10px 0; border-bottom:1px solid #ff00ff; padding-bottom:5px;">⚡ HACKER MENU ⚡</h3>
         
-        <!-- Options Dropdown -->
-        <select id="dev-resource" style="width:100%; padding:8px; margin-bottom:10px; background:#111; color:#fff; border:1px solid #ff00ff; cursor:pointer;">
+        <select id="dev-resource" style="width:100%; padding:8px; margin-bottom:10px; background:#111; color:#fff; border:1px solid #ff00ff; cursor:pointer; font-weight:bold;">
             <option value="zekes">Zekes</option>
             <option value="tokens">Rebirth Tokens</option>
             <option value="baseClickGain">Click Power (Base)</option>
             <option value="baseIdleZekes">Auto Power (Base)</option>
         </select>
         
-        <!-- Amount Input -->
         <input type="number" id="dev-amount" value="1000000" style="width:100%; padding:8px; margin-bottom:10px; background:#111; color:#00ffff; border:1px solid #00ffff; box-sizing:border-box; font-weight:bold;">
         
-        <!-- Apply Button -->
         <button id="dev-apply-btn" onclick="applyDevCheat()" style="width:100%; padding:10px; margin-bottom:8px; background:#222; color:#00ff00; border:1px solid #00ff00; cursor:pointer; font-weight:bold; transition: background 0.2s;">GRANT RESOURCES</button>
         
-        <!-- Close Button -->
         <button onclick="document.getElementById('dev-panel').style.display='none'" style="width:100%; padding:8px; background:#222; color:#ff0000; border:1px solid #ff0000; cursor:pointer; font-weight:bold;">Close Panel</button>
     </div>
     `;
     document.body.insertAdjacentHTML('beforeend', devPanelHTML);
-};
+}
 
-// Handle Dev Panel Logic
 window.applyDevCheat = function() {
     let res = document.getElementById("dev-resource").value;
     let amt = parseFloat(document.getElementById("dev-amount").value) || 0;
     
-    if (res === "zekes") gainZeke(amt);
+    if (res === "zekes") zekes += amt;
     if (res === "tokens") rebirthTokens += amt;
     if (res === "baseClickGain") baseClickGain += amt;
     if (res === "baseIdleZekes") baseIdleZekes += amt;
     
     updateAll();
+    saveGame();
     
-    // Provide a visual flash to show it worked
     let btn = document.getElementById('dev-apply-btn');
-    btn.innerText = "GRANTED!";
-    btn.style.background = "#00ff00";
-    btn.style.color = "#000";
-    setTimeout(() => {
-        btn.innerText = "GRANT RESOURCES";
-        btn.style.background = "#222";
-        btn.style.color = "#00ff00";
-    }, 800);
+    if (btn) {
+        btn.innerText = "GRANTED!";
+        btn.style.background = "#00ff00";
+        btn.style.color = "#000";
+        setTimeout(() => {
+            btn.innerText = "GRANT RESOURCES";
+            btn.style.background = "#222";
+            btn.style.color = "#00ff00";
+        }, 800);
+    }
 };
 
-// Global keystroke listener for the secret code
 let secretKeystrokeBuffer = "";
 const targetCode = "super_secret_long_password_12345_i_love_zeke";
 
 document.addEventListener("keydown", (e) => {
-    // Only capture single-character keys to avoid appending 'Shift', 'Control', etc.
-    if (e.key.length === 1) {
-        secretKeystrokeBuffer += e.key;
+    if (e.key && e.key.length === 1) {
+        secretKeystrokeBuffer += e.key.toLowerCase();
         
-        // Prevent buffer from growing infinitely 
         if (secretKeystrokeBuffer.length > 100) {
-            secretKeystrokeBuffer = secretKeystrokeBuffer.substring(secretKeystrokeBuffer.length - targetCode.length - 10);
+            secretKeystrokeBuffer = secretKeystrokeBuffer.substring(secretKeystrokeBuffer.length - 60);
         }
         
-        // Check if the end of our typing matches the code
-        if (secretKeystrokeBuffer.endsWith(targetCode)) {
+        if (secretKeystrokeBuffer.endsWith(targetCode.toLowerCase())) {
+            initDevPanel();
             let panel = document.getElementById("dev-panel");
             if (panel) {
-                panel.style.display = panel.style.display === "none" ? "block" : "none";
+                panel.style.display = (panel.style.display === "none" || panel.style.display === "") ? "block" : "none";
             }
-            // Reset buffer so it doesn't instantly re-trigger
             secretKeystrokeBuffer = "";
         }
     }
+});
+
+// Boot up game and dev panel safely
+window.addEventListener("DOMContentLoaded", () => {
+    loadGame();
+    initDevPanel();
 });
