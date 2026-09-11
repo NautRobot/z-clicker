@@ -17,25 +17,25 @@ let zekeLiverCost = 25000, zekeLiverCount = 0;
 let zekeRobotCost = 150000, zekeRobotCount = 0;
 
 // Layer 1: Rebirth (Soft Reset)
-const REBIRTH_THRESHOLD = 100000; // Zekes required for 1 Token
+const REBIRTH_THRESHOLD = 100000;
 let rebirthTokens = 0;
 let totalRebirths = 0;
 let rebirthPowerLevel = 0, rbPowerCost = 1; 
 let rebirthAutoLevel = 0, rbAutoCost = 2;  
 
 // Layer 2: Ascension (Medium Reset)
-const ASCENSION_THRESHOLD = 100; // Rebirth Tokens required for 1 AP
+const ASCENSION_THRESHOLD = 100;
 let ascensionPoints = 0;
 let totalAscensions = 0;
-let ascensionAutoRebirth = false; // The automation toggle
+let ascensionAutoRebirth = false; 
 let ascensionPowerLevel = 0, ascPowerCost = 1;
 let ascensionAutoLevel = 0, ascAutoCost = 1;
 
 // Layer 3: Transcension (Hard Reset/Win)
 let transcensionPartOne = false;
 let transcensionPartTwo = false;
-const transPartOneCost = 50;  // Costs AP
-const transPartTwoCost = 150; // Costs AP
+const transPartOneCost = 50;  
+const transPartTwoCost = 150; 
 
 // Buffs
 let clickBuffMultiplier = 1, clickBuffTimer = 0;
@@ -44,14 +44,16 @@ let autoBuffMultiplier = 1, autoBuffTimer = 0;
 const image = document.getElementById('zeke'); 
 
 // Click Event
-image.addEventListener('mousedown', (e) => { 
-    image.classList.remove('click-animation'); 
-    void image.offsetWidth; 
-    image.classList.add('click-animation'); 
-    
-    gainZekesAutoCount();
-    createFloatingText(e);
-}); 
+if (image) {
+    image.addEventListener('mousedown', (e) => { 
+        image.classList.remove('click-animation'); 
+        void image.offsetWidth; 
+        image.classList.add('click-animation'); 
+        
+        gainZekesAutoCount();
+        createFloatingText(e);
+    }); 
+}
 
 function createFloatingText(e) {
     let rpMult = Math.max(1, rebirthPowerLevel * 2);
@@ -133,7 +135,9 @@ setInterval(() => {
     // Auto-Rebirth Logic
     if (ascensionAutoRebirth) {
         let toggle = document.getElementById('autoRebirthToggle');
-        let target = parseInt(document.getElementById('autoRebirthTarget').value) || 1;
+        let targetEl = document.getElementById('autoRebirthTarget');
+        let target = targetEl ? (parseInt(targetEl.value) || 1) : 1;
+        
         if (toggle && toggle.checked) {
             if (calculatePendingTokens() >= target) {
                 triggerRebirth();
@@ -198,12 +202,22 @@ function triggerGoldenZekeEffect() {
     updateAll();
 }
 
+// Safe HTML Updater Helper to prevent "Cannot set property of null" errors
+function setHTML(id, value) {
+    let el = document.getElementById(id);
+    if (el) el.innerHTML = value;
+}
+
+function setDisplay(id, value) {
+    let el = document.getElementById(id);
+    if (el) el.style.display = value;
+}
+
 function updateBuffDisplay() {
     let text = "";
     if (clickBuffTimer > 0) text += `⚡ 3x Click Power (${clickBuffTimer}s)  `;
     if (autoBuffTimer > 0) text += `🚀 5x Auto Power (${autoBuffTimer}s)`;
-    let buffElement = document.getElementById('active-buffs');
-    if (buffElement) buffElement.innerText = text;
+    setHTML('active-buffs', text);
 }
 
 // Auto Save
@@ -244,21 +258,19 @@ function buyUpgrade(upgradeName) {
         case 'transcensionPartOne': 
             if (ascensionPoints >= transPartOneCost) { 
                 ascensionPoints -= transPartOneCost; transcensionPartOne = true;
-                let p1Box = document.getElementById('partOneBox');
-                if (p1Box) p1Box.style.display = 'none';
+                setDisplay('partOneBox', 'none');
             } 
             break; 
         case 'transcensionPartTwo': 
             if (ascensionPoints >= transPartTwoCost) { 
                 ascensionPoints -= transPartTwoCost; transcensionPartTwo = true;
-                let p2Box = document.getElementById('partTwoBox');
-                if (p2Box) p2Box.style.display = 'none';
+                setDisplay('partTwoBox', 'none');
             } 
             break; 
     } 
 
     if (transcensionPartOne && transcensionPartTwo) {
-        document.getElementById('win-screen').style.display = 'flex';
+        setDisplay('win-screen', 'flex');
     }
 
     updateAll(); 
@@ -335,7 +347,7 @@ function triggerAscension() {
 
     // UI Resets
     let autoToggle = document.getElementById('autoRebirthToggle');
-    if(autoToggle) autoToggle.checked = false; // Turn off auto rebirth so it doesn't immediately fire on next run
+    if(autoToggle) autoToggle.checked = false; 
 
     updateAll();
     saveGame();
@@ -378,10 +390,8 @@ function formatNumber(num) {
 }
 
 function updateAll() { 
-    // Mults
     let rpMult = Math.max(1, rebirthPowerLevel * 2);
     let raMult = Math.max(1, rebirthAutoLevel * 2);
-    
     let apMult = Math.pow(5, ascensionPowerLevel);
     let aaMult = Math.pow(5, ascensionAutoLevel);
 
@@ -389,68 +399,67 @@ function updateAll() {
     let currentIdleZekes = (baseIdleZekes * raMult * aaMult) * autoBuffMultiplier;
 
     // Core Stats
-    document.getElementById("zekeCount").innerHTML = formatNumber(zekes); 
-    document.getElementById("zekeIdleCount").innerHTML = formatNumber(currentIdleZekes); 
-    document.getElementById("zekeClickGain").innerHTML = formatNumber(currentClickGain); 
+    setHTML("zekeCount", formatNumber(zekes));
+    setHTML("zekeIdleCount", formatNumber(currentIdleZekes));
+    setHTML("zekeClickGain", formatNumber(currentClickGain));
     
     // Normal Upgrades Display
-    document.getElementById("fingerCount").innerHTML = zekeFingerCount; 
-    document.getElementById("fingerCost").innerHTML = formatNumber(zekeFingerCost); 
-    document.getElementById("toeCount").innerHTML = zekeToeCount; 
-    document.getElementById("toeCost").innerHTML = formatNumber(zekeToeCost); 
-    document.getElementById("footCount").innerHTML = zekeFootCount; 
-    document.getElementById("footCost").innerHTML = formatNumber(zekeFootCost); 
-    document.getElementById("armCount").innerHTML = zekeArmCount; 
-    document.getElementById("armCost").innerHTML = formatNumber(zekeArmCost); 
-    document.getElementById("legCount").innerHTML = zekeLegCount; 
-    document.getElementById("legCost").innerHTML = formatNumber(zekeLegCost); 
+    setHTML("fingerCount", zekeFingerCount);
+    setHTML("fingerCost", formatNumber(zekeFingerCost));
+    setHTML("toeCount", zekeToeCount);
+    setHTML("toeCost", formatNumber(zekeToeCost));
+    setHTML("footCount", zekeFootCount);
+    setHTML("footCost", formatNumber(zekeFootCost));
+    setHTML("armCount", zekeArmCount);
+    setHTML("armCost", formatNumber(zekeArmCost));
+    setHTML("legCount", zekeLegCount);
+    setHTML("legCost", formatNumber(zekeLegCost));
     
-    document.getElementById("shoeCount").innerHTML = zekeShoeCount; 
-    document.getElementById("shoeCost").innerHTML = formatNumber(zekeShoeCost); 
-    document.getElementById("glassesCount").innerHTML = zekeGlassesCount; 
-    document.getElementById("glassesCost").innerHTML = formatNumber(zekeGlassesCost); 
-    document.getElementById("backpackCount").innerHTML = zekeBackpackCount; 
-    document.getElementById("backpackCost").innerHTML = formatNumber(zekeBackpackCost); 
-    document.getElementById("liverCount").innerHTML = zekeLiverCount; 
-    document.getElementById("liverCost").innerHTML = formatNumber(zekeLiverCost); 
-    document.getElementById("robotCount").innerHTML = zekeRobotCount; 
-    document.getElementById("robotCost").innerHTML = formatNumber(zekeRobotCost); 
+    setHTML("shoeCount", zekeShoeCount);
+    setHTML("shoeCost", formatNumber(zekeShoeCost));
+    setHTML("glassesCount", zekeGlassesCount);
+    setHTML("glassesCost", formatNumber(zekeGlassesCost));
+    setHTML("backpackCount", zekeBackpackCount);
+    setHTML("backpackCost", formatNumber(zekeBackpackCost));
+    setHTML("liverCount", zekeLiverCount);
+    setHTML("liverCost", formatNumber(zekeLiverCost));
+    setHTML("robotCount", zekeRobotCount);
+    setHTML("robotCost", formatNumber(zekeRobotCost));
 
     // Prestige Currencies
-    document.getElementById("tokenCount").innerHTML = formatNumber(rebirthTokens);
-    document.getElementById("apCount").innerHTML = formatNumber(ascensionPoints);
+    setHTML("tokenCount", formatNumber(rebirthTokens));
+    setHTML("apCount", formatNumber(ascensionPoints));
     
     if(rebirthTokens > 0 || totalRebirths > 0 || totalAscensions > 0) {
-        document.getElementById("token-display").style.display = "block";
-        document.getElementById("rebirth-shop-container").style.display = "block";
+        setDisplay("token-display", "block");
+        setDisplay("rebirth-shop-container", "block");
     }
     if(ascensionPoints > 0 || totalAscensions > 0) {
-        document.getElementById("ap-display").style.display = "block";
-        document.getElementById("ascension-shop-container").style.display = "block";
-        document.getElementById("transcension-shop-container").style.display = "block";
+        setDisplay("ap-display", "block");
+        setDisplay("ascension-shop-container", "block");
+        setDisplay("transcension-shop-container", "block");
     }
 
     // Rebirth Shop Values
-    document.getElementById("rbPowerCount").innerHTML = rebirthPowerLevel;
-    document.getElementById("rbPowerCost").innerHTML = rbPowerCost;
-    document.getElementById("rbAutoCount").innerHTML = rebirthAutoLevel;
-    document.getElementById("rbAutoCost").innerHTML = rbAutoCost;
+    setHTML("rbPowerCount", rebirthPowerLevel);
+    setHTML("rbPowerCost", rbPowerCost);
+    setHTML("rbAutoCount", rebirthAutoLevel);
+    setHTML("rbAutoCost", rbAutoCost);
 
     // Ascension Shop Values
-    document.getElementById("ascPowerCount").innerHTML = ascensionPowerLevel;
-    document.getElementById("ascPowerCost").innerHTML = ascPowerCost;
-    document.getElementById("ascAutoCount").innerHTML = ascensionAutoLevel;
-    document.getElementById("ascAutoCost").innerHTML = ascAutoCost;
+    setHTML("ascPowerCount", ascensionPowerLevel);
+    setHTML("ascPowerCost", ascPowerCost);
+    setHTML("ascAutoCount", ascensionAutoLevel);
+    setHTML("ascAutoCost", ascAutoCost);
 
-    let autoRebirthBox = document.getElementById('autoRebirthBuyBox');
-    if (ascensionAutoRebirth && autoRebirthBox) autoRebirthBox.style.display = 'none';
-    
-    let autoRebirthSettings = document.getElementById('auto-rebirth-container');
-    if (ascensionAutoRebirth && autoRebirthSettings) autoRebirthSettings.style.display = 'block';
+    if (ascensionAutoRebirth) {
+        setDisplay('autoRebirthBuyBox', 'none');
+        setDisplay('auto-rebirth-container', 'block');
+    }
 
     // Transcension Shop Values
-    if (transcensionPartOne) document.getElementById('partOneBox').style.display = 'none';
-    if (transcensionPartTwo) document.getElementById('partTwoBox').style.display = 'none';
+    if (transcensionPartOne) setDisplay('partOneBox', 'none');
+    if (transcensionPartTwo) setDisplay('partTwoBox', 'none');
 
     // Prestige Buttons Logic
     let pendingTokens = calculatePendingTokens();
@@ -461,7 +470,7 @@ function updateAll() {
             if (pendingTokens > 0) {
                 rebirthBtn.disabled = false;
                 rebirthBtn.classList.remove("btn-disabled");
-                document.getElementById('pendingTokensBtn').innerText = formatNumber(pendingTokens);
+                setHTML('pendingTokensBtn', formatNumber(pendingTokens));
                 rebirthBtn.innerText = `Rebirth (+${formatNumber(pendingTokens)} Tokens)`;
             } else {
                 rebirthBtn.disabled = true;
@@ -479,7 +488,7 @@ function updateAll() {
             if (pendingAP > 0) {
                 ascendBtn.disabled = false;
                 ascendBtn.classList.remove("btn-disabled");
-                document.getElementById('pendingAPBtn').innerText = formatNumber(pendingAP);
+                setHTML('pendingAPBtn', formatNumber(pendingAP));
                 ascendBtn.innerText = `ASCEND (+${formatNumber(pendingAP)} AP)`;
             } else {
                 ascendBtn.disabled = true;
@@ -530,7 +539,6 @@ function saveGame() {
         ascensionPoints, totalAscensions, ascensionAutoRebirth, ascensionPowerLevel, ascensionAutoLevel, ascPowerCost, ascAutoCost,
         transcensionPartOne, transcensionPartTwo
     };
-    // Migrated to v4 to ensure clean states after big updates
     setCookie("zekeClickerSave_v4", JSON.stringify(gameState), 365);
 }
 
