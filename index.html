@@ -5,205 +5,98 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Zeke Clicker</title>
 <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=4">
+<link rel="stylesheet" href="style.css?v=6">
 </head>
 <body>
+<!-- Firebase SDK (For Real Player Tracking - see script.js) -->
+<script type="module" src="https://www.gstatic.com/firebasejs/10.5.0/firebase-app.js"></script>
+<script type="module" src="https://www.gstatic.com/firebasejs/10.5.0/firebase-database.js"></script>
+
 <header class="banner">
   <h1>ZEKE CLICKER</h1>
+  <div class="live-stats">
+    <div><span class="pulse-dot"></span>Online Now: <span id="realLiveUsers" class="stat-number">1 (You)</span></div>
+    <div style="margin-top: 5px;">👁️ Total Visits: <span id="realTotalVisits" class="stat-number">Loading...</span></div>
+  </div>
 </header>
+
+<!-- Global Tooltip for Upgrades -->
+<div id="tooltip" class="tooltip" style="display:none;"></div>
+
 <div class="main-layout">
   
-  <!-- Left Sidebar (Normal Click + Rebirth) -->
-  <div class="left-sidebar" id="left-sidebar">
-    <h3>Click Upgrades</h3>
-    <div class="upgrade-box">
-      <button onclick="buyUpgrade('zekeFinger')">
-        Zeke's Finger (Cost: <span id="fingerCost">15</span>)
-      </button>
-      <p>+1 Click Value.</p>
-      <p>Owned: <span id="fingerCount">0</span></p>
-    </div>
-    <div class="upgrade-box">
-      <button onclick="buyUpgrade('zekeToe')">
-        Zeke's Toe (Cost: <span id="toeCost">120</span>)
-      </button>
-      <p>+4 Click Value.</p>
-      <p>Owned: <span id="toeCount">0</span></p>
-    </div>
-    <div class="upgrade-box">
-      <button onclick="buyUpgrade('zekeFoot')">
-        Zeke's Foot (Cost: <span id="footCost">900</span>)
-      </button>
-      <p>+15 Click Value.</p>
-      <p>Owned: <span id="footCount">0</span></p>
-    </div>
-    <div class="upgrade-box">
-      <button onclick="buyUpgrade('zekeArm')">
-        Zeke's Arm (Cost: <span id="armCost">7500</span>)
-      </button>
-      <p>+60 Click Value.</p>
-      <p>Owned: <span id="armCount">0</span></p>
-    </div>
-    <div class="upgrade-box">
-      <button onclick="buyUpgrade('zekeLeg')">
-        Zeke's Leg (Cost: <span id="legCost">50000</span>)
-      </button>
-      <p>+250 Click Value.</p>
-      <p>Owned: <span id="legCount">0</span></p>
-    </div>
-
-    <!-- Rebirth Shop -->
-    <div id="rebirth-shop-container" style="display: none; margin-top: 20px;">
-      <h3 style="color: #ff00ff; border-color: #ff00ff;">Rebirth Shop</h3>
-      <div class="rebirth-shop-box">
-        <button onclick="buyRebirthUpgrade('power')">Rebirth Power (Cost: <span id="rbPowerCost">1</span>)</button>
-        <p>+2x Click Multiplier.</p>
-        <p>Owned: <span id="rbPowerCount">0</span></p>
-      </div>
-      <div class="rebirth-shop-box">
-        <button onclick="buyRebirthUpgrade('auto')">Rebirth Auto (Cost: <span id="rbAutoCost">2</span>)</button>
-        <p>+2x Auto Multiplier.</p>
-        <p>Owned: <span id="rbAutoCount">0</span></p>
-      </div>
-    </div>
-  </div>
-
-  <!-- Center Game Container -->
-  <div class="game-container" id="game-container">
-    <div id="win-screen">
-      <h2 id="win-title">TRANSCENSION REACHED!</h2>
-      <p style="color: #fff; font-size: 1.2rem;">You have gathered all elements of Zeke.</p>
-      <button onclick="restartGame()">Restart from Scratch</button>
-    </div>
-
-    <div id="active-buffs" style="color: #ffff00; font-weight: bold; min-height: 24px;"></div>
-    
+  <!-- LEFT PANEL: The Clicker & Stats -->
+  <div class="panel left-panel">
     <div class="score-board">
-        <p class="score-main">Zekes: <span id="zekeCount">0</span></p>
-        <p class="score-sub" id="token-display" style="display:none; color: #ff00ff;">Tokens: <span id="tokenCount">0</span></p>
-        <p class="score-sub" id="ap-display" style="display:none; color: #ffd700;">AP: <span id="apCount">0</span></p>
-        <div style="margin-top: 10px; font-size: 0.9rem;">
-            <p style="color: #00ffff; margin: 2px 0;">Zeke Click Value: <span id="zekeClickGain">1</span></p>
-            <p style="color: #00ffff; margin: 2px 0;">Zekes Per Second: <span id="zekeIdleCount">0</span></p>
-        </div>
+        <p class="score-main">Zekes: <br><span id="zekeCount" style="color:#00ffff; font-size:2.5rem;">0</span></p>
+        <p style="color: #ccc; margin: 10px 0; font-size: 1.1rem;">per second: <span id="cpsDisplay" style="color:#fff;">0</span></p>
     </div>
 
-    <div style="position: relative; display: inline-block; margin-top: 20px;">
+    <div class="zeke-container">
       <img src="zeke.jpg" id="zeke" alt="Zeke">
     </div>
     
-    <!-- Auto-Rebirth Settings -->
-    <div id="auto-rebirth-container" style="display: none; margin-top: 20px; background: #222; padding: 15px; border: 2px solid #ffd700; border-radius: 8px;">
-        <label style="color: #ffd700; font-weight: bold; cursor: pointer; font-size: 1.1rem;">
-            <input type="checkbox" id="autoRebirthToggle"> Enable Auto-Rebirth
-        </label>
-        <div style="margin-top: 10px;">
-            <span style="font-size: 0.9rem; color: #ccc;">Trigger automatically when pending Tokens reach: </span>
-            <input type="number" id="autoRebirthTarget" value="10" min="1" style="width: 70px; background: #111; color: #fff; border: 1px solid #555; border-radius: 4px; padding: 4px; text-align: center;">
-        </div>
+    <div class="stats-box">
+      <p>Click Value: <span id="clickValueDisplay">1</span></p>
+      <p id="critDisplay" style="display:none; color:#ff00ff;">Crit Chance: 10% (x5 Damage)</p>
     </div>
+  </div>
 
-    <!-- Prestige Triggers -->
-    <button id="rebirth-trigger-btn" class="prestige-btn rebirth-btn" style="display: none;" onclick="triggerRebirth()">
-      Rebirth (+<span id="pendingTokensBtn">1</span> Tokens)
-    </button>
-
-    <button id="ascend-trigger-btn" class="prestige-btn ascend-btn" style="display: none;" onclick="triggerAscension()">
-      Ascend (+<span id="pendingAPBtn">1</span> AP)
-    </button>
+  <!-- MIDDLE PANEL: Prestige & Skill Trees -->
+  <div class="panel middle-panel">
     
-    <button onclick="restartGame()" style="margin-top: 30px; background: #800000; color: #fff; border: 1px solid #ff0000; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 0.8rem;">
-      Hard Reset Game
-    </button>
+    <!-- Rebirth Section -->
+    <div class="prestige-section rebirth-section">
+      <h3>REBIRTH</h3>
+      <p>Soft reset for Memory Fragments.</p>
+      <p class="prestige-currency">Memories: <span id="memoryCount">0</span></p>
+      <p style="font-size: 0.85rem; color: #aaa;">(+<span id="memoryBoost">0</span>% global production)</p>
+      
+      <button id="btn-rebirth" class="btn-prestige" onclick="triggerRebirth()">
+        Rebirth (+<span id="pendingMemories">0</span>)
+      </button>
+
+      <div class="tree-container" id="rebirth-tree">
+        <!-- Rebirth upgrades inject here via JS -->
+      </div>
+    </div>
+
+    <hr style="border-color: #333; margin: 20px 0;">
+
+    <!-- Ascension Section -->
+    <div class="prestige-section ascension-section">
+      <h3 style="color: #ffd700;">ASCENSION</h3>
+      <p>Hard reset for Astral Zekes.</p>
+      <p class="prestige-currency" style="color: #ffd700;">Astral Zekes: <span id="astralCount">0</span></p>
+      
+      <button id="btn-ascend" class="btn-prestige btn-ascend" onclick="triggerAscension()">
+        Ascend (+<span id="pendingAstral">0</span>)
+      </button>
+
+      <div class="tree-container" id="ascension-tree">
+        <!-- Ascension upgrades inject here via JS -->
+      </div>
+    </div>
+    
+    <button onclick="restartGame()" class="btn-hard-reset">Hard Reset Game</button>
   </div>
 
-  <!-- Right Sidebar (Normal Auto + Ascension + Transcension) -->
-  <div class="right-sidebar" id="right-sidebar">
-    <h3>Gather Upgrades</h3>
-    <div class="upgrade-box">
-      <button onclick="buyUpgrade('zekeShoe')">
-        Zeke's Shoe (Cost: <span id="shoeCost">50</span>)
-      </button>
-      <p>+1 Auto Value.</p>
-      <p>Owned: <span id="shoeCount">0</span></p>
-    </div>
-    <div class="upgrade-box">
-      <button onclick="buyUpgrade('zekeGlasses')">
-        Zeke's Glasses (Cost: <span id="glassesCost">400</span>)
-      </button>
-      <p>+6 Auto Value.</p>
-      <p>Owned: <span id="glassesCount">0</span></p>
-    </div>
-    <div class="upgrade-box">
-      <button onclick="buyUpgrade('zekeBackpack')">
-        Zeke's Backpack (Cost: <span id="backpackCost">3500</span>)
-      </button>
-      <p>+35 Auto Value.</p>
-      <p>Owned: <span id="backpackCount">0</span></p>
-    </div>
-    <div class="upgrade-box">
-      <button onclick="buyUpgrade('zekeLiver')">
-        Zeke's Liver (Cost: <span id="liverCost">25000</span>)
-      </button>
-      <p>+150 Auto Value.</p>
-      <p>Owned: <span id="liverCount">0</span></p>
-    </div>
-    <div class="upgrade-box">
-      <button onclick="buyUpgrade('zekeRobot')">
-        Zeke's Robot (Cost: <span id="robotCost">150000</span>)
-      </button>
-      <p>+800 Auto Value.</p>
-      <p>Owned: <span id="robotCount">0</span></p>
+  <!-- RIGHT PANEL: Store (Cookie Clicker Style) -->
+  <div class="panel right-panel">
+    <h2 class="store-title">Store</h2>
+    
+    <!-- Upgrades Grid -->
+    <div class="upgrades-grid" id="upgrades-container">
+        <!-- Upgrades inject here via JS -->
     </div>
 
-    <!-- Ascension Shop -->
-    <div id="ascension-shop-container" style="display: none; margin-top: 20px;">
-      <h3 style="color: #ffd700; border-color: #ffd700;">Ascension Shop</h3>
-      <div class="ascension-shop-box" id="autoRebirthBuyBox">
-        <button onclick="buyAscensionUpgrade('autoRebirth')">Unlock Auto-Rebirth (Cost: 3 AP)</button>
-        <p>Automate your Token grinding.</p>
-      </div>
-      <div class="ascension-shop-box">
-        <button onclick="buyAscensionUpgrade('power')">Ascended Power (Cost: <span id="ascPowerCost">1</span> AP)</button>
-        <p>x5 Click Multiplier.</p>
-        <p>Owned: <span id="ascPowerCount">0</span></p>
-      </div>
-      <div class="ascension-shop-box">
-        <button onclick="buyAscensionUpgrade('auto')">Ascended Auto (Cost: <span id="ascAutoCost">1</span> AP)</button>
-        <p>x5 Auto Multiplier.</p>
-        <p>Owned: <span id="ascAutoCount">0</span></p>
-      </div>
-    </div>
-
-    <!-- Transcension Parts -->
-    <div id="transcension-shop-container" style="display: none; margin-top: 20px;">
-      <h3 style="color: #00ffff; border-color: #00ffff;">Transcension</h3>
-      <div class="upgrade-box-win" id="partOneBox">
-        <button onclick="buyUpgrade('transcensionPartOne')">
-          Transcension Core (Cost: 50 AP)
-        </button>
-        <p>Part 1 of the End.</p>
-      </div>
-      <div class="upgrade-box-win" id="partTwoBox">
-        <button onclick="buyUpgrade('transcensionPartTwo')">
-          Transcension Crown (Cost: 150 AP)
-        </button>
-        <p>Part 2 of the End.</p>
-      </div>
+    <!-- Buildings List -->
+    <div class="buildings-list" id="buildings-container">
+        <!-- Buildings inject here via JS -->
     </div>
   </div>
 </div>
 
-<!-- Secret Dev Panel Modal -->
-<div id="dev-panel" style="display:none; position:fixed; top:20%; left:50%; transform:translateX(-50%); background:#111; border:2px solid #00ffff; padding:20px; z-index:9999; border-radius:10px; color:#fff; text-align:center; cursor:move;">
-  <h3 style="margin-top:0;">🛠️ Secret Dev Panel</h3>
-  <button onclick="devAddZekes()" style="background:#ff007f; color:#fff; border:none; padding:8px 12px; margin:5px; border-radius:5px; cursor:pointer;">+10B Zekes</button><br>
-  <button onclick="devAddTokens()" style="background:#ff00ff; color:#fff; border:none; padding:8px 12px; margin:5px; border-radius:5px; cursor:pointer;">+1,000 Tokens</button><br>
-  <button onclick="devAddAP()" style="background:#ffd700; color:#000; border:none; padding:8px 12px; margin:5px; border-radius:5px; cursor:pointer; font-weight:bold;">+100 AP</button><br>
-  <button onclick="document.getElementById('dev-panel').style.display='none'" style="background:#333; color:#fff; border:none; padding:6px 12px; margin-top:10px; border-radius:5px; cursor:pointer;">Close</button>
-</div>
-
-<!-- The "?v=4" appended below prevents the browser from caching the old broken javascript file -->
-<script src="script.js?v=4"></script>
+<script src="script.js?v=6"></script>
 </body>
 </html>
