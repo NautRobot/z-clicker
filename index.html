@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <title>Speech - Ms. Inman</title>
-<link rel="stylesheet" href="style.css?v=13">
+<link rel="stylesheet" href="style.css?v=14">
 </head>
 <body>
 
@@ -15,7 +15,7 @@
         <p style="font-family: Arial, sans-serif;"><strong>Assignment:</strong> Draft a 3-minute persuasive speech on a topic of your choice.</p>
         <p style="font-family: Arial, sans-serif; color: #d93025;"><em>Due: Tomorrow at 8:00 AM</em></p>
         <div style="border:1px solid #dadce0; padding:20px; border-radius:8px; width: 600px; max-width:90%; font-family: Arial, sans-serif;">
-            <p><strong>Prompt:</strong> Ensure you include a strong hook, three main supporting points, and a call to action. Do not use filler words (um, like, etc.).</p>
+            <p><strong>Prompt:</strong> Ensure you include a strong hook, three main supporting points, and a call to action. Do not use filler words.</p>
             <textarea style="width:100%; height:200px; margin-top:10px; border:1px solid #ccc; padding: 10px; font-family: Arial, sans-serif;" placeholder="Type your speech draft here..."></textarea>
             <button style="margin-top: 15px; background: #1a73e8; color: #fff; border:none; padding: 10px 24px; border-radius: 4px; font-weight:bold; cursor:pointer;">Turn In</button>
         </div>
@@ -50,25 +50,26 @@
 
 <div id="game-ui">
     
-    <!-- Classic Google Sites style header -->
+    <!-- OG GLITCH HEADER -->
     <div class="site-header">
-        <h1>Zeke's Unblocked Games 66 (NOT BLOCKED)</h1>
-        <p>Play free flash games online at school. (Press ESC for panic button)</p>
+        <button onclick="toggleDarkMode()" id="dark-btn">🌙 Dark Mode</button>
+        <h1 class="glitch-banner">ZEKE CLICKER</h1>
+        <p style="text-align: center; margin-top:5px; font-weight:bold;">UNBLOCKED GAMES 66 (Press ESC for panic button)</p>
     </div>
 
     <div class="site-body">
-        <!-- Fake navigation sidebar -->
+        <!-- GAME NAVIGATION SIDEBAR -->
         <div class="sidebar">
-            <h3>Navigation</h3>
-            <ul>
-                <li><a href="#">Home</a></li>
-                <li><a href="#">Action Games</a></li>
-                <li><a href="#">Puzzle Games</a></li>
-                <li><a href="#">Hacked Games</a></li>
-                <li><a href="#">Proxy Links (Working)</a></li>
+            <h3>Arcade Menu</h3>
+            <ul id="game-nav">
+                <li><a href="#" onclick="openGame('snake', this)" class="nav-link active-nav">🐍 Zeke Snake</a></li>
+                <li><a href="#" onclick="openGame('jump', this)" class="nav-link">🏃 Zeke Jump</a></li>
+                <li><a href="#" onclick="openGame('papa', this)" class="nav-link">🍕 Papa's Rush</a></li>
+                <li><a href="#" onclick="openGame('aim', this)" class="nav-link">🎯 Gridshot Aim</a></li>
             </ul>
+            <hr>
             <div class="visitor-counter">
-                <p style="margin:0; font-size:11px;">Visitors:</p>
+                <p style="margin:0; font-size:11px;">Total Visits:</p>
                 <span id="realTotalVisits">Loading...</span>
             </div>
             <div class="visitor-counter" style="margin-top:5px;">
@@ -79,15 +80,15 @@
 
         <!-- Main Content Area -->
         <div class="main-content">
-            <h2 style="border-bottom: 1px solid #ccc; padding-bottom: 5px; margin-top:0;">Zeke Clicker (Updated 2026)</h2>
             
             <div class="game-container">
                 <!-- Clicker Side -->
                 <div class="clicker-section">
+                    <h2 style="border-bottom: 1px solid #ccc; padding-bottom: 5px; margin-top:0;">Main Game</h2>
                     <div class="stats-box">
                         <div style="font-size: 24px; font-weight: bold;">Zekes: <span id="zekeCount">0</span></div>
-                        <div style="color: green; font-weight: bold;">Per second: <span id="cpsDisplay">0</span></div>
-                        <div style="font-size: 12px; color: #555;">Click Power: <span id="clickPowerDisplay">1</span></div>
+                        <div style="color: #28a745; font-weight: bold;">Per second: <span id="cpsDisplay">0</span></div>
+                        <div style="font-size: 12px;">Click Power: <span id="clickPowerDisplay">1</span></div>
                     </div>
 
                     <div style="text-align: center; margin: 20px 0; height: 180px;">
@@ -101,7 +102,7 @@
                             <button onclick="switchTab('upg')" id="tab-upg" class="store-tab">Upgrades</button>
                         </div>
                         <div id="store-list" class="store-list">
-                            <!-- JS will inject standard HTML tables here -->
+                            <!-- JS injects here -->
                         </div>
                     </div>
                     <button onclick="restartGame()" style="margin-top:10px; font-size:10px; color:red; cursor:pointer;">Wipe Save Data</button>
@@ -109,43 +110,34 @@
 
                 <!-- Minigame Side -->
                 <div class="arcade-section">
-                    <h3 style="margin-top:0;">Arcade Widget</h3>
-                    <p style="font-size: 11px; margin-top: -10px;">(Rewards scale with your CPS. The better your clicker, the better the rewards.)</p>
+                    <h2 style="border-bottom: 1px solid #ccc; padding-bottom: 5px; margin-top:0;">Active Minigame</h2>
                     
-                    <div class="arcade-nav">
-                        <a href="javascript:void(0)" onclick="openGame('snake')">Snake</a> | 
-                        <a href="javascript:void(0)" onclick="openGame('jump')">Jump</a> | 
-                        <a href="javascript:void(0)" onclick="openGame('papa')">Papa's</a> | 
-                        <a href="javascript:void(0)" onclick="openGame('aim')">Gridshot</a>
-                    </div>
-
                     <div class="arcade-window">
-                        
                         <!-- SNAKE -->
                         <div id="game-snake" class="mini-view active-mini">
                             <b>Zeke Snake</b><br>
-                            <span style="font-size:11px;">WASD to move. Golden Zekes give 10x points.</span><br>
+                            <span style="font-size:11px;">WASD/Arrows to move. Golden Zekes give 10x points.</span><br>
                             <canvas id="snakeCanvas" width="300" height="300"></canvas><br>
-                            <button onclick="startSnake()">Start Game</button>
+                            <button onclick="startSnake()">Start Snake</button>
                         </div>
 
                         <!-- JUMP -->
                         <div id="game-jump" class="mini-view">
-                            <b>Zeke Jump</b><br>
-                            <span style="font-size:11px;">Space to jump. Space in air to double jump. Grab coins!</span><br>
+                            <b>Zeke Jump Pro</b><br>
+                            <span style="font-size:11px;">Space/Up to jump. Dodge varied ground blocks AND flying birds!</span><br>
                             <div id="jump-world">
                                 <div id="jumper"></div>
                                 <div id="jump-coin" style="display:none;"></div>
                                 <div id="obstacle"></div>
                             </div>
                             <div style="font-weight:bold; margin-top:5px;">Score: <span id="jump-score">0</span></div>
-                            <button onclick="startJump()">Start Game</button>
+                            <button onclick="startJump()">Start Run</button>
                         </div>
 
                         <!-- PAPA'S -->
                         <div id="game-papa" class="mini-view">
-                            <b>Papa's Pizzeria: RUSH HOUR</b><br>
-                            <span style="font-size:11px;">60 seconds. Build orders fast to stack your combo!</span><br>
+                            <b>Papa's: RUSH HOUR</b><br>
+                            <span style="font-size:11px;">60 seconds. Build orders fast to stack your combo multiplier!</span><br>
                             <div style="display:flex; justify-content:space-between; width:280px; margin:5px auto; font-weight:bold;">
                                 <span>Time: <span id="papa-time">60</span>s</span>
                                 <span>Combo: x<span id="papa-combo">1</span></span>
@@ -157,19 +149,19 @@
                                 <button onclick="addIng('Cheese')">Cheese</button>
                                 <button onclick="addIng('Zeke')">Zeke</button>
                             </div>
-                            <div style="font-size:12px; margin-top:5px;">Currently holding: <span id="papa-current"></span></div>
+                            <div style="font-size:12px; margin-top:5px;">Holding: <span id="papa-current"></span></div>
                             <button onclick="startPapa()" style="margin-top:10px;">Start Shift</button>
                         </div>
 
                         <!-- AIM TRAINER -->
                         <div id="game-aim" class="mini-view">
-                            <b>Gridshot (30 Seconds)</b><br>
-                            <span style="font-size:11px;">Click the targets as fast as possible.</span><br>
+                            <b>Gridshot (Anti-Spam)</b><br>
+                            <span style="font-size:11px; color:#d00;">WARNING: Missing clicks LOSES points!</span><br>
                             <div style="font-weight:bold;">Time: <span id="aim-time">30</span> | Hits: <span id="aim-score">0</span></div>
                             <div id="aim-box">
-                                <img src="zeke.jpg" class="aim-t" id="at-1" onclick="hitTarget(1)">
-                                <img src="zeke.jpg" class="aim-t" id="at-2" onclick="hitTarget(2)">
-                                <img src="zeke.jpg" class="aim-t" id="at-3" onclick="hitTarget(3)">
+                                <img src="zeke.jpg" class="aim-t" id="at-1">
+                                <img src="zeke.jpg" class="aim-t" id="at-2">
+                                <img src="zeke.jpg" class="aim-t" id="at-3">
                             </div>
                             <button onclick="startAim()" style="margin-top:5px;">Start Routine</button>
                         </div>
@@ -182,6 +174,6 @@
     </div>
 </div>
 
-<script src="script.js?v=13"></script>
+<script src="script.js?v=14"></script>
 </body>
 </html>
