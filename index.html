@@ -3,11 +3,15 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Zeke Clicker</title>
-<link rel="stylesheet" href="style.css?v=15">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+<title>Zeke Clicker // V.16</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Syne:wght@600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css?v=16">
 </head>
 <body>
+
+<div class="grain-overlay"></div>
 
 <!-- REAL FIREBASE TRACKING MODULE -->
 <script type="module">
@@ -37,133 +41,179 @@
 
 <div class="app-container">
     
-    <!-- Header -->
-    <header class="main-header">
-        <div class="header-left">
-            <h1>Zeke Clicker</h1>
-            <button onclick="toggleDarkMode()" id="dark-btn" class="icon-btn">🌗 Theme</button>
+    <header class="editorial-header stagger-1">
+        <div class="header-brand">
+            <h1>ZEKE CLICKER</h1>
+            <span class="version-tag">STABLE BUILD 16.0</span>
         </div>
-        <div class="header-right">
-            <div class="stat-badge">🟢 Online: <span id="realLiveUsers">...</span></div>
-            <div class="stat-badge">👁️ Visits: <span id="realTotalVisits">...</span></div>
+        <div class="header-metrics">
+            <div class="metric">
+                <span class="metric-label">NETWORK PROTOCOL</span>
+                <span class="metric-val">SECURE</span>
+            </div>
+            <div class="metric">
+                <span class="metric-label">ACTIVE CLIENTS</span>
+                <span class="metric-val" id="realLiveUsers">...</span>
+            </div>
+            <div class="metric">
+                <span class="metric-label">LIFETIME PINGS</span>
+                <span class="metric-val" id="realTotalVisits">...</span>
+            </div>
         </div>
     </header>
 
-    <!-- Main Game Area -->
-    <main class="game-layout">
+    <main class="bento-layout">
         
-        <!-- Left: Clicker Area -->
-        <div class="clicker-panel panel">
-            <div class="score-display">
-                <div class="score-label">Total Zekes</div>
-                <div id="zekeCount" class="score-value">0</div>
-                <div class="score-rates">
-                    <span class="cps-badge">CPS: <span id="cpsDisplay">0</span></span>
-                    <span class="power-badge">Power: <span id="clickPowerDisplay">1</span></span>
+        <!-- LEFT: Navigation & Systems -->
+        <aside class="bento-card card-nav stagger-2">
+            <h2>SYSTEMS</h2>
+            <nav class="system-nav">
+                <button class="nav-item" onclick="openArcadeModal()">
+                    <span class="nav-icon">▤</span>
+                    <span class="nav-text">Enter Arcade Hub</span>
+                </button>
+                <button class="nav-item danger-text" onclick="restartGame()">
+                    <span class="nav-icon">⊗</span>
+                    <span class="nav-text">Purge Local Data</span>
+                </button>
+            </nav>
+            
+            <div class="card-footer-info">
+                <p>Rewards scale dynamically with your aggregate CPS.</p>
+            </div>
+        </aside>
+
+        <!-- CENTER: The Main Stage (Clicker) -->
+        <section class="bento-card card-main stagger-3">
+            <div class="stage-metrics">
+                <div class="primary-score">
+                    <span class="score-label">AGGREGATE ZEKES</span>
+                    <div id="zekeCount" class="score-value">0</div>
+                </div>
+                <div class="secondary-scores">
+                    <div class="sec-score">
+                        <span class="score-label">YIELD / SEC</span>
+                        <span id="cpsDisplay" class="score-val-mono accent-text">0</span>
+                    </div>
+                    <div class="sec-score">
+                        <span class="score-label">CLICK FORCE</span>
+                        <span id="clickPowerDisplay" class="score-val-mono">1</span>
+                    </div>
                 </div>
             </div>
 
-            <div class="zeke-wrapper">
-                <img src="zeke.jpg" id="main-zeke" alt="Zeke">
+            <div class="stage-interaction">
+                <div class="zeke-artifact">
+                    <img src="zeke.jpg" id="main-zeke" alt="Zeke Entity">
+                </div>
             </div>
+        </section>
 
-            <button onclick="restartGame()" class="danger-btn">Wipe Save Data</button>
-        </div>
+        <!-- RIGHT: The Market (Store) -->
+        <section class="bento-card card-store stagger-4">
+            <div class="store-header">
+                <h2>MARKETPLACE</h2>
+                <div class="store-toggles">
+                    <button onclick="switchTab('bld')" id="tab-bld" class="toggle-btn active">Accessories</button>
+                    <button onclick="switchTab('upg')" id="tab-upg" class="toggle-btn">Protocols</button>
+                </div>
+            </div>
+            <div id="store-list" class="store-inventory">
+                <!-- JS Inject -->
+            </div>
+        </section>
 
-        <!-- Right: Store Area -->
-        <div class="store-panel panel">
-            <div class="store-tabs">
-                <button onclick="switchTab('bld')" id="tab-bld" class="tab-btn active">Buildings</button>
-                <button onclick="switchTab('upg')" id="tab-upg" class="tab-btn">Upgrades</button>
-            </div>
-            <div id="store-list" class="store-list">
-                <!-- JS Injects Here -->
-            </div>
-        </div>
     </main>
-
-    <!-- Floating Arcade Button -->
-    <button class="fab-arcade" onclick="openArcadeModal()">🕹️ Open Arcade</button>
-
 </div>
 
-<!-- ARCADE MODAL OVERLAY -->
-<div id="arcade-modal" class="modal-overlay hidden">
-    <div class="modal-content">
-        <div class="modal-header">
-            <h2>Arcade Hub</h2>
-            <button class="close-btn" onclick="closeArcadeModal()">✖</button>
-        </div>
+<!-- EDITORIAL ARCADE MODAL -->
+<div id="arcade-modal" class="editorial-modal hidden">
+    <div class="modal-backdrop" onclick="closeArcadeModal()"></div>
+    <div class="modal-window">
+        <header class="modal-header">
+            <h2>ARCADE SUITE</h2>
+            <button class="close-btn" onclick="closeArcadeModal()">CLOSE ✕</button>
+        </header>
         
-        <div class="modal-body">
-            <div class="arcade-nav">
-                <button onclick="openGame('snake', this)" class="nav-btn active">🐍 Snake</button>
-                <button onclick="openGame('jump', this)" class="nav-btn">🏃 Jump</button>
-                <button onclick="openGame('papa', this)" class="nav-btn">🍕 Papa's</button>
-                <button onclick="openGame('aim', this)" class="nav-btn">🎯 Gridshot</button>
-            </div>
+        <div class="modal-layout">
+            <nav class="arcade-menu">
+                <button onclick="openGame('snake', this)" class="menu-btn active">01. Serpent</button>
+                <button onclick="openGame('jump', this)" class="menu-btn">02. Velocity</button>
+                <button onclick="openGame('papa', this)" class="menu-btn">03. Assembly</button>
+                <button onclick="openGame('aim', this)" class="menu-btn">04. Gridshot</button>
+            </nav>
 
-            <div class="arcade-viewport">
+            <main class="arcade-stage">
                 <!-- SNAKE -->
                 <div id="game-snake" class="game-view active-view">
-                    <h3>Zeke Snake</h3>
-                    <p class="game-desc">WASD/Arrows to move. Golden Zekes give 10x points.</p>
-                    <canvas id="snakeCanvas" width="300" height="300"></canvas>
-                    <button class="action-btn" onclick="startSnake()">Start Game</button>
+                    <div class="game-meta">
+                        <h3>SERPENT PROTOCOL</h3>
+                        <p>Directional keys to navigate. Acquire targets. Gold targets yield 10x multiplier.</p>
+                    </div>
+                    <div class="game-canvas-wrapper">
+                        <canvas id="snakeCanvas" width="300" height="300"></canvas>
+                    </div>
+                    <button class="prime-btn" onclick="startSnake()">INITIALIZE</button>
                 </div>
 
                 <!-- JUMP -->
                 <div id="game-jump" class="game-view">
-                    <h3>Zeke Jump</h3>
-                    <p class="game-desc">Space to jump. Double jump in mid-air. Dodge red, catch gold.</p>
-                    <div id="jump-world">
+                    <div class="game-meta">
+                        <h3>VELOCITY ENGINE</h3>
+                        <p>Spacebar to engage vertical thrust. Dual-thrust enabled. Evade red entities, intercept gold.</p>
+                    </div>
+                    <div class="game-canvas-wrapper" id="jump-world">
                         <div id="jumper"></div>
                         <div id="jump-coin" class="hidden"></div>
                         <div id="obstacle"></div>
                     </div>
-                    <div class="game-score">Score: <span id="jump-score">0</span></div>
-                    <button class="action-btn" onclick="startJump()">Start Run</button>
+                    <div class="game-metric">DISTANCE: <span id="jump-score">0</span></div>
+                    <button class="prime-btn" onclick="startJump()">INITIALIZE</button>
                 </div>
 
                 <!-- PAPA'S -->
                 <div id="game-papa" class="game-view">
-                    <h3>Papa's Rush Hour</h3>
-                    <p class="game-desc">Build orders exactly as shown to increase your combo!</p>
-                    <div class="game-stats-row">
-                        <span>Time: <span id="papa-time" class="highlight">60</span>s</span>
-                        <span>Combo: x<span id="papa-combo" class="highlight">1</span></span>
+                    <div class="game-meta">
+                        <h3>ASSEMBLY LINE</h3>
+                        <p>Replicate the structural sequence accurately to exponentially stack combo multipliers.</p>
                     </div>
-                    <div id="papa-order" class="papa-order-display">Click Start</div>
-                    <div class="papa-controls">
-                        <button onclick="addIng('Dough')">Dough</button>
-                        <button onclick="addIng('Sauce')">Sauce</button>
-                        <button onclick="addIng('Cheese')">Cheese</button>
-                        <button onclick="addIng('Zeke')">Zeke</button>
+                    <div class="assembly-metrics">
+                        <span>T-MINUS: <span id="papa-time" class="accent-text">60</span>s</span>
+                        <span>MULTIPLIER: x<span id="papa-combo" class="accent-text">1</span></span>
                     </div>
-                    <p class="papa-current-text">Holding: <span id="papa-current"></span></p>
-                    <button class="action-btn" onclick="startPapa()">Start Shift</button>
+                    <div id="papa-order" class="assembly-target">AWAITING INITIALIZATION</div>
+                    <div class="assembly-controls">
+                        <button onclick="addIng('Dough')">DOUGH</button>
+                        <button onclick="addIng('Sauce')">SAUCE</button>
+                        <button onclick="addIng('Cheese')">CHEESE</button>
+                        <button onclick="addIng('Zeke')">ZEKE</button>
+                    </div>
+                    <div class="assembly-buffer">BUFFER: <span id="papa-current"></span></div>
+                    <button class="prime-btn" onclick="startPapa()">INITIALIZE</button>
                 </div>
 
                 <!-- AIM TRAINER -->
                 <div id="game-aim" class="game-view">
-                    <h3>Gridshot Tracker</h3>
-                    <p class="game-desc warning">Missing clicks removes points! Accuracy matters.</p>
-                    <div class="game-stats-row">
-                        <span>Time: <span id="aim-time" class="highlight">30</span></span>
-                        <span>Hits: <span id="aim-score" class="highlight">0</span></span>
+                    <div class="game-meta">
+                        <h3>GRIDSHOT CALIBRATOR</h3>
+                        <p class="danger-text">WARNING: Inaccurate inputs result in point degradation.</p>
                     </div>
-                    <div id="aim-box">
-                        <img src="zeke.jpg" class="aim-target" id="at-1">
-                        <img src="zeke.jpg" class="aim-target" id="at-2">
-                        <img src="zeke.jpg" class="aim-target" id="at-3">
+                    <div class="assembly-metrics">
+                        <span>T-MINUS: <span id="aim-time" class="accent-text">30</span></span>
+                        <span>HITS: <span id="aim-score" class="accent-text">0</span></span>
                     </div>
-                    <button class="action-btn" onclick="startAim()">Start Routine</button>
+                    <div id="aim-box" class="aim-arena">
+                        <div class="aim-target" id="at-1"></div>
+                        <div class="aim-target" id="at-2"></div>
+                        <div class="aim-target" id="at-3"></div>
+                    </div>
+                    <button class="prime-btn" onclick="startAim()">INITIALIZE</button>
                 </div>
-            </div>
+            </main>
         </div>
     </div>
 </div>
 
-<script src="script.js?v=15"></script>
+<script src="script.js?v=16"></script>
 </body>
 </html>
