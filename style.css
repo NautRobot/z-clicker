@@ -15,6 +15,7 @@ body {
   text-align: center;
   padding: 30px 0;
   box-shadow: 0 6px 20px rgba(255,0,127,0.5);
+  position: relative;
 }
 .banner h1 {
   margin: 0;
@@ -24,6 +25,20 @@ body {
   letter-spacing: 4px;
   text-shadow: 3px 3px #00ffff, -3px -3px #ff007f;
 }
+
+/* Discreet Stats Header */
+.live-stats {
+  position: absolute;
+  top: 10px;
+  right: 20px;
+  font-size: 14px;
+  color: #00ffff;
+  text-align: right;
+  font-family: monospace;
+  font-weight: bold;
+  text-shadow: 1px 1px 2px #000;
+}
+
 .main-layout {
   display: flex;
   flex: 1;
@@ -208,4 +223,107 @@ body {
 #win-screen button:hover {
   background-color: #fff;
   color: #000;
+}
+
+/* =========================================
+   DISCREET ARCADE CSS 
+   ========================================= */
+#arcade-trigger {
+  position: fixed;
+  bottom: 15px;
+  right: 15px;
+  font-size: 28px;
+  opacity: 0.15;
+  cursor: pointer;
+  transition: opacity 0.3s, transform 0.2s;
+  z-index: 999;
+}
+#arcade-trigger:hover {
+  opacity: 1;
+  transform: scale(1.1);
+  text-shadow: 0 0 10px #ff007f;
+}
+
+#arcade-modal {
+  position: fixed;
+  top: 0; left: 0; width: 100vw; height: 100vh;
+  background: rgba(0, 0, 0, 0.8);
+  display: flex; align-items: center; justify-content: center;
+  z-index: 1000;
+}
+
+.arcade-content {
+  background: #111;
+  border: 2px solid #ff007f;
+  border-radius: 12px;
+  padding: 20px;
+  width: 350px;
+  box-shadow: 0 0 30px rgba(255,0,127,0.5);
+  text-align: center;
+}
+
+.arcade-header {
+  display: flex; justify-content: space-between; align-items: center;
+  margin-bottom: 15px;
+  border-bottom: 1px solid #333;
+  padding-bottom: 10px;
+}
+
+.arcade-tabs {
+  display: flex; gap: 5px; margin-bottom: 15px; flex-wrap: wrap; justify-content: center;
+}
+.arcade-tabs button {
+  background: #222; border: 1px solid #00ffff; color: #fff;
+  padding: 5px 10px; cursor: pointer; border-radius: 4px; font-size: 11px;
+}
+.arcade-tabs button.active-tab {
+  background: #00ffff; color: #000; font-weight: bold;
+}
+
+.arcade-view { display: none; }
+.arcade-start {
+  background: #ff007f; color: #fff; border: none; padding: 10px 20px;
+  border-radius: 8px; font-weight: bold; cursor: pointer; margin-top: 15px;
+}
+.arcade-start:hover { background: #00ffff; color: #000; }
+
+/* Minigame Canvas/Box styles */
+#snakeCanvas { background: #000; border: 2px solid #333; }
+
+#jump-world {
+  width: 300px; height: 120px; background: #222; border: 2px solid #333;
+  position: relative; overflow: hidden; margin: 0 auto;
+}
+#jumper { width: 20px; height: 20px; background: #00ffff; position: absolute; bottom: 0; left: 30px; }
+#obstacle { width: 15px; height: 25px; background: #ff007f; position: absolute; bottom: 0; left: 300px; }
+.jump-anim { animation: jumpUp 0.5s linear; }
+@keyframes jumpUp { 0%{bottom:0;} 40%{bottom:70px;} 50%{bottom:80px;} 60%{bottom:70px;} 100%{bottom:0;} }
+
+/* Papa's Drag & Drop */
+#papa-order {
+  background: #000; border: 1px dashed #00ffff; padding: 10px;
+  font-family: monospace; font-size: 14px; margin-bottom: 15px; color: #fff;
+}
+.papa-ingredients {
+  display: flex; gap: 10px; justify-content: center; margin-bottom: 15px;
+}
+.papa-ing {
+  background: #333; border: 1px solid #ff007f; padding: 8px; cursor: grab;
+  border-radius: 4px; font-size: 12px; font-weight: bold;
+}
+.papa-ing:active { cursor: grabbing; }
+#pizza-base {
+  width: 250px; height: 100px; background: #222; border: 2px dashed #ff007f;
+  margin: 0 auto; border-radius: 50px; display: flex; align-items: center; justify-content: center;
+  color: #666; font-weight: bold; flex-direction: column; font-size: 12px;
+}
+
+/* Aim Trainer */
+#aim-box {
+  width: 300px; height: 200px; background: #000; border: 2px solid #333;
+  position: relative; margin: 0 auto; cursor: crosshair; overflow: hidden;
+}
+.aim-target {
+  width: 30px; height: 30px; background: #00ffff; border-radius: 50%;
+  position: absolute; display: none; box-shadow: 0 0 10px #00ffff;
 }
