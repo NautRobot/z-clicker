@@ -1,107 +1,148 @@
-/* PURE EARLY 2000s CHAOS */
-@import url('https://fonts.googleapis.com/css2?family=Comic+Neue:wght@700&display=swap');
-
+/* Authentic messy 2010s unblocked games style */
 body, html {
-    margin: 0; padding: 0;
-    font-family: 'Comic Neue', 'Comic Sans MS', cursive, sans-serif;
-    background-color: #000;
+    margin: 0; padding: 0; height: 100%;
+    font-family: 'Comic Sans MS', cursive, sans-serif; /* Mandatory for school game feel */
+    background-color: #0d0d0d;
     background-image: url('zeke.jpg');
-    background-size: 150px;
-    background-blend-mode: overlay; /* Makes the background dark but zeke is still visible everywhere */
+    background-size: 80px;
+    background-blend-mode: overlay; 
     color: #fff;
-    overflow: hidden;
-    height: 100vh;
+    overflow-x: hidden;
+}
+
+/* Panic Screen */
+.fake-classroom {
+    background: #fff; width: 100vw; height: 100vh; padding: 40px; 
+    font-family: Arial, sans-serif; color: #333; box-sizing: border-box;
 }
 
 /* Header */
-.marquee-header {
-    background: #ff00ff; color: #ffff00; font-size: 24px; font-weight: bold;
-    border-bottom: 5px solid #00ffff; display: flex; flex-direction: column; text-shadow: 2px 2px #000;
+.retro-header {
+    background: #000; border-bottom: 4px solid #ff00ff;
 }
-.tracker-box {
-    background: #000; color: #00ff00; font-size: 14px; text-align: center; padding: 5px; font-family: monospace; border-bottom: 2px dashed #00ff00;
+.retro-header marquee {
+    font-size: 20px; font-weight: bold; color: #ff0; padding: 5px 0;
+}
+.stats-bar {
+    background: #222; text-align: center; padding: 4px; font-size: 14px; border-bottom: 2px dotted #fff;
+}
+.stats-bar b { color: #0f0; }
+
+/* Main Layout: Heavy focus on the clicker (left), fixed minigame box (right) */
+.page-wrapper {
+    display: flex; flex-direction: row; flex-wrap: nowrap;
+    padding: 20px; gap: 20px; max-width: 1200px; margin: 0 auto;
 }
 
-/* Layout */
-.layout { display: flex; height: calc(100vh - 60px); }
-.left-zone {
-    flex: 1; border-right: 5px ridge #ff00ff; background: rgba(0, 0, 0, 0.85);
-    display: flex; flex-direction: column; align-items: center; padding: 10px; overflow-y: auto;
-}
-.right-zone {
-    flex: 2; background: rgba(0, 0, 0, 0.9); padding: 20px; display: flex; flex-direction: column;
+/* THE CLICKER (MAIN FOCUS) */
+.clicker-column {
+    flex: 1; /* Takes up all remaining space */
+    background: rgba(0, 0, 0, 0.85);
+    border: 5px ridge #00ffff;
+    border-radius: 10px;
+    padding: 20px;
+    display: flex; flex-direction: column; align-items: center;
 }
 
-/* Left Clicker UI */
-.zeke-score-box { text-align: center; background: #000; border: 3px dotted #00ffff; padding: 10px; width: 90%; border-radius: 10px; box-shadow: 0 0 15px #00ffff; }
-.zeke-score-box h2 { margin: 0; font-size: 28px; }
+.score-display {
+    text-align: center; width: 100%;
+    background: #111; border: 2px solid #ff00ff; border-radius: 10px;
+    padding: 10px; margin-bottom: 20px;
+}
+.score-display h1 { margin: 0; font-size: 40px; }
+.score-display h3 { margin: 5px 0 0 0; }
+
 .rainbow-text {
     background-image: linear-gradient(to left, violet, indigo, blue, green, yellow, orange, red);
-    -webkit-background-clip: text; color: transparent; animation: rainbow 2s infinite linear;
+    -webkit-background-clip: text; color: transparent; 
+    animation: rainbow 2s infinite linear;
 }
 @keyframes rainbow { 0%{background-position: 0 0;} 100%{background-position: -200px 0;} }
 
-.main-clicker-wrap { margin: 20px 0; }
+.big-zeke-area { margin: 20px 0; height: 250px; display:flex; align-items:center; }
 #main-zeke {
-    width: 200px; height: 200px; border-radius: 50%; border: 5px solid #ff00ff;
-    cursor: crosshair; user-select: none; -webkit-user-drag: none; transition: transform 0.05s;
-    animation: spinZeke 10s linear infinite; box-shadow: 0 0 30px #ff00ff;
+    width: 220px; height: 220px; border-radius: 50%;
+    border: 6px dashed #00ffff; cursor: crosshair; user-select: none;
+    -webkit-user-drag: none; transition: transform 0.05s;
+    box-shadow: 0 0 40px rgba(255, 0, 255, 0.5);
 }
-#main-zeke:active { transform: scale(0.8) rotate(-15deg) !important; }
-@keyframes spinZeke { 100% { transform: rotate(360deg); } }
+#main-zeke:active { transform: scale(0.85); box-shadow: 0 0 10px #f0f; }
 
-.upgrades-list {
-    width: 100%; display: flex; flex-direction: column; gap: 5px; overflow-y: auto;
-}
-.upgrades-list h3 { text-align: center; color: #ffff00; margin-bottom: 5px; text-decoration: underline; }
+.store-area { width: 100%; }
+#store-list { display: flex; flex-direction: column; gap: 8px; max-height: 350px; overflow-y: auto; padding-right: 5px;}
 .upg-btn {
-    background: #222; border: 2px solid #00ffff; color: #fff; text-align: left;
-    padding: 10px; cursor: pointer; font-family: inherit; font-weight: bold; transition: 0.1s; display: flex; justify-content: space-between;
+    background: #222; border: 2px solid #444; border-left: 5px solid #00ffff;
+    color: #fff; padding: 10px; text-align: left; cursor: pointer;
+    font-family: inherit; display: flex; justify-content: space-between; align-items: center;
 }
-.upg-btn:hover:not(:disabled) { background: #00ffff; color: #000; transform: scale(1.02); }
-.upg-btn:disabled { border-color: #444; color: #666; cursor: not-allowed; }
+.upg-btn:hover:not(:disabled) { background: #333; border-left-color: #ff00ff; }
+.upg-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+.upg-name { font-size: 16px; font-weight: bold; }
+.upg-desc { font-size: 12px; color: #aaa; }
+.upg-cost { color: #ff0; font-weight: bold; }
 
-.nuke-btn { margin-top: auto; background: red; color: yellow; border: 5px outset darkred; padding: 10px; font-weight: bold; cursor: pointer; font-family: inherit; width: 100%; }
-.nuke-btn:active { border-style: inset; }
-
-/* Right Minigames UI */
-.tabs { display: flex; gap: 5px; border-bottom: 3px solid #ff00ff; margin-bottom: 20px; }
-.tab-btn {
-    background: #333; color: #fff; border: 2px solid #ff00ff; border-bottom: none;
-    padding: 10px 20px; cursor: pointer; font-family: inherit; font-weight: bold; font-size: 18px; border-radius: 10px 10px 0 0;
+.nuke-btn {
+    margin-top: 20px; width: 100%; padding: 10px; background: #600; color: #fff;
+    border: 2px solid #f00; cursor: pointer; font-family: inherit; font-weight: bold;
 }
-.tab-btn.active { background: #ff00ff; color: #fff; }
 
-.minigame-container { flex: 1; position: relative; background: #111; border: 3px solid #ff00ff; border-radius: 0 10px 10px 10px; padding: 20px; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center;}
-.minigame { display: none; width: 100%; height: 100%; flex-direction: column; align-items: center; justify-content: center;}
-.active-minigame { display: flex; }
+/* ARCADE WIDGET (SIDEBAR) - Fixed sizes to prevent layout breaking */
+.arcade-column {
+    width: 340px; /* Fixed width */
+    background: #1a1a1a;
+    border: 4px solid #ff00ff;
+    padding: 10px;
+    height: fit-content;
+}
 
-.start-btn { background: #00ff00; color: #000; border: 4px outset #00cc00; font-size: 24px; font-weight: bold; padding: 15px 30px; margin-top: 20px; cursor: pointer; font-family: inherit; }
-.start-btn:active { border-style: inset; }
+.arcade-title { text-align: center; font-size: 20px; margin: 0 0 10px 0; color: #ff00ff; text-shadow: 1px 1px #000; }
 
-/* Snake */
-#snakeCanvas { background: #000; border: 4px solid #fff; box-shadow: 0 0 20px #fff; image-rendering: pixelated; }
+.arcade-tabs {
+    display: flex; flex-wrap: wrap; gap: 2px; margin-bottom: 10px;
+}
+.arcade-tabs button {
+    flex: 1 1 30%; background: #333; color: #fff; border: 1px solid #777;
+    padding: 5px; cursor: pointer; font-size: 12px; font-weight: bold; font-family: inherit;
+}
+.arcade-tabs button:hover { background: #555; }
 
-/* Jump */
-#jump-world { width: 500px; height: 200px; border-bottom: 5px solid #fff; position: relative; overflow: hidden; background: url('zeke.jpg'); background-size: 50px; background-blend-mode: multiply; background-color: #333; }
-#jumper { width: 40px; height: 40px; background: url('zeke.jpg'); background-size: cover; position: absolute; bottom: 0; left: 50px; border-radius: 5px; }
-#obstacle { width: 30px; height: 50px; background: brown; border: 2px solid #000; position: absolute; bottom: 0; left: 500px; }
-.jump-anim { animation: jump 0.5s linear; }
-@keyframes jump { 0%{bottom:0;} 40%{bottom:100px;} 50%{bottom:110px;} 60%{bottom:100px;} 100%{bottom:0;} }
-.obs-anim { animation: slide 1.5s infinite linear; }
-@keyframes slide { 0%{left:500px;} 100%{left:-50px;} }
+.arcade-screen {
+    width: 320px; height: 380px; 
+    background: #000; border: 2px inset #555;
+    position: relative;
+}
 
-/* Papa's */
-#papa-order-screen { background: #fff; color: #000; border: 5px solid #666; padding: 20px; width: 400px; border-radius: 10px; margin-bottom: 20px; font-family: monospace; }
-.papa-buttons { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; }
-.papa-buttons button { background: #ff9900; border: 3px outset #cc7a00; padding: 15px; font-size: 20px; cursor: pointer; font-weight: bold; border-radius: 10px; display: flex; align-items: center; gap: 5px;}
-.papa-buttons button:active { border-style: inset; }
+.minigame-view {
+    display: none; width: 100%; height: 100%; 
+    flex-direction: column; align-items: center; justify-content: flex-start;
+    padding-top: 10px; box-sizing: border-box; text-align: center;
+}
+.active-game { display: flex; }
+.minigame-view h3 { margin: 0 0 5px 0; color: #00ffff; }
+.play-btn { margin-top: auto; margin-bottom: 20px; background: #0f0; color: #000; font-weight: bold; padding: 10px 20px; border: 3px outset #0a0; cursor: pointer; font-family: inherit;}
+.play-btn:active { border-style: inset; }
 
-/* Floating Text */
+/* Minigame Specifics */
+#snakeCanvas { background: #111; border: 2px solid #444; }
+
+#jump-world { width: 300px; height: 150px; background: #333 url('zeke.jpg'); background-size: 40px; background-blend-mode: multiply; position: relative; overflow: hidden; border: 2px solid #fff;}
+#jumper { width: 30px; height: 30px; background: url('zeke.jpg'); background-size: cover; position: absolute; bottom: 0; left: 30px; }
+#obstacle { width: 20px; height: 30px; background: red; position: absolute; bottom: 0; left: 300px; border: 1px solid #000;}
+.jump-anim { animation: dinoJump 0.6s linear; }
+@keyframes dinoJump { 0%{bottom:0;} 40%{bottom:80px;} 50%{bottom:90px;} 60%{bottom:80px;} 100%{bottom:0;} }
+
+.papa-screen { background: #fff; color: #000; padding: 10px; width: 280px; font-weight: bold; font-family: monospace; border: 2px solid #999; min-height: 40px; margin-bottom: 10px;}
+.papa-controls { display: grid; grid-template-columns: 1fr 1fr; gap: 5px; width: 280px; }
+.papa-controls button { background: orange; border: 2px outset #cc8400; padding: 10px; font-weight: bold; cursor: pointer; font-family: inherit;}
+
+#aim-box { width: 300px; height: 200px; background: #222; position: relative; border: 2px solid #00ffff; cursor: crosshair; overflow: hidden;}
+#aim-target { width: 40px; height: 40px; position: absolute; top: 50px; left: 130px; border-radius: 50%; display: none; }
+
+#slot-machine { font-size: 40px; background: #fff; padding: 20px; border: 4px solid gold; border-radius: 10px; margin: 20px 0; }
+
 .float-txt { position: absolute; color: #ffff00; font-weight: bold; font-size: 24px; pointer-events: none; animation: floatUp 1s forwards; text-shadow: 2px 2px #000; z-index: 9999; }
 @keyframes floatUp { 0% { transform: translateY(0); opacity: 1; } 100% { transform: translateY(-50px); opacity: 0; } }
 
-/* Scrollbar styling for that extra gross feel */
-::-webkit-scrollbar { width: 12px; }
-::-webkit-scrollbar-track { background: #000; border-left: 2px solid #ff00ff; }
-::-webkit-scrollbar-thumb { background: #00ffff; border: 2px solid #000; }
+::-webkit-scrollbar { width: 10px; }
+::-webkit-scrollbar-track { background: #111; }
+::-webkit-scrollbar-thumb { background: #444; border: 1px solid #00ffff; }
