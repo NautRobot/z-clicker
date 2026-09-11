@@ -120,15 +120,15 @@ body {
 .bld-cost { font-size: 1.1rem; color: #00ffff; font-weight: bold; }
 .bld-count { font-size: 3rem; color: rgba(255,255,255,0.2); font-weight: bold; margin-left: 10px; }
 
-/* Tooltip */
+/* Tooltip - Adjusted for rich content */
 .tooltip {
-    position: absolute; background: rgba(0,0,0,0.9); border: 1px solid #00ffff;
-    padding: 10px; border-radius: 4px; color: #fff; font-size: 0.9rem;
-    pointer-events: none; z-index: 1000; width: 200px;
-    box-shadow: 0 4px 10px rgba(0,255,255,0.2);
+    position: absolute; background: rgba(0,0,0,0.92); border: 1px solid #00ffff;
+    padding: 12px; border-radius: 6px; color: #fff; font-size: 0.95rem;
+    pointer-events: none; z-index: 1000; width: 220px;
+    box-shadow: 0 4px 15px rgba(0,255,255,0.3);
 }
-.tooltip h4 { margin: 0 0 5px 0; color: #00ffff; }
-.tooltip .tt-cost { font-weight: bold; color: #ff00ff; margin-bottom: 5px; display: block;}
+.tooltip h4 { margin: 0 0 5px 0; color: #00ffff; font-size: 1.1rem; border-bottom: 1px solid #444; padding-bottom: 4px;}
+.tooltip .tt-cost { font-weight: bold; color: #ff00ff; margin-bottom: 8px; display: block;}
 
 /* Floating click text */
 .floating-text {
