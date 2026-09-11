@@ -2,22 +2,21 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Speech - Ms. Inman</title> <!-- Fake title -->
-<link rel="stylesheet" href="style.css?v=11">
+<title>Speech - Ms. Inman</title>
+<link rel="stylesheet" href="style.css?v=12">
 </head>
 <body>
 
-<!-- PANIC SCREEN -->
+<!-- PANIC SCREEN (Speech Class) -->
 <div id="panic-screen" style="display:none;">
     <div class="fake-classroom">
         <h1 style="color:#1967d2; border-bottom:2px solid #1967d2; padding-bottom:10px;">Google Classroom</h1>
         <h2>Speech - Ms. Inman</h2>
-        <p><strong>Assignment:</strong> Write a speech on the assignment today.</p>
+        <p><strong>Assignment:</strong> Draft a 3-minute persuasive speech on a topic of your choice.</p>
         <p><em>Due: Tomorrow at 8:00 AM</em></p>
         <div style="border:1px solid #ccc; padding:20px; border-radius:8px; width: 600px; max-width:90%;">
-            <p>1. Outline your speech in 5 paragraphs.</p>
-            <p>2. Review it with a peer.</p>
-            <textarea style="width:100%; height:100px; margin-top:10px; border:1px solid #999;" placeholder="Type your answer here..."></textarea>
+            <p><strong>Prompt:</strong> Ensure you include a strong hook, three main supporting points, and a call to action. Do not use filler words (um, like, etc.).</p>
+            <textarea style="width:100%; height:200px; margin-top:10px; border:1px solid #999; padding: 10px;" placeholder="Type your speech draft here..."></textarea>
             <button style="margin-top: 10px; background: #1967d2; color: #fff; border:none; padding: 8px 16px; border-radius: 4px;">Turn In</button>
         </div>
         <p style="margin-top:50px; font-size:12px; color:#999;">Press ESC again to return.</p>
@@ -51,11 +50,16 @@
 
 <div id="game-ui">
     <div class="retro-header">
-        <marquee scrollamount="12">🔥 UNBLOCKED GAMES 66: ZEKE EDITION 🔥 PLAY IN CLASS 🔥 PRESS 'ESC' FOR MS. INMAN'S CALCULUS PANIC BUTTON 🔥</marquee>
+        <marquee scrollamount="12">🔥 UNBLOCKED GAMES 66: ZEKE EDITION 🔥 PLAY IN CLASS 🔥 PRESS 'ESC' FOR MS. INMAN'S SPEECH PANIC BUTTON 🔥</marquee>
         <div class="stats-bar">
             <span>LIVE PLAYERS: <b id="realLiveUsers">?</b></span> | 
             <span>TOTAL VISITS: <b id="realTotalVisits">?</b></span>
         </div>
+    </div>
+
+    <!-- Golden Zeke Container -->
+    <div id="golden-zeke-container" style="display:none;" onclick="clickGoldenZeke()">
+        <img src="zeke.jpg" class="golden-zeke" alt="Bonus!">
     </div>
 
     <div class="page-wrapper">
@@ -63,8 +67,9 @@
         <div class="clicker-column">
             
             <div class="score-display">
-                <h1>ZEKES: <span id="zekeCount" class="rainbow-text">0</span></h1>
+                <h1>ZEKES: <span id="zekeCount">0</span></h1>
                 <h3>Zekes per second: <span id="cpsDisplay" style="color:#0f0;">0</span></h3>
+                <p style="font-size:12px; color:#aaa; margin-top:5px;">Click Power: <span id="clickPowerDisplay">1</span></p>
             </div>
 
             <div class="big-zeke-area">
@@ -72,7 +77,10 @@
             </div>
 
             <div class="store-area">
-                <h2 style="margin-top:0; border-bottom: 2px dashed #fff;">UPGRADES</h2>
+                <div class="store-tabs">
+                    <button class="store-tab active" id="tab-bld" onclick="switchStoreTab('buildings')">Buildings</button>
+                    <button class="store-tab" id="tab-upg" onclick="switchStoreTab('upgrades')">Upgrades</button>
+                </div>
                 <div id="store-list">
                     <!-- JS Injects Here -->
                 </div>
@@ -84,13 +92,14 @@
         <!-- SIDEBAR: MINIGAME ARCADE -->
         <div class="arcade-column">
             <h2 class="arcade-title">🎮 BORED? PLAY THESE</h2>
+            <p style="text-align:center; font-size:11px; margin-top:-5px; color:#aaa;">(Rewards scale with your CPS!)</p>
             
             <div class="arcade-tabs">
-                <button onclick="switchTab('snake')">Snake</button>
-                <button onclick="switchTab('jump')">Jump</button>
-                <button onclick="switchTab('papa')">Papa's</button>
-                <button onclick="switchTab('aim')">Aim</button>
-                <button onclick="switchTab('rng')">RNG</button>
+                <button onclick="switchArcadeTab('snake')">Snake</button>
+                <button onclick="switchArcadeTab('jump')">Jump</button>
+                <button onclick="switchArcadeTab('papa')">Papa's</button>
+                <button onclick="switchArcadeTab('aim')">Aim</button>
+                <button onclick="switchArcadeTab('rng')">RNG</button>
             </div>
 
             <div class="arcade-screen">
@@ -142,10 +151,10 @@
                 <!-- GACHA / RNG -->
                 <div id="game-rng" class="minigame-view">
                     <h3>Zeke Casino</h3>
-                    <p>Costs 500 Zekes to spin.<br>Win up to 5,000!</p>
+                    <p>Cost scales with CPS.<br>Win up to 10x your bet!</p>
                     <div id="slot-machine">❓❓❓</div>
                     <p id="slot-result"></p>
-                    <button class="play-btn" style="background: gold;" onclick="spinRNG()">SPIN (-500)</button>
+                    <button class="play-btn" style="background: gold;" onclick="spinRNG()">SPIN</button>
                 </div>
 
             </div>
@@ -153,6 +162,6 @@
     </div>
 </div>
 
-<script src="script.js?v=11"></script>
+<script src="script.js?v=12"></script>
 </body>
 </html>
