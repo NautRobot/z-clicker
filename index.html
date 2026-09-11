@@ -3,15 +3,12 @@
 <head>
 <meta charset="UTF-8">
 <title>Zeke Clicker</title>
-<!-- Fixed your Google Fonts link so Rubik Glitch and Bungee Shade actually load -->
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Bungee+Shade&family=Rubik+Glitch&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Rubik+Glitch&family=Bungee+Shade&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-<!-- REAL FIREBASE TRACKING MODULE -->
+<!-- FIREBASE TRACKING MODULE -->
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
     import { getDatabase, ref, onValue, onDisconnect, set, increment } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
@@ -26,26 +23,31 @@
     };
     const app = initializeApp(firebaseConfig);
     const db = getDatabase(app);
-    
-    // Live Users
     const sessionId = Date.now() + Math.random().toString(36).substring(2);
     const sessionRef = ref(db, 'online_users/' + sessionId);
     set(sessionRef, true);
     onDisconnect(sessionRef).remove();
-    onValue(ref(db, 'online_users'), (s) => document.getElementById('realLiveUsers').innerText = s.size || 0);
     
-    // Total Visits
+    onValue(ref(db, 'online_users'), (s) => {
+        const el = document.getElementById('realLiveUsers');
+        if(el) el.innerText = s.size || 0;
+    });
     const visitsRef = ref(db, 'total_visits');
     set(visitsRef, increment(1)); 
-    onValue(visitsRef, (s) => document.getElementById('realTotalVisits').innerText = (s.val() || 0).toLocaleString());
+    onValue(visitsRef, (s) => {
+        const el = document.getElementById('realTotalVisits');
+        if(el) el.innerText = (s.val() || 0).toLocaleString();
+    });
 </script>
 
 <header class="banner">
-  <h1>ZEKE CLICKER</h1>
-  <!-- Added Stats under banner -->
-  <div class="site-stats">
-      ONLINE: <span id="realLiveUsers">?</span> | VISITS: <span id="realTotalVisits">?</span>
+  <!-- Discreet Stats -->
+  <div class="live-stats">
+    Online: <span id="realLiveUsers">?</span><br>
+    Visits: <span id="realTotalVisits">?</span>
   </div>
+  
+  <h1>ZEKE CLICKER</h1>
 </header>
 
 <div class="main-layout">
@@ -95,7 +97,7 @@
     </div>
   </div>
 
-  <!-- Rebirth Sidebar (Hidden by default, shows up after win/rebirth) -->
+  <!-- Rebirth Sidebar (Hidden by default) -->
   <div class="left-sidebar" id="rebirth-sidebar" style="display: none;">
     <h3>Rebirth Shop</h3>
     <p style="color: #ff00ff; text-align:center;">Tokens: <span id="tokenCount">0</span></p>
@@ -118,12 +120,9 @@
     <p style="color: #00ffff;">Zeke Click Value: <span id="zekeClickGain">1</span></p>
     <p style="color: #00ffff;">Zekes Per Second: <span id="zekeIdleCount">0</span></p>
     <img src="zeke.jpg" id="zeke" onclick="gainZekesAutoCount()">
-    
-    <!-- Super discreet link to minigames -->
-    <div id="discreet-arcade" onclick="openArcade()">[ terminal ]</div>
   </div>
 
-  <!-- Right Sidebar (Normal Upgrades) -->
+  <!-- Right Sidebar (Gather Upgrades) -->
   <div class="right-sidebar" id="right-sidebar">
     <h3>Gather Upgrades</h3>
     <div class="upgrade-box">
@@ -170,53 +169,70 @@
   </div>
 </div>
 
-<!-- Arcade Overlay (Hidden) -->
-<div id="arcade-modal">
-    <div class="arcade-content">
-        <span id="close-arcade" onclick="closeArcade()">[ X ] CLOSE</span>
-        <h2 style="font-family: 'Rubik Glitch', cursive; color: #ff00ff;">SYSTEM ARCADE</h2>
-        <div class="arcade-nav">
-            <button onclick="showGame('snake')">SNAKE</button>
-            <button onclick="showGame('jump')">JUMP</button>
-            <button onclick="showGame('papa')">ASSEMBLY</button>
-            <button onclick="showGame('aim')">AIM</button>
-        </div>
-        
-        <div id="game-snake" class="minigame active">
-            <canvas id="snakeCanvas" width="300" height="300"></canvas>
-            <button class="arcade-start" onclick="startSnake()">PLAY SNAKE</button>
-        </div>
+<!-- DISCREET ARCADE TRIGGER -->
+<div id="arcade-trigger" onclick="toggleArcade()">🕹️</div>
 
-        <div id="game-jump" class="minigame">
-            <div id="jump-world">
-                <div id="jumper"></div>
-                <div id="obstacle"></div>
-            </div>
-            <p>Score: <span id="jump-score">0</span></p>
-            <button class="arcade-start" onclick="startJump()">PLAY JUMP (SPACE)</button>
-        </div>
-
-        <div id="game-papa" class="minigame">
-            <p>Time: <span id="papa-time" style="color:#00ffff;">60</span>s | Combo: x<span id="papa-combo" style="color:#00ffff;">1</span></p>
-            <div id="papa-order">Click Start</div>
-            <div class="papa-btn-grid">
-                <button onclick="addIng('Dough')">Dough</button>
-                <button onclick="addIng('Sauce')">Sauce</button>
-                <button onclick="addIng('Cheese')">Cheese</button>
-                <button onclick="addIng('Zeke')">Zeke</button>
-            </div>
-            <p style="font-size:12px;">Building: <span id="papa-current"></span></p>
-            <button class="arcade-start" onclick="startPapa()">START SHIFT</button>
-        </div>
-
-        <div id="game-aim" class="minigame">
-            <p>Time: <span id="aim-time" style="color:#00ffff;">30</span> | Hits: <span id="aim-score" style="color:#00ffff;">0</span></p>
-            <div id="aim-box">
-                <img src="zeke.jpg" id="aim-target" onclick="hitTarget(event)">
-            </div>
-            <button class="arcade-start" onclick="startAim()">START TRACER</button>
-        </div>
+<!-- ARCADE MODAL (Hidden by default) -->
+<div id="arcade-modal" style="display: none;">
+  <div class="arcade-content">
+    <div class="arcade-header">
+      <h3 style="margin:0; font-family: 'Bungee Shade', cursive; color:#00ffff;">ARCADE</h3>
+      <button onclick="toggleArcade()" style="background:none; border:none; color:#ff007f; font-size:1.2rem; cursor:pointer; font-weight:bold;">X</button>
     </div>
+    <div class="arcade-tabs">
+      <button onclick="switchArcade('snake')" class="active-tab">Snake</button>
+      <button onclick="switchArcade('jump')">Jump</button>
+      <button onclick="switchArcade('papa')">Papa's Pizzeria</button>
+      <button onclick="switchArcade('aim')">Aim Trainer</button>
+    </div>
+
+    <!-- SNAKE -->
+    <div id="game-snake" class="arcade-view" style="display:block;">
+      <canvas id="snakeCanvas" width="300" height="300"></canvas>
+      <button class="arcade-start" onclick="startSnake()">Start Snake</button>
+    </div>
+
+    <!-- JUMP -->
+    <div id="game-jump" class="arcade-view">
+      <div id="jump-world">
+        <div id="jumper"></div>
+        <div id="obstacle"></div>
+      </div>
+      <p>Score: <span id="jump-score">0</span></p>
+      <button class="arcade-start" onclick="startJump()">Start Jump</button>
+    </div>
+
+    <!-- PAPA'S (Drag & Drop) -->
+    <div id="game-papa" class="arcade-view">
+      <p>Time: <span id="papa-time">60</span>s | Combo: x<span id="papa-combo">1</span></p>
+      <div id="papa-order">Click Start</div>
+      
+      <!-- Drag Sources -->
+      <div class="papa-ingredients">
+        <div class="papa-ing" draggable="true" ondragstart="dragPapa(event)" data-ing="Dough">Dough</div>
+        <div class="papa-ing" draggable="true" ondragstart="dragPapa(event)" data-ing="Sauce">Sauce</div>
+        <div class="papa-ing" draggable="true" ondragstart="dragPapa(event)" data-ing="Cheese">Cheese</div>
+        <div class="papa-ing" draggable="true" ondragstart="dragPapa(event)" data-ing="Pepperoni">Pepperoni</div>
+      </div>
+
+      <!-- Drop Target -->
+      <div id="pizza-base" ondragover="allowDropPapa(event)" ondrop="dropPapa(event)">
+        Drag Ingredients Here!
+      </div>
+      
+      <button class="arcade-start" onclick="startPapa()">Start Shift</button>
+    </div>
+
+    <!-- AIM TRAINER -->
+    <div id="game-aim" class="arcade-view">
+      <p>Time: <span id="aim-time">30</span> | Hits: <span id="aim-score">0</span></p>
+      <div id="aim-box" onmousedown="handleAimClick(event)">
+        <div class="aim-target" id="aim-target-1"></div>
+      </div>
+      <button class="arcade-start" onclick="startAim()">Start Aim</button>
+    </div>
+
+  </div>
 </div>
 
 <script src="script.js"></script>
