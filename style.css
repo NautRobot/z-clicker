@@ -1,38 +1,72 @@
-/* Authentic early 2010s Google Sites / Weebly layout */
+@import url('https://fonts.googleapis.com/css2?family=Rubik+Glitch&display=swap');
+
+/* Base / Light Mode */
 body {
     margin: 0; padding: 0;
     font-family: Arial, Helvetica, sans-serif;
     background-color: #e9e9e9;
     color: #333;
+    transition: background 0.3s, color 0.3s;
 }
+
+/* Dark Mode Variables */
+body.dark-mode { background-color: #121212; color: #eee; }
+.dark-mode .site-header { background: #1f1f1f; border-bottom: 2px solid #444; }
+.dark-mode .sidebar, .dark-mode .main-content { background: #1f1f1f; border-color: #444; }
+.dark-mode .stats-box { background: #2a2a2a; border-color: #555; }
+.dark-mode .store-tab { background: #333; border-color: #555; color: #bbb; }
+.dark-mode .active-tab { background: #1f1f1f; color: #fff; }
+.dark-mode .store-list { background: #1a1a1a; border-color: #555; }
+.dark-mode .store-item { background: #2a2a2a; border-color: #444; color: #eee; }
+.dark-mode .store-item button { background: #444; border-color: #666; color: #fff; }
+.dark-mode .store-item button:hover:not(:disabled) { background: #555; }
+.dark-mode .arcade-window { background: #2a2a2a; border-color: #555; }
+.dark-mode h2, .dark-mode h3 { border-color: #555 !important; }
+.dark-mode .sidebar ul li a { color: #4fa3ff; }
+.dark-mode .nav-link.active-nav { background: #333; border-color:#555; color:#fff;}
+.dark-mode .papa-order-box { background: #111; border-color: #888; }
+.dark-mode .papa-buttons button { background: #333; color:#fff; border-color:#555; }
 
 /* Panic Screen */
 .classroom-layout {
     background: #fff; width: 100vw; height: 100vh; padding: 40px; box-sizing: border-box;
 }
 
-/* Header */
+/* Header & Glitch Banner */
 .site-header {
     background: #fff; border-bottom: 2px solid #ccc;
-    padding: 20px 40px; box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+    padding: 15px 40px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); position: relative;
 }
-.site-header h1 { margin: 0; font-size: 28px; color: #222; }
-.site-header p { margin: 5px 0 0 0; font-size: 14px; color: #666; }
+#dark-btn {
+    position: absolute; top: 15px; left: 15px; background: #333; color: #fff; border: none; padding: 8px 12px; cursor: pointer; border-radius: 4px;
+}
+.glitch-banner {
+    font-family: 'Rubik Glitch', system-ui, sans-serif;
+    font-size: 50px; font-style: italic; font-weight: bold;
+    background-image: linear-gradient(to left, violet, indigo, blue, green, yellow, orange, red);
+    -webkit-background-clip: text; color: transparent;
+    animation: rainbow 2s infinite linear; margin: 0; text-align: center;
+    text-shadow: 2px 2px 0px rgba(0,0,0,0.1);
+}
+@keyframes rainbow { 0%{background-position: 0 0;} 100%{background-position: -400px 0;} }
 
 /* Layout */
 .site-body {
     display: flex; max-width: 1200px; margin: 20px auto; gap: 20px; padding: 0 20px;
 }
 
-/* Sidebar */
+/* Sidebar Navigation */
 .sidebar {
-    width: 200px; background: #fff; border: 1px solid #ccc; padding: 15px; height: fit-content;
+    width: 200px; background: #fff; border: 1px solid #ccc; padding: 15px; height: fit-content; border-radius: 4px;
 }
 .sidebar h3 { margin-top: 0; font-size: 16px; border-bottom: 1px solid #eee; padding-bottom: 5px;}
 .sidebar ul { list-style-type: none; padding: 0; margin: 0 0 20px 0; }
 .sidebar ul li { margin-bottom: 8px; }
-.sidebar ul li a { color: #1155cc; text-decoration: none; font-size: 14px; }
-.sidebar ul li a:hover { text-decoration: underline; }
+.sidebar ul li a { 
+    display: block; padding: 8px; color: #1155cc; text-decoration: none; font-size: 14px; border-radius: 4px; border: 1px solid transparent;
+}
+.sidebar ul li a:hover { background: rgba(0,0,0,0.05); }
+.nav-link.active-nav { font-weight: bold; background: #f0f0f0; border-color:#ccc; color: #000; }
 
 .visitor-counter {
     background: #000; color: #0f0; border: 2px inset #666; padding: 5px; text-align: center; font-family: 'Courier New', Courier, monospace; font-weight: bold;
@@ -40,84 +74,71 @@ body {
 
 /* Main Content */
 .main-content {
-    flex: 1; background: #fff; border: 1px solid #ccc; padding: 20px; min-height: 600px;
+    flex: 1; background: #fff; border: 1px solid #ccc; padding: 20px; min-height: 600px; border-radius: 4px;
 }
-
-.game-container {
-    display: flex; gap: 20px; align-items: flex-start;
-}
+.game-container { display: flex; gap: 20px; align-items: flex-start; }
 
 /* Clicker Section */
-.clicker-section {
-    flex: 1; border-right: 1px dashed #ccc; padding-right: 20px;
-}
-.stats-box {
-    background: #f9f9f9; border: 1px solid #ddd; padding: 10px; text-align: center;
-}
+.clicker-section { flex: 1; border-right: 1px dashed #ccc; padding-right: 20px; }
+.stats-box { background: #f9f9f9; border: 1px solid #ddd; padding: 10px; text-align: center; border-radius: 4px;}
 #main-zeke {
-    width: 150px; height: 150px; cursor: pointer; border: 1px solid #000;
+    width: 150px; height: 150px; cursor: pointer; border: 2px solid #000; border-radius: 50%;
     transition: transform 0.05s; user-select: none; -webkit-user-drag: none;
 }
-#main-zeke:active { transform: scale(0.95); }
+#main-zeke:active { transform: scale(0.92); }
 
-/* Store styling (looks like generic HTML tables) */
+/* Store styling */
 .store-tab {
-    background: #eee; border: 1px solid #ccc; padding: 5px 10px; cursor: pointer; font-size: 13px;
+    background: #eee; border: 1px solid #ccc; padding: 8px 12px; cursor: pointer; font-size: 13px; margin-right: 2px;
 }
 .active-tab { background: #fff; border-bottom: none; font-weight: bold; }
 .store-list { border: 1px solid #ccc; height: 350px; overflow-y: scroll; padding: 5px; background: #fafafa; }
 .store-item {
     border: 1px solid #ddd; background: #fff; padding: 8px; margin-bottom: 5px; display: flex; justify-content: space-between; align-items: center;
 }
-.store-item button {
-    background: #f0f0f0; border: 1px solid #999; padding: 5px 10px; cursor: pointer;
-}
+.store-item button { background: #f0f0f0; border: 1px solid #999; padding: 5px 10px; cursor: pointer; font-weight:bold;}
 .store-item button:hover:not(:disabled) { background: #e0e0e0; }
-.store-item button:disabled { color: #aaa; cursor: not-allowed; }
+.store-item button:disabled { color: #aaa; cursor: not-allowed; font-weight:normal;}
 
 /* Minigame Section */
-.arcade-section {
-    width: 320px; text-align: center;
-}
-.arcade-nav { margin-bottom: 10px; font-size: 14px; }
-.arcade-nav a { color: #1155cc; text-decoration: none; margin: 0 2px; }
-.arcade-nav a:hover { text-decoration: underline; }
+.arcade-section { width: 340px; text-align: center; }
 .arcade-window {
-    background: #eee; border: 1px solid #999; padding: 10px; min-height: 400px; display: flex; flex-direction: column; align-items: center;
+    background: #eee; border: 1px solid #999; padding: 10px; min-height: 420px; display: flex; flex-direction: column; align-items: center; border-radius: 4px;
 }
-
 .mini-view { display: none; width: 100%; text-align: center; }
 .active-mini { display: block; }
+.mini-view button { padding: 8px 16px; cursor: pointer; font-weight: bold; margin-top: 10px; }
 
 /* Minigame specifics */
 #snakeCanvas { background: #fff; border: 1px solid #000; margin-top: 10px; image-rendering: pixelated; }
 
 #jump-world {
-    width: 280px; height: 120px; background: #fff; border: 1px solid #000; position: relative; overflow: hidden; margin: 10px auto;
+    width: 300px; height: 140px; background: #fff; border: 1px solid #000; position: relative; overflow: hidden; margin: 10px auto; border-bottom: 3px solid #333;
 }
-#jumper { width: 20px; height: 20px; background: url('zeke.jpg'); background-size: cover; position: absolute; bottom: 0; left: 30px; }
-#obstacle { width: 15px; height: 25px; background: #333; position: absolute; bottom: 0; left: 300px; }
-#jump-coin { width: 15px; height: 15px; background: gold; border-radius: 50%; position: absolute; left: 300px; bottom: 50px; border: 1px solid #b8860b; }
+#jumper { width: 20px; height: 20px; background: url('zeke.jpg'); background-size: cover; position: absolute; bottom: 0; left: 30px; border-radius:2px;}
+#obstacle { width: 15px; height: 25px; background: #d00; position: absolute; bottom: 0; left: 320px; border: 1px solid #000; }
+#jump-coin { width: 15px; height: 15px; background: gold; border-radius: 50%; position: absolute; left: 320px; bottom: 50px; border: 1px solid #b8860b; }
 .jump-up { animation: jumpUp 0.3s forwards cubic-bezier(0.1, 0.5, 0.1, 1); }
 .jump-down { animation: jumpDown 0.3s forwards cubic-bezier(0.9, 0, 0.9, 0.5); }
-@keyframes jumpUp { from { bottom: 0; } to { bottom: 60px; } }
-@keyframes jumpDown { from { bottom: 60px; } to { bottom: 0; } }
+@keyframes jumpUp { from { bottom: 0; } to { bottom: 70px; } }
+@keyframes jumpDown { from { bottom: 70px; } to { bottom: 0; } }
 
 .papa-order-box {
-    background: #fff; border: 1px dashed #666; padding: 10px; font-family: monospace; font-size: 14px; margin: 10px auto; width: 260px; min-height: 40px; box-sizing: border-box;
+    background: #fff; border: 1px dashed #666; padding: 10px; font-family: monospace; font-size: 14px; margin: 10px auto; width: 280px; min-height: 40px; box-sizing: border-box;
 }
-.papa-buttons { display: grid; grid-template-columns: 1fr 1fr; gap: 5px; width: 260px; margin: 0 auto; }
+.papa-buttons { display: grid; grid-template-columns: 1fr 1fr; gap: 5px; width: 280px; margin: 0 auto; }
 .papa-buttons button { padding: 10px; font-size: 12px; cursor: pointer; border: 1px solid #999; background: #eaeaea; }
 
 #aim-box {
-    width: 280px; height: 220px; background: #fff; border: 1px solid #000; position: relative; margin: 10px auto; cursor: crosshair; overflow: hidden;
+    width: 300px; height: 220px; background: #fff; border: 1px solid #000; position: relative; margin: 10px auto; cursor: crosshair; overflow: hidden;
 }
 .aim-t {
-    width: 30px; height: 30px; position: absolute; border-radius: 50%; display: none; user-select: none; -webkit-user-drag: none;
+    width: 35px; height: 35px; position: absolute; border-radius: 50%; display: none; user-select: none; -webkit-user-drag: none; cursor: crosshair; border: 1px solid #000;
 }
 
 /* Floating click text */
 .float-txt {
-    position: absolute; color: #000; font-weight: bold; font-size: 16px; pointer-events: none; animation: floatUp 1s forwards; z-index: 9999;
+    position: absolute; color: #ff00ff; font-weight: bold; font-size: 18px; pointer-events: none; animation: floatUp 1s forwards; z-index: 9999; text-shadow: 1px 1px 0 #fff;
 }
+.dark-mode .float-txt { text-shadow: 1px 1px 0 #000; }
 @keyframes floatUp { 0% { transform: translateY(0); opacity: 1; } 100% { transform: translateY(-30px); opacity: 0; } }
