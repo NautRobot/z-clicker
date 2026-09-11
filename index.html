@@ -3,141 +3,138 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Zeke Clicker</title>
-<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=9">
+<title>Google Classroom</title> <!-- Fake title so teachers don't notice the tab -->
+<link rel="stylesheet" href="style.css?v=10">
 </head>
 <body>
 
-<!-- REAL FIREBASE TRACKING MODULE -->
-<script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-  import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-analytics.js";
-  import { getDatabase, ref, onValue, onDisconnect, set, increment } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
-
-  const firebaseConfig = {
-    apiKey: "AIzaSyCyD2K3TT7hOfakFPgJ9mMjTEM8Jim9_rA",
-    authDomain: "z-clicker-97488.firebaseapp.com",
-    projectId: "z-clicker-97488",
-    storageBucket: "z-clicker-97488.firebasestorage.app",
-    messagingSenderId: "686862323992",
-    appId: "1:686862323992:web:e25c46b7deb67254278e6d",
-    measurementId: "G-Y92C3EM9E1",
-    databaseURL: "https://z-clicker-97488-default-rtdb.firebaseio.com" 
-  };
-
-  const app = initializeApp(firebaseConfig);
-  const analytics = getAnalytics(app);
-  const db = getDatabase(app);
-
-  const sessionId = Date.now() + Math.random().toString(36).substring(2);
-  const sessionRef = ref(db, 'online_users/' + sessionId);
-
-  set(sessionRef, true);
-  onDisconnect(sessionRef).remove();
-
-  const usersRef = ref(db, 'online_users');
-  onValue(usersRef, (snapshot) => {
-      let count = snapshot.size || 0;
-      document.getElementById('realLiveUsers').innerText = count;
-  });
-
-  const visitsRef = ref(db, 'total_visits');
-  set(visitsRef, increment(1)); 
-  
-  onValue(visitsRef, (snapshot) => {
-      let total = snapshot.val() || 0;
-      document.getElementById('realTotalVisits').innerText = total.toLocaleString();
-  });
-</script>
-
-<header class="banner">
-  <h1>ZEKE CLICKER</h1>
-  <div class="live-stats">
-    <div><span class="pulse-dot"></span>Online Now: <span id="realLiveUsers" class="stat-number">Loading...</span></div>
-    <div style="margin-top: 5px;">👁️ Total Visits: <span id="realTotalVisits" class="stat-number">Loading...</span></div>
-  </div>
-</header>
-
-<!-- Global Tooltip for Upgrades & Buildings -->
-<div id="tooltip" class="tooltip" style="display:none;"></div>
-
-<div class="main-layout">
-  
-  <!-- LEFT PANEL: The Clicker & Stats -->
-  <div class="panel left-panel">
-    <div class="score-board">
-        <p class="score-main">Zekes: <br><span id="zekeCount" style="color:#00ffff; font-size:2.5rem;">0</span></p>
-        <p style="color: #ccc; margin: 10px 0; font-size: 1.1rem; cursor:help;" id="cpsWrapper">
-            per second: <span id="cpsDisplay" style="color:#fff;">0</span>
-        </p>
+<!-- THE PANIC SCREEN (Hidden by default, press ESC to show) -->
+<div id="panic-screen" style="display:none;">
+    <div style="background:#fff; width:100%; height:100vh; padding:40px; font-family:Arial, sans-serif; color:#333;">
+        <h1 style="color:#1967d2; border-bottom:2px solid #1967d2; padding-bottom:10px;">Google Classroom</h1>
+        <h2>Algebra II - Mr. Smith</h2>
+        <p><strong>Assignment:</strong> Complete pages 142-145 in the textbook. Show all work for polynomial division.</p>
+        <p><em>Due: Tomorrow at 8:00 AM</em></p>
+        <div style="border:1px solid #ccc; padding:20px; border-radius:8px; max-width:600px;">
+            <p>1. (x² - 4x + 4) / (x - 2) = ?</p>
+            <p>2. Find the roots of f(x) = x³ - 6x² + 11x - 6</p>
+            <textarea style="width:100%; height:100px; margin-top:10px;" placeholder="Type your answer here..."></textarea>
+        </div>
+        <p style="margin-top:50px; font-size:12px; color:#999;">Press ESC again to return to Zeke.</p>
     </div>
-
-    <div class="zeke-container">
-      <img src="zeke.jpg" id="zeke" alt="Zeke">
-    </div>
-    
-    <div class="stats-box">
-      <p id="clickWrapper" style="cursor:help;">Click Value: <span id="clickValueDisplay">1</span></p>
-      <p id="critDisplay" style="display:none; color:#ff00ff; margin-top:5px; font-weight:bold; cursor:help;">✨ Crit Chance: 10% (x5 Damage)</p>
-    </div>
-  </div>
-
-  <!-- MIDDLE PANEL: Prestige & Skill Trees -->
-  <div class="panel middle-panel">
-    
-    <!-- Rebirth Section -->
-    <div class="prestige-section rebirth-section">
-      <h3>REBIRTH</h3>
-      <p>Soft reset for Memory Fragments.</p>
-      <p class="prestige-currency" id="memoryWrapper" style="cursor:help;">Memories: <span id="memoryCount">0</span></p>
-      <p style="font-size: 0.85rem; color: #aaa;">(+<span id="memoryBoost">0</span>% global production)</p>
-      
-      <button id="btn-rebirth" class="btn-prestige" onclick="triggerRebirth()">
-        Rebirth (+<span id="pendingMemories">0</span>)
-      </button>
-
-      <div class="tree-container" id="rebirth-tree">
-        <!-- Rebirth upgrades inject here via JS -->
-      </div>
-    </div>
-
-    <hr style="border-color: #333; margin: 20px 0;">
-
-    <!-- Ascension Section -->
-    <div class="prestige-section ascension-section">
-      <h3 style="color: #ffd700;">ASCENSION</h3>
-      <p>Hard reset for Astral Zekes.</p>
-      <p class="prestige-currency" style="color: #ffd700; cursor:help;" id="astralWrapper">Astral Zekes: <span id="astralCount">0</span></p>
-      
-      <button id="btn-ascend" class="btn-prestige btn-ascend" onclick="triggerAscension()">
-        Ascend (+<span id="pendingAstral">0</span>)
-      </button>
-
-      <div class="tree-container" id="ascension-tree">
-        <!-- Ascension upgrades inject here via JS -->
-      </div>
-    </div>
-    
-    <button onclick="restartGame()" class="btn-hard-reset" id="btn-hard-reset">Hard Reset Game</button>
-  </div>
-
-  <!-- RIGHT PANEL: Store (Cookie Clicker Style) -->
-  <div class="panel right-panel">
-    <h2 class="store-title">Store</h2>
-    
-    <!-- Upgrades Grid -->
-    <div class="upgrades-grid" id="upgrades-container">
-        <!-- Upgrades inject here via JS -->
-    </div>
-
-    <!-- Buildings List -->
-    <div class="buildings-list" id="buildings-container">
-        <!-- Buildings inject here via JS -->
-    </div>
-  </div>
 </div>
 
-<script src="script.js?v=9"></script>
+<!-- GAME UI -->
+<div id="game-ui">
+    <!-- REAL FIREBASE TRACKING MODULE -->
+    <script type="module">
+      import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+      import { getDatabase, ref, onValue, onDisconnect, set, increment } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+
+      const firebaseConfig = {
+        apiKey: "AIzaSyCyD2K3TT7hOfakFPgJ9mMjTEM8Jim9_rA",
+        authDomain: "z-clicker-97488.firebaseapp.com",
+        projectId: "z-clicker-97488",
+        storageBucket: "z-clicker-97488.firebasestorage.app",
+        messagingSenderId: "686862323992",
+        appId: "1:686862323992:web:e25c46b7deb67254278e6d",
+        databaseURL: "https://z-clicker-97488-default-rtdb.firebaseio.com" 
+      };
+
+      const app = initializeApp(firebaseConfig);
+      const db = getDatabase(app);
+      const sessionId = Date.now() + Math.random().toString(36).substring(2);
+      const sessionRef = ref(db, 'online_users/' + sessionId);
+
+      set(sessionRef, true);
+      onDisconnect(sessionRef).remove();
+
+      onValue(ref(db, 'online_users'), (s) => document.getElementById('realLiveUsers').innerText = s.size || 0);
+      
+      const visitsRef = ref(db, 'total_visits');
+      set(visitsRef, increment(1)); 
+      onValue(visitsRef, (s) => document.getElementById('realTotalVisits').innerText = (s.val() || 0).toLocaleString());
+    </script>
+
+    <header class="marquee-header">
+      <marquee scrollamount="15">🔥 UNBLOCKED ZEKE CLICKER V.99 💯 PLAY FREE GAMES NO VIRUS 🎮 PRESS 'ESC' FOR PANIC BUTTON 🚨</marquee>
+      <div class="tracker-box">
+        🟩 ONLINE: <span id="realLiveUsers">?</span> | 👁️ VISITS: <span id="realTotalVisits">?</span>
+      </div>
+    </header>
+
+    <div class="layout">
+        
+        <!-- CLICKER & UPGRADES -->
+        <div class="left-zone">
+            <div class="zeke-score-box">
+                <h2>ZEKES: <span id="zekeCount" class="rainbow-text">0</span></h2>
+                <p>Zekes/sec: <span id="cpsDisplay">0</span></p>
+            </div>
+
+            <div class="main-clicker-wrap">
+                <img src="zeke.jpg" id="main-zeke" alt="CLICK ME">
+            </div>
+
+            <div class="upgrades-list" id="store">
+                <h3>SCHOOL STORE (UPGRADES)</h3>
+                <!-- Injected via JS -->
+            </div>
+            
+            <button class="nuke-btn" onclick="restartGame()">NUKE SAVE DATA</button>
+        </div>
+
+        <!-- UNBLOCKED MINIGAMES HUB -->
+        <div class="right-zone">
+            <div class="tabs">
+                <button class="tab-btn active" onclick="switchTab('snake')">🐍 Zeke Snake</button>
+                <button class="tab-btn" onclick="switchTab('jump')">🏃‍♂️ Zeke Jump</button>
+                <button class="tab-btn" onclick="switchTab('papa')">🍕 Papa Zeke's</button>
+            </div>
+
+            <div class="minigame-container">
+                <!-- SNAKE -->
+                <div id="game-snake" class="minigame active-minigame">
+                    <h3>Zeke Snake</h3>
+                    <p>Use WASD or Arrows. Eat Zeke. Don't hit walls.</p>
+                    <canvas id="snakeCanvas" width="400" height="400"></canvas>
+                    <button class="start-btn" onclick="startSnake()">Start Snake</button>
+                </div>
+
+                <!-- JUMP (DINO/SLOPE) -->
+                <div id="game-jump" class="minigame">
+                    <h3>Zeke Jump</h3>
+                    <p>Press SPACE or Click to jump over the teacher's desk!</p>
+                    <div id="jump-world">
+                        <div id="jumper"></div>
+                        <div id="obstacle"></div>
+                    </div>
+                    <p id="jump-score">Score: 0</p>
+                    <button class="start-btn" onclick="startJump()">Start Jumping</button>
+                </div>
+
+                <!-- PAPA'S -->
+                <div id="game-papa" class="minigame">
+                    <h3>Papa Zeke's Pizzeria</h3>
+                    <p>Make the order FAST. Click ingredients in exact order!</p>
+                    <div id="papa-order-screen">
+                        <h2>ORDER:</h2>
+                        <h1 id="current-order" class="rainbow-text">WAITING...</h1>
+                    </div>
+                    <div class="papa-buttons">
+                        <button onclick="addIng('Dough')">Dough</button>
+                        <button onclick="addIng('Sauce')">Sauce</button>
+                        <button onclick="addIng('Cheese')">Cheese</button>
+                        <button onclick="addIng('Zeke')"><img src="zeke.jpg" width="30"> Zeke</button>
+                    </div>
+                    <p>Current Built: <span id="papa-current"></span></p>
+                    <button class="start-btn" onclick="startPapa()">Start Shift</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="script.js?v=10"></script>
 </body>
 </html>
