@@ -202,17 +202,31 @@
       <button class="arcade-start" onclick="startJump()">Start Jump</button>
     </div>
 
-    <!-- PAPA'S (Drag & Drop) -->
+    <!-- PAPA'S (Drag & Drop SVG) -->
     <div id="game-papa" class="arcade-view">
-      <p>Time: <span id="papa-time">60</span>s | Combo: x<span id="papa-combo">1</span></p>
+      <p>Time: <span id="papa-time">30</span>s | Combo: x<span id="papa-combo">1</span></p>
       <div id="papa-order">Click Start</div>
       
-      <!-- Drag Sources -->
+      <!-- Drag Sources with Inline SVGs -->
       <div class="papa-ingredients">
-        <div class="papa-ing" draggable="true" ondragstart="dragPapa(event)" data-ing="Dough">Dough</div>
-        <div class="papa-ing" draggable="true" ondragstart="dragPapa(event)" data-ing="Sauce">Sauce</div>
-        <div class="papa-ing" draggable="true" ondragstart="dragPapa(event)" data-ing="Cheese">Cheese</div>
-        <div class="papa-ing" draggable="true" ondragstart="dragPapa(event)" data-ing="Pepperoni">Pepperoni</div>
+        <div class="papa-ing" draggable="true" ondragstart="dragPapa(event)" data-ing="Dough" title="Dough">
+          <svg viewBox="0 0 100 100" width="35" height="35"><circle cx="50" cy="50" r="48" fill="#f5d7b5" stroke="#d4b48f" stroke-width="2"/></svg>
+        </div>
+        <div class="papa-ing" draggable="true" ondragstart="dragPapa(event)" data-ing="Sauce" title="Sauce">
+          <svg viewBox="0 0 100 100" width="35" height="35"><circle cx="50" cy="50" r="42" fill="#d9381e"/></svg>
+        </div>
+        <div class="papa-ing" draggable="true" ondragstart="dragPapa(event)" data-ing="Cheese" title="Cheese">
+          <svg viewBox="0 0 100 100" width="35" height="35"><circle cx="50" cy="50" r="38" fill="#f4d03f" stroke="#f1c40f" stroke-width="2" stroke-dasharray="5,5"/></svg>
+        </div>
+        <div class="papa-ing" draggable="true" ondragstart="dragPapa(event)" data-ing="Pepperoni" title="Pepperoni">
+          <svg viewBox="0 0 100 100" width="35" height="35">
+            <circle cx="35" cy="35" r="10" fill="#c0392b"/>
+            <circle cx="65" cy="45" r="10" fill="#c0392b"/>
+            <circle cx="45" cy="70" r="10" fill="#c0392b"/>
+            <circle cx="55" cy="25" r="10" fill="#c0392b"/>
+            <circle cx="30" cy="60" r="10" fill="#c0392b"/>
+          </svg>
+        </div>
       </div>
 
       <!-- Drop Target -->
@@ -225,7 +239,7 @@
 
     <!-- AIM TRAINER -->
     <div id="game-aim" class="arcade-view">
-      <p>Time: <span id="aim-time">30</span> | Hits: <span id="aim-score">0</span></p>
+      <p>Time: <span id="aim-time">15</span> | Hits: <span id="aim-score">0</span></p>
       <div id="aim-box" onmousedown="handleAimClick(event)">
         <div class="aim-target" id="aim-target-1"></div>
       </div>
