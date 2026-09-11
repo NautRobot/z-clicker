@@ -10,34 +10,29 @@ window.addEventListener("keydown", function(e) {
 }, false);
 
 // ==========================================
-// DARK MODE
-// ==========================================
-function toggleDarkMode() {
-    document.body.classList.toggle('dark-mode');
-    localStorage.setItem('zekeTheme', document.body.classList.contains('dark-mode'));
-}
-if(localStorage.getItem('zekeTheme') === 'true') document.body.classList.add('dark-mode');
-
-// ==========================================
-// CORE CLICKER ENGINE
+// CORE DATA & LOGIC
 // ==========================================
 let zekes = 0; let cps = 0; let activeStoreTab = 'bld';
 
+// LORE: Buildings are Zeke Accessories
 const buildings = [
-    { id: 'b1', name: "Hall Pass", desc: "Wander the halls passively generating Zekes.", baseCost: 15, cps: 0.5, count: 0 },
-    { id: 'b2', name: "Background Tab", desc: "Leave the game running in a hidden tab.", baseCost: 100, cps: 4, count: 0 },
-    { id: 'b3', name: "Proxy Network", desc: "Bypass the school filters for better routing.", baseCost: 1100, cps: 16, count: 0 },
-    { id: 'b4', name: "Bot Net", desc: "Run a script on all library computers.", baseCost: 12000, cps: 65, count: 0 },
-    { id: 'b5', name: "Server Hijack", desc: "Redirect the school's bandwidth to mine Zekes.", baseCost: 130000, cps: 380, count: 0 },
-    { id: 'b6', name: "Cloud Infrastructure", desc: "Deploy massive clusters to automate clicking.", baseCost: 1500000, cps: 2500, count: 0 }
+    { id: 'b1', name: "Zeke's Finger", desc: "A severed digit that clicks autonomously.", baseCost: 15, cps: 0.5, count: 0 },
+    { id: 'b2', name: "Zeke's Leg", desc: "Stomps the ground to unearth hidden Zekes.", baseCost: 100, cps: 4, count: 0 },
+    { id: 'b3', name: "Zeke's Arm", desc: "Sweeps across the desk to gather Zekes.", baseCost: 1100, cps: 16, count: 0 },
+    { id: 'b4', name: "Zeke's Backpack", desc: "A massive bag that hoards thousands of Zekes.", baseCost: 12000, cps: 65, count: 0 },
+    { id: 'b5', name: "Zeke's Glasses", desc: "Reveals microscopic Zekes floating in the air.", baseCost: 130000, cps: 380, count: 0 },
+    { id: 'b6', name: "Zeke's Liver", desc: "Filters pure Zekes directly from the bloodstream.", baseCost: 1500000, cps: 2500, count: 0 },
+    { id: 'b7', name: "Zeke's Heart", desc: "Pumps liquid Zekes through the system.", baseCost: 20000000, cps: 15000, count: 0 },
+    { id: 'b8', name: "Zeke's Soul", desc: "Transcends reality to manifest Zekes from the void.", baseCost: 330000000, cps: 100000, count: 0 }
 ];
 
+// LORE: Active Click Upgrades are School-themed Protocols
 const clickUpgrades = [
-    { id: 'u1', name: "Ergonomic Mouse", desc: "Clicking is 2x stronger.", cost: 500, bought: false },
-    { id: 'u2', name: "Software Macros", desc: "Clicking is 2x stronger.", cost: 5000, bought: false },
-    { id: 'u3', name: "Caffeine Boost", desc: "Clicking is 2x stronger.", cost: 50000, bought: false },
-    { id: 'u4', name: "Synergy Link I", desc: "Clicks gain +1% of your total CPS.", cost: 250000, bought: false },
-    { id: 'u5', name: "Mechanical Switches", desc: "Clicking is 2x stronger.", cost: 1000000, bought: false }
+    { id: 'u1', name: "Cool Math Proxy", desc: "Clicking force increased by 200%.", cost: 500, bought: false },
+    { id: 'u2', name: "Kahoot Botter", desc: "Clicking force increased by 200%.", cost: 5000, bought: false },
+    { id: 'u3', name: "South-Doyle Wi-Fi", desc: "Clicking force increased by 200%.", cost: 50000, bought: false },
+    { id: 'u4', name: "Securly Bypass", desc: "Aggregate clicks yield +1% of global CPS.", cost: 250000, bought: false },
+    { id: 'u5', name: "Flash Drive VPN", desc: "Clicking force increased by 200%.", cost: 1000000, bought: false }
 ];
 
 function getBldCost(b) { return Math.floor(b.baseCost * Math.pow(1.15, b.count)); }
@@ -61,10 +56,10 @@ document.getElementById('main-zeke').addEventListener('mousedown', (e) => {
 });
 
 setInterval(() => { if(cps > 0) { zekes += cps / 10; updateUI(); } }, 100);
-setInterval(() => { localStorage.setItem('zekeClickerV15', JSON.stringify({ zekes, buildings, clickUpgrades })); }, 5000);
+setInterval(() => { localStorage.setItem('zekeClicker_Premium', JSON.stringify({ zekes, buildings, clickUpgrades })); }, 5000);
 
 function loadGame() {
-    let save = JSON.parse(localStorage.getItem('zekeClickerV15'));
+    let save = JSON.parse(localStorage.getItem('zekeClicker_Premium'));
     if(save) {
         zekes = save.zekes || 0;
         if(save.buildings) save.buildings.forEach((sb, i) => { if(buildings[i]) buildings[i].count = sb.count; });
@@ -77,8 +72,8 @@ function recalcStats() { cps = 0; buildings.forEach(b => cps += b.cps * b.count)
 
 function switchTab(tab) {
     activeStoreTab = tab;
-    document.getElementById('tab-bld').className = tab === 'bld' ? 'tab-btn active' : 'tab-btn';
-    document.getElementById('tab-upg').className = tab === 'upg' ? 'tab-btn active' : 'tab-btn';
+    document.getElementById('tab-bld').className = tab === 'bld' ? 'toggle-btn active' : 'toggle-btn';
+    document.getElementById('tab-upg').className = tab === 'upg' ? 'toggle-btn active' : 'toggle-btn';
     buildStore();
 }
 function buyBuilding(idx) { let b = buildings[idx]; let cost = getBldCost(b); if(zekes >= cost) { zekes -= cost; b.count++; recalcStats(); buildStore(); updateUI(); } }
@@ -89,29 +84,35 @@ function buildStore() {
     if (activeStoreTab === 'bld') {
         buildings.forEach((b, i) => {
             html += `
-            <div class="store-item">
-                <div class="item-info">
-                    <strong>${b.name} <span style="color:var(--text-muted); font-size:14px; font-weight:normal;">(${b.count})</span></strong>
-                    <div class="item-desc">${b.desc}</div>
-                    <div class="item-stat">+${formatNum(b.cps)} Zekes/sec</div>
+            <div class="inventory-item">
+                <div class="inv-details">
+                    <span class="inv-name">${b.name} <span style="font-weight:normal; color:var(--ink-light);">(${b.count})</span></span>
+                    <span class="inv-desc">${b.desc}</span>
+                    <span class="inv-yield">+${formatNum(b.cps)} Z/sec</span>
                 </div>
-                <button class="buy-btn" id="btn-bld-${i}" onclick="buyBuilding(${i})">${formatNum(getBldCost(b))} Z</button>
+                <button class="inv-action" id="btn-bld-${i}" onclick="buyBuilding(${i})">
+                    <span class="action-lbl">ACQUIRE</span>
+                    <span class="action-cost">${formatNum(getBldCost(b))}</span>
+                </button>
             </div>`;
         });
     } else {
         clickUpgrades.forEach((u, i) => {
             if (!u.bought) {
                 html += `
-                <div class="store-item">
-                    <div class="item-info">
-                        <strong>${u.name}</strong>
-                        <div class="item-desc">${u.desc}</div>
+                <div class="inventory-item">
+                    <div class="inv-details">
+                        <span class="inv-name">${u.name}</span>
+                        <span class="inv-desc">${u.desc}</span>
                     </div>
-                    <button class="buy-btn" id="btn-upg-${i}" onclick="buyUpgrade(${i})">${formatNum(u.cost)} Z</button>
+                    <button class="inv-action" id="btn-upg-${i}" onclick="buyUpgrade(${i})">
+                        <span class="action-lbl">UPGRADE</span>
+                        <span class="action-cost">${formatNum(u.cost)}</span>
+                    </button>
                 </div>`;
             }
         });
-        if (html === '') html = '<p style="text-align:center; color:var(--text-muted); margin-top:20px;">All upgrades purchased!</p>';
+        if (html === '') html = '<p style="text-align:center; font-family:var(--font-mono); font-size:12px; color:var(--ink-light); margin-top:20px;">ALL PROTOCOLS ACQUIRED.</p>';
     }
     document.getElementById('store-list').innerHTML = html;
 }
@@ -131,42 +132,30 @@ function formatNum(num) {
     return (num / 1000000000000).toFixed(2) + "T";
 }
 
-function restartGame() { if(confirm("Are you sure you want to permanently delete your save file?")) { localStorage.removeItem('zekeClickerV15'); location.reload(); } }
-
+function restartGame() { if(confirm("CRITICAL WARNING: This will permanently purge local cache data. Proceed?")) { localStorage.removeItem('zekeClicker_Premium'); location.reload(); } }
 
 // ==========================================
-// ARCADE MODAL & MINIGAMES
+// ARCADE HUB MODAL & GAMES
 // ==========================================
 let activeInterval = null; let gameTimer = null;
 const modal = document.getElementById('arcade-modal');
 
 function getGameMult() { return Math.max(1, Math.floor(cps / 15)); }
 
-function openArcadeModal() {
-    modal.classList.remove('hidden');
-    // Ensure first game is open visually
-}
-
-function closeArcadeModal() {
-    modal.classList.add('hidden');
-    clearInterval(activeInterval); 
-    clearInterval(gameTimer);
-}
+function openArcadeModal() { modal.classList.remove('hidden'); }
+function closeArcadeModal() { modal.classList.add('hidden'); clearInterval(activeInterval); clearInterval(gameTimer); }
 
 function openGame(tabId, element) {
     document.querySelectorAll('.game-view').forEach(el => el.classList.remove('active-view'));
     document.getElementById('game-' + tabId).classList.add('active-view');
-    document.querySelectorAll('.nav-btn').forEach(el => el.classList.remove('active'));
+    document.querySelectorAll('.menu-btn').forEach(el => el.classList.remove('active'));
     if(element) element.classList.add('active');
-    
-    // Stop any running games when switching tabs
-    clearInterval(activeInterval); 
-    clearInterval(gameTimer);
+    clearInterval(activeInterval); clearInterval(gameTimer);
 }
 
 // --- 1. SNAKE ---
 const sCanvas = document.getElementById("snakeCanvas"); const sCtx = sCanvas.getContext("2d"); const box = 15;
-let snake, food, goldenFood, d, snakeSpeed; let zImg = new Image(); zImg.src = 'zeke.jpg';
+let snake, food, goldenFood, d, snakeSpeed;
 function startSnake() {
     clearInterval(activeInterval); snake = [{ x: 9 * box, y: 9 * box }]; food = spawnFood(); goldenFood = null; d = "RIGHT"; snakeSpeed = 130;
     activeInterval = setTimeout(snakeLoop, snakeSpeed);
@@ -180,14 +169,13 @@ document.addEventListener("keydown", (e) => {
     else if((e.code === "ArrowDown" || e.code === "KeyS") && d != "UP") d = "DOWN";
 });
 function snakeLoop() {
-    sCtx.fillStyle = "#111827"; sCtx.fillRect(0, 0, 300, 300);
+    sCtx.fillStyle = "#F4F0EA"; sCtx.fillRect(0, 0, 300, 300);
     for(let i = 0; i < snake.length; i++) {
-        sCtx.fillStyle = i === 0 ? "#3b82f6" : "#60a5fa"; 
-        sCtx.fillRect(snake[i].x, snake[i].y, box, box);
-        sCtx.strokeStyle = "#1e3a8a"; sCtx.strokeRect(snake[i].x, snake[i].y, box, box);
+        sCtx.fillStyle = i === 0 ? "#1018D5" : "#5A5A5A"; sCtx.fillRect(snake[i].x, snake[i].y, box, box);
+        sCtx.strokeStyle = "#111111"; sCtx.strokeRect(snake[i].x, snake[i].y, box, box);
     }
-    try { sCtx.drawImage(zImg, food.x, food.y, box, box); } catch(e) { sCtx.fillStyle = "#ef4444"; sCtx.fillRect(food.x, food.y, box, box); }
-    if(goldenFood) { sCtx.fillStyle = "#fbbf24"; sCtx.fillRect(goldenFood.x, goldenFood.y, box, box); }
+    sCtx.fillStyle = "#D53F2B"; sCtx.fillRect(food.x, food.y, box, box);
+    if(goldenFood) { sCtx.fillStyle = "#FFD700"; sCtx.fillRect(goldenFood.x, goldenFood.y, box, box); }
 
     let sX = snake[0].x, sY = snake[0].y;
     if(d == "LEFT") sX -= box; if(d == "UP") sY -= box; if(d == "RIGHT") sX += box; if(d == "DOWN") sY += box;
@@ -204,7 +192,7 @@ function snakeLoop() {
     let newHead = { x: sX, y: sY };
     if(sX < 0 || sX >= 300 || sY < 0 || sY >= 300 || snake.some(s => s.x === sX && s.y === sY)) {
         let reward = (snake.length - 1) * 80 * getGameMult();
-        alert("Game Over! Length: " + snake.length + " | Earned: " + formatNum(reward) + " Zekes");
+        alert("TERMINATED. Length: " + snake.length + " | Yield: " + formatNum(reward) + " Zekes");
         zekes += reward; updateUI(); return;
     }
     snake.unshift(newHead); activeInterval = setTimeout(snakeLoop, snakeSpeed);
@@ -216,7 +204,7 @@ let jScore = 0, oLeft = 420, cLeft = -50, isJumping = false, canDoubleJump = fal
 
 function startJump() {
     clearInterval(activeInterval); jScore = 0; oLeft = 420; cLeft = 500; 
-    obs.style.left = oLeft + 'px'; obs.style.bottom = '0px'; obs.style.background = '#ef4444'; obs.style.width = '16px'; obs.style.height = '30px';
+    obs.style.left = oLeft + 'px'; obs.style.bottom = '0px'; obs.style.background = 'var(--danger)'; obs.style.width = '16px'; obs.style.height = '32px';
     coin.classList.remove('hidden'); coin.style.left = cLeft + 'px';
     document.getElementById("jump-score").innerText = "0";
     
@@ -227,11 +215,8 @@ function startJump() {
         if (oLeft < -40) { 
             oLeft = 400 + Math.random() * 150; jScore += 5; 
             obsType = Math.random() < 0.3 ? 1 : 0; 
-            if(obsType === 1) {
-                obs.style.bottom = '65px'; obs.style.height = '20px'; obs.style.width = '20px'; obs.style.background = '#8b5cf6';
-            } else {
-                obs.style.bottom = '0px'; obs.style.height = (25 + Math.random() * 20) + 'px'; obs.style.width = (15 + Math.random() * 15) + 'px'; obs.style.background = '#ef4444';
-            }
+            if(obsType === 1) { obs.style.bottom = '65px'; obs.style.height = '20px'; obs.style.width = '20px'; obs.style.background = 'var(--accent)'; } 
+            else { obs.style.bottom = '0px'; obs.style.height = (25 + Math.random() * 20) + 'px'; obs.style.width = (15 + Math.random() * 15) + 'px'; obs.style.background = 'var(--danger)'; }
         }
         if (cLeft < -20) { cLeft = 400 + Math.random() * 300; coin.classList.remove('hidden'); }
         
@@ -241,7 +226,7 @@ function startJump() {
         if (jRect.left < oRect.right && jRect.right > oRect.left && jRect.bottom > oRect.top && jRect.top < oRect.bottom) {
             clearInterval(activeInterval);
             let reward = jScore * 40 * getGameMult();
-            alert("Crash! Score: " + jScore + " | Earned: " + formatNum(reward) + " Zekes."); zekes += reward; updateUI();
+            alert("IMPACT DETECTED. Distance: " + jScore + " | Yield: " + formatNum(reward) + " Zekes."); zekes += reward; updateUI();
         }
         if (!coin.classList.contains('hidden') && jRect.left < cRect.right && jRect.right > cRect.left && jRect.top < cRect.bottom && jRect.bottom > cRect.top) {
             coin.classList.add('hidden'); jScore += 25;
@@ -263,8 +248,8 @@ function doJump() {
     }
 }
 
-// --- 3. PAPA'S RUSH HOUR ---
-const ings = ["Dough", "Sauce", "Cheese", "Zeke"];
+// --- 3. ASSEMBLY ---
+const ings = ["DOUGH", "SAUCE", "CHEESE", "ZEKE"];
 let target = [], current = [], papaTime = 0, papaCombo = 1, totalPapaScore = 0;
 function startPapa() {
     clearInterval(gameTimer); papaTime = 60; papaCombo = 1; totalPapaScore = 0;
@@ -274,8 +259,8 @@ function startPapa() {
         papaTime--; document.getElementById('papa-time').innerText = papaTime;
         if(papaTime <= 0) {
             clearInterval(gameTimer); let reward = totalPapaScore * getGameMult();
-            alert("Shift Over! Earned: " + formatNum(reward) + " Zekes!"); zekes += reward; updateUI();
-            document.getElementById('papa-order').innerText = "Click Start"; document.getElementById('papa-current').innerText = "";
+            alert("ASSEMBLY COMPLETE. Yield: " + formatNum(reward) + " Zekes!"); zekes += reward; updateUI();
+            document.getElementById('papa-order').innerText = "AWAITING INITIALIZATION"; document.getElementById('papa-current').innerText = "";
         }
     }, 1000);
 }
@@ -285,7 +270,7 @@ function newOrder() {
     document.getElementById('papa-order').innerText = target.join(" + "); document.getElementById('papa-current').innerText = "";
 }
 function addIng(ing) {
-    if(papaTime <= 0) return; current.push(ing); document.getElementById('papa-current').innerText = current.join(" - ");
+    if(papaTime <= 0) return; current.push(ing.toUpperCase()); document.getElementById('papa-current').innerText = current.join(" - ");
     for(let i=0; i<current.length; i++) {
         if(current[i] !== target[i]) { papaCombo = 1; document.getElementById('papa-combo').innerText = papaCombo; newOrder(); return; }
     }
@@ -294,7 +279,7 @@ function addIng(ing) {
     }
 }
 
-// --- 4. GRIDSHOT (Anti-Spam) ---
+// --- 4. GRIDSHOT ---
 let aimHits = 0, aimTime = 0;
 function startAim() {
     clearInterval(gameTimer); aimHits = 0; aimTime = 30; 
@@ -306,12 +291,12 @@ function startAim() {
         if(aimTime <= 0) {
             clearInterval(gameTimer); for(let i=1; i<=3; i++) document.getElementById("at-"+i).style.display = 'none';
             let reward = aimHits * 150 * getGameMult();
-            alert("Time's Up! Hits: " + aimHits + " | Earned: " + formatNum(reward)); zekes += reward; updateUI();
+            alert("CALIBRATION COMPLETE. Hits: " + aimHits + " | Yield: " + formatNum(reward)); zekes += reward; updateUI();
         }
     }, 1000);
 }
 function spawnTarget(t) {
-    t.style.display = "block"; t.style.left = Math.floor(Math.random() * 350) + "px"; t.style.top = Math.floor(Math.random() * 200) + "px";
+    t.style.display = "block"; t.style.left = Math.floor(Math.random() * 400) + "px"; t.style.top = Math.floor(Math.random() * 230) + "px";
 }
 
 document.getElementById('aim-box').addEventListener('mousedown', (e) => {
