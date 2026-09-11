@@ -3,13 +3,13 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Zeke Clicker // V.16</title>
+<title>Zeke Clicker // V.17</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Syne:wght@600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=16">
+<link rel="stylesheet" href="style.css?v=17">
 </head>
-<body> 
+<body>
 
 <div class="grain-overlay"></div>
 
@@ -44,7 +44,10 @@
     <header class="editorial-header stagger-1">
         <div class="header-brand">
             <h1>ZEKE CLICKER</h1>
-            <span class="version-tag">STABLE BUILD 16.0</span>
+            <div class="brand-sub">
+                <span class="version-tag">STABLE BUILD 17.0</span>
+                <button class="theme-toggle" onclick="toggleTheme()">🌗 INVERT THEME</button>
+            </div>
         </div>
         <div class="header-metrics">
             <div class="metric">
@@ -114,7 +117,7 @@
             <div class="store-header">
                 <h2>MARKETPLACE</h2>
                 <div class="store-toggles">
-                    <button onclick="switchTab('bld')" id="tab-bld" class="toggle-btn active">Accessories</button>
+                    <button onclick="switchTab('bld')" id="tab-bld" class="toggle-btn active">Infrastructure</button>
                     <button onclick="switchTab('upg')" id="tab-upg" class="toggle-btn">Protocols</button>
                 </div>
             </div>
@@ -137,18 +140,18 @@
         
         <div class="modal-layout">
             <nav class="arcade-menu">
-                <button onclick="openGame('snake', this)" class="menu-btn active">01. Serpent</button>
-                <button onclick="openGame('jump', this)" class="menu-btn">02. Velocity</button>
-                <button onclick="openGame('papa', this)" class="menu-btn">03. Assembly</button>
-                <button onclick="openGame('aim', this)" class="menu-btn">04. Gridshot</button>
+                <button onclick="openGame('snake', this)" class="menu-btn active">01. Swerve Pathing</button>
+                <button onclick="openGame('jump', this)" class="menu-btn">02. Altima Run</button>
+                <button onclick="openGame('papa', this)" class="menu-btn">03. Dutch Bros Rush</button>
+                <button onclick="openGame('aim', this)" class="menu-btn">04. AprilTag Vision</button>
             </nav>
 
             <main class="arcade-stage">
                 <!-- SNAKE -->
                 <div id="game-snake" class="game-view active-view">
                     <div class="game-meta">
-                        <h3>SERPENT PROTOCOL</h3>
-                        <p>Directional keys to navigate. Acquire targets. Gold targets yield 10x multiplier.</p>
+                        <h3>SWERVE PATHING</h3>
+                        <p>Directional keys to navigate the FRC field. Acquire targets. Gold targets yield 10x multiplier.</p>
                     </div>
                     <div class="game-canvas-wrapper">
                         <canvas id="snakeCanvas" width="300" height="300"></canvas>
@@ -159,8 +162,8 @@
                 <!-- JUMP -->
                 <div id="game-jump" class="game-view">
                     <div class="game-meta">
-                        <h3>VELOCITY ENGINE</h3>
-                        <p>Spacebar to engage vertical thrust. Dual-thrust enabled. Evade red entities, intercept gold.</p>
+                        <h3>ALTIMA RUN</h3>
+                        <p>Spacebar to engage suspension jump. Evade traffic, intercept fuel.</p>
                     </div>
                     <div class="game-canvas-wrapper" id="jump-world">
                         <div id="jumper"></div>
@@ -174,8 +177,8 @@
                 <!-- PAPA'S -->
                 <div id="game-papa" class="game-view">
                     <div class="game-meta">
-                        <h3>ASSEMBLY LINE</h3>
-                        <p>Replicate the structural sequence accurately to exponentially stack combo multipliers.</p>
+                        <h3>DUTCH BROS RUSH</h3>
+                        <p>Replicate the exact drink sequence accurately to stack combo multipliers.</p>
                     </div>
                     <div class="assembly-metrics">
                         <span>T-MINUS: <span id="papa-time" class="accent-text">60</span>s</span>
@@ -183,10 +186,10 @@
                     </div>
                     <div id="papa-order" class="assembly-target">AWAITING INITIALIZATION</div>
                     <div class="assembly-controls">
-                        <button onclick="addIng('Dough')">DOUGH</button>
-                        <button onclick="addIng('Sauce')">SAUCE</button>
-                        <button onclick="addIng('Cheese')">CHEESE</button>
-                        <button onclick="addIng('Zeke')">ZEKE</button>
+                        <button onclick="addIng('Espresso')">ESPRESSO</button>
+                        <button onclick="addIng('Milk')">MILK</button>
+                        <button onclick="addIng('Syrup')">SYRUP</button>
+                        <button onclick="addIng('Ice')">ICE</button>
                     </div>
                     <div class="assembly-buffer">BUFFER: <span id="papa-current"></span></div>
                     <button class="prime-btn" onclick="startPapa()">INITIALIZE</button>
@@ -195,7 +198,7 @@
                 <!-- AIM TRAINER -->
                 <div id="game-aim" class="game-view">
                     <div class="game-meta">
-                        <h3>GRIDSHOT CALIBRATOR</h3>
+                        <h3>APRILTAG VISION</h3>
                         <p class="danger-text">WARNING: Inaccurate inputs result in point degradation.</p>
                     </div>
                     <div class="assembly-metrics">
@@ -214,6 +217,6 @@
     </div>
 </div>
 
-<script src="script.js?v=16"></script>
+<script src="script.js?v=17"></script>
 </body>
 </html>
