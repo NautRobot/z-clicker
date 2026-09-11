@@ -9,7 +9,7 @@ let rbAutoCost = 2;
 let zekes = 0; 
 let baseClickGain = 1; 
 let baseIdleZekes = 0; 
-const costMultiplier = 1.2; 
+const costMultiplier = 2.5; 
 
 // Costs
 let zekeFingerCost = 15; 
@@ -62,7 +62,7 @@ setInterval(() => {
     }
 }, 1000);
 
-// Auto save loop (saves every 10 seconds)
+// Auto save loop
 setInterval(() => {
     saveGame();
 }, 10000);
@@ -189,7 +189,6 @@ function triggerRebirth() {
     let earnedTokens = parseInt(document.getElementById('pendingTokens').innerText) || 5;
     rebirthTokens += earnedTokens;
 
-    // Reset standard game variables
     zekes = 0;
     baseClickGain = 1;
     baseIdleZekes = 0;
@@ -209,7 +208,6 @@ function triggerRebirth() {
     zekePartOne = false;
     zekePartTwo = false;
 
-    // Reset layout UI elements
     image.classList.remove('win-image');
     document.getElementById('win-screen').style.display = 'none';
     document.getElementById('partOneBox').style.display = 'block';
@@ -307,7 +305,6 @@ function gainZekesAutoCount() {
     gainZeke(currentClickGain); 
 } 
 
-// --- COOKIE SAVE SYSTEM ---
 function setCookie(name, value, days) {
     let expires = "";
     if (days) {
@@ -384,8 +381,6 @@ function loadGame() {
     updateAll();
 }
 
-
-// Prevent scrolling when using keys for arcade games
 window.addEventListener("keydown", function(e) {
     if(["Space", "ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight"].indexOf(e.code) > -1 && document.getElementById('arcade-modal').style.display === 'flex') {
         e.preventDefault();
@@ -398,6 +393,7 @@ window.addEventListener("keydown", function(e) {
    ========================================= */
 let activeInterval = null;
 let gameTimer = null;
+let aimMoveTimer = null; // Specially for aim trainer pacing
 
 function toggleArcade() {
     let modal = document.getElementById('arcade-modal');
@@ -407,6 +403,7 @@ function toggleArcade() {
         modal.style.display = 'none';
         clearInterval(activeInterval);
         clearInterval(gameTimer);
+        clearInterval(aimMoveTimer);
     }
 }
 
@@ -420,6 +417,7 @@ function switchArcade(gameId) {
 
     clearInterval(activeInterval);
     clearInterval(gameTimer);
+    clearInterval(aimMoveTimer);
 }
 
 function getGameReward() {
@@ -427,7 +425,7 @@ function getGameReward() {
     return Math.max(10, Math.floor((baseClickGain + baseIdleZekes) * tokenMultiplier * 5));
 }
 
-// --- 1. SNAKE ---
+// --- 1. FASTER SNAKE ---
 const sCanvas = document.getElementById("snakeCanvas"); 
 const sCtx = sCanvas.getContext("2d"); 
 const box = 15;
@@ -438,7 +436,7 @@ function startSnake() {
     snake = [{ x: 9 * box, y: 9 * box }]; 
     food = { x: Math.floor(Math.random() * 19) * box, y: Math.floor(Math.random() * 19) * box };
     d = "RIGHT"; 
-    snakeSpeed = 120;
+    snakeSpeed = 80; // Starts much faster
     activeInterval = setTimeout(snakeLoop, snakeSpeed);
 }
 
@@ -466,7 +464,7 @@ function snakeLoop() {
 
     if(sX == food.x && sY == food.y) {
         food = { x: Math.floor(Math.random() * 19) * box, y: Math.floor(Math.random() * 19) * box };
-        snakeSpeed = Math.max(50, snakeSpeed - 2);
+        snakeSpeed = Math.max(30, snakeSpeed - 4); // Drops floor even lower, speed increases faster
     } else { 
         snake.pop(); 
     }
@@ -482,7 +480,7 @@ function snakeLoop() {
     activeInterval = setTimeout(snakeLoop, snakeSpeed);
 }
 
-// --- 2. JUMP ---
+// --- 2. FASTER JUMP ---
 const jumper = document.getElementById("jumper"); 
 const obs = document.getElementById("obstacle"); 
 let jScore = 0, oLeft = 320, isJumping = false;
@@ -495,7 +493,7 @@ function startJump() {
     
     activeInterval = setInterval(() => {
         let jTop = parseInt(window.getComputedStyle(jumper).getPropertyValue("bottom"));
-        oLeft -= 5 + (jScore * 0.1); 
+        oLeft -= 10 + (jScore * 0.2); // Base speed faster, scales up faster
         
         if (oLeft < -20) { 
             oLeft = 300 + Math.random() * 100; 
@@ -522,16 +520,32 @@ document.addEventListener("keydown", (e) => {
 function doJump() {
     isJumping = true; 
     jumper.classList.add('jump-anim');
-    setTimeout(() => { jumper.classList.remove('jump-anim'); isJumping = false; }, 500);
+    setTimeout(() => { jumper.classList.remove('jump-anim'); isJumping = false; }, 350); // Matches the new fast CSS animation
 }
 
-// --- 3. PAPA'S PIZZERIA (DRAG & DROP) ---
+// --- 3. FASTER PAPA'S PIZZERIA (SVG VISUAL STACKING) ---
 const ingredients = ["Dough", "Sauce", "Cheese", "Pepperoni"];
 let papaTarget = [], currentPapa = [], papaTime = 0, papaCombo = 1, totalPapaScore = 0;
 
+// SVG Visual Maps for rendering the pizza
+const svgMap = {
+    "Dough": `<svg style="position:absolute; top:20px; left:20px; width:100px; height:100px; z-index:1;" viewBox="0 0 100 100"><circle cx="50" cy="50" r="48" fill="#f5d7b5" stroke="#d4b48f" stroke-width="2"/></svg>`,
+    "Sauce": `<svg style="position:absolute; top:20px; left:20px; width:100px; height:100px; z-index:2;" viewBox="0 0 100 100"><circle cx="50" cy="50" r="42" fill="#d9381e"/></svg>`,
+    "Cheese": `<svg style="position:absolute; top:20px; left:20px; width:100px; height:100px; z-index:3;" viewBox="0 0 100 100"><circle cx="50" cy="50" r="38" fill="#f4d03f" stroke="#f1c40f" stroke-width="2" stroke-dasharray="5,5"/></svg>`,
+    "Pepperoni": `<svg style="position:absolute; top:20px; left:20px; width:100px; height:100px; z-index:4;" viewBox="0 0 100 100">
+        <circle cx="35" cy="35" r="10" fill="#c0392b"/>
+        <circle cx="65" cy="45" r="10" fill="#c0392b"/>
+        <circle cx="45" cy="70" r="10" fill="#c0392b"/>
+        <circle cx="55" cy="25" r="10" fill="#c0392b"/>
+        <circle cx="30" cy="60" r="10" fill="#c0392b"/>
+    </svg>`
+};
+
 function startPapa() {
     clearInterval(gameTimer); 
-    papaTime = 60; papaCombo = 1; totalPapaScore = 0;
+    papaTime = 30; // Reduced from 60s for a fast paced shift!
+    papaCombo = 1; 
+    totalPapaScore = 0;
     document.getElementById('papa-time').innerText = papaTime; 
     document.getElementById('papa-combo').innerText = papaCombo;
     newPapaOrder();
@@ -552,15 +566,15 @@ function startPapa() {
 
 function newPapaOrder() {
     currentPapa = []; 
-    papaTarget = ["Dough"]; // Pizza always starts with dough
-    let len = Math.floor(Math.random() * 3) + 2; // 2 to 4 extra toppings
+    papaTarget = ["Dough"]; 
+    let len = Math.floor(Math.random() * 3) + 2; 
     for(let i=0; i<len; i++) {
         let randIng = ingredients[Math.floor(Math.random() * ingredients.length)];
         if(randIng === "Dough") randIng = "Cheese"; 
         papaTarget.push(randIng);
     }
     document.getElementById('papa-order').innerText = "Order: " + papaTarget.join(" -> "); 
-    document.getElementById('pizza-base').innerHTML = "Drag Ingredients Here!";
+    document.getElementById('pizza-base').innerHTML = "Drop Here!";
 }
 
 function dragPapa(ev) {
@@ -576,39 +590,65 @@ function dropPapa(ev) {
     var data = ev.dataTransfer.getData("text");
     
     currentPapa.push(data);
-    document.getElementById('pizza-base').innerHTML = "Current:<br>" + currentPapa.join(", ");
     
+    // Clear out the "Drop Here!" text if it's the first ingredient
+    if(currentPapa.length === 1) {
+        document.getElementById('pizza-base').innerHTML = "";
+    }
+    
+    // Visually stack the SVG on the pizza!
+    document.getElementById('pizza-base').innerHTML += svgMap[data];
+    
+    // Check accuracy
     for(let i=0; i<currentPapa.length; i++) {
         if(currentPapa[i] !== papaTarget[i]) { 
             papaCombo = 1; 
             document.getElementById('papa-combo').innerText = papaCombo; 
+            
+            // Visual error feedback
+            document.getElementById('pizza-base').style.borderColor = "red";
+            setTimeout(() => document.getElementById('pizza-base').style.borderColor = "#ff007f", 300);
+            
             newPapaOrder(); 
             return; 
         }
     }
     
+    // Successful pizza!
     if(currentPapa.length === papaTarget.length) {
         totalPapaScore += (papaTarget.length * papaCombo); 
         papaCombo++; 
         document.getElementById('papa-combo').innerText = papaCombo; 
+        
+        // Visual success feedback
+        document.getElementById('pizza-base').style.borderColor = "#00ff00";
+        setTimeout(() => document.getElementById('pizza-base').style.borderColor = "#ff007f", 300);
+
         newPapaOrder();
     }
 }
 
-// --- 4. AIM TRAINER ---
+// --- 4. FASTER AIM TRAINER ---
 let aimHits = 0, aimTime = 0;
+
 function startAim() {
     clearInterval(gameTimer); 
-    aimHits = 0; aimTime = 30; 
+    clearInterval(aimMoveTimer);
+    aimHits = 0; aimTime = 15; // Cut down from 30s
     document.getElementById("aim-score").innerText = "0"; 
     document.getElementById("aim-time").innerText = aimTime;
+    
     spawnTarget();
+    
+    // Automatically warp the target away if they don't click it fast enough! (0.6 seconds)
+    aimMoveTimer = setInterval(spawnTarget, 600); 
     
     gameTimer = setInterval(() => {
         aimTime--; 
         document.getElementById("aim-time").innerText = aimTime;
         if(aimTime <= 0) {
             clearInterval(gameTimer); 
+            clearInterval(aimMoveTimer);
             document.getElementById("aim-target-1").style.display = 'none';
             let reward = aimHits * getGameReward();
             alert("Time's up! Hits: " + aimHits + " | Earned: " + reward); 
@@ -629,30 +669,73 @@ function handleAimClick(e) {
     if(e.target.classList.contains('aim-target')) {
         aimHits++; 
         document.getElementById("aim-score").innerText = aimHits;
+        
+        // Reset the teleport timer since they successfully hit it
+        clearInterval(aimMoveTimer);
         spawnTarget();
+        aimMoveTimer = setInterval(spawnTarget, 600); 
     } else {
         aimHits = Math.max(0, aimHits - 1);
         document.getElementById("aim-score").innerText = aimHits;
     }
 }
 
+
 /* =========================================
    SECRET DEV PANEL LOGIC
    ========================================= */
 
-// Inject the dev panel HTML into the document on load
+// Inject the dev panel HTML structure on load
 window.onload = function() {
     loadGame();
     
     const devPanelHTML = `
-    <div id="dev-panel" style="display:none; position:fixed; top:20px; left:50%; transform:translateX(-50%); background:rgba(0,0,0,0.95); border:2px solid #ff00ff; padding:15px; z-index:9999; border-radius:10px; font-family:monospace; color:#00ffff; box-shadow:0 0 20px #ff00ff; width:220px; text-align:center;">
-        <h3 style="margin:0 0 10px 0; border-bottom:1px solid #ff00ff; padding-bottom:5px; text-align:center;">HACKER MENU</h3>
-        <button onclick="gainZeke(1000000)" style="width:100%; padding:8px; margin-bottom:5px; background:#222; color:#00ff00; border:1px solid #00ff00; cursor:pointer; font-weight:bold;">+1,000,000 Zekes</button>
-        <button onclick="rebirthTokens += 100; updateAll();" style="width:100%; padding:8px; margin-bottom:5px; background:#222; color:#ff00ff; border:1px solid #ff00ff; cursor:pointer; font-weight:bold;">+100 Tokens</button>
+    <div id="dev-panel" style="display:none; position:fixed; top:20px; left:50%; transform:translateX(-50%); background:rgba(0,0,0,0.95); border:2px solid #ff00ff; padding:15px; z-index:9999; border-radius:10px; font-family:monospace; color:#00ffff; box-shadow:0 0 20px #ff00ff; width:260px; text-align:center;">
+        <h3 style="margin:0 0 10px 0; border-bottom:1px solid #ff00ff; padding-bottom:5px;">HACKER MENU</h3>
+        
+        <!-- Options Dropdown -->
+        <select id="dev-resource" style="width:100%; padding:8px; margin-bottom:10px; background:#111; color:#fff; border:1px solid #ff00ff; cursor:pointer;">
+            <option value="zekes">Zekes</option>
+            <option value="tokens">Rebirth Tokens</option>
+            <option value="baseClickGain">Click Power (Base)</option>
+            <option value="baseIdleZekes">Auto Power (Base)</option>
+        </select>
+        
+        <!-- Amount Input -->
+        <input type="number" id="dev-amount" value="1000000" style="width:100%; padding:8px; margin-bottom:10px; background:#111; color:#00ffff; border:1px solid #00ffff; box-sizing:border-box; font-weight:bold;">
+        
+        <!-- Apply Button -->
+        <button id="dev-apply-btn" onclick="applyDevCheat()" style="width:100%; padding:10px; margin-bottom:8px; background:#222; color:#00ff00; border:1px solid #00ff00; cursor:pointer; font-weight:bold; transition: background 0.2s;">GRANT RESOURCES</button>
+        
+        <!-- Close Button -->
         <button onclick="document.getElementById('dev-panel').style.display='none'" style="width:100%; padding:8px; background:#222; color:#ff0000; border:1px solid #ff0000; cursor:pointer; font-weight:bold;">Close Panel</button>
     </div>
     `;
     document.body.insertAdjacentHTML('beforeend', devPanelHTML);
+};
+
+// Handle Dev Panel Logic
+window.applyDevCheat = function() {
+    let res = document.getElementById("dev-resource").value;
+    let amt = parseFloat(document.getElementById("dev-amount").value) || 0;
+    
+    if (res === "zekes") gainZeke(amt);
+    if (res === "tokens") rebirthTokens += amt;
+    if (res === "baseClickGain") baseClickGain += amt;
+    if (res === "baseIdleZekes") baseIdleZekes += amt;
+    
+    updateAll();
+    
+    // Provide a visual flash to show it worked
+    let btn = document.getElementById('dev-apply-btn');
+    btn.innerText = "GRANTED!";
+    btn.style.background = "#00ff00";
+    btn.style.color = "#000";
+    setTimeout(() => {
+        btn.innerText = "GRANT RESOURCES";
+        btn.style.background = "#222";
+        btn.style.color = "#00ff00";
+    }, 800);
 };
 
 // Global keystroke listener for the secret code
@@ -660,11 +743,11 @@ let secretKeystrokeBuffer = "";
 const targetCode = "super_secret_long_password_12345_i_love_zeke";
 
 document.addEventListener("keydown", (e) => {
-    // We only capture single-character keys to avoid appending 'Shift', 'Control', etc.
+    // Only capture single-character keys to avoid appending 'Shift', 'Control', etc.
     if (e.key.length === 1) {
         secretKeystrokeBuffer += e.key;
         
-        // Prevent buffer from growing infinitely (keep it to the length of the secret + a little buffer)
+        // Prevent buffer from growing infinitely 
         if (secretKeystrokeBuffer.length > 100) {
             secretKeystrokeBuffer = secretKeystrokeBuffer.substring(secretKeystrokeBuffer.length - targetCode.length - 10);
         }
