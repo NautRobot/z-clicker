@@ -296,7 +296,8 @@ body {
 }
 #jumper { width: 20px; height: 20px; background: #00ffff; position: absolute; bottom: 0; left: 30px; }
 #obstacle { width: 15px; height: 25px; background: #ff007f; position: absolute; bottom: 0; left: 300px; }
-.jump-anim { animation: jumpUp 0.5s linear; }
+/* FASTER JUMP ANIMATION */
+.jump-anim { animation: jumpUp 0.35s linear; }
 @keyframes jumpUp { 0%{bottom:0;} 40%{bottom:70px;} 50%{bottom:80px;} 60%{bottom:70px;} 100%{bottom:0;} }
 
 /* Papa's Drag & Drop */
@@ -308,14 +309,17 @@ body {
   display: flex; gap: 10px; justify-content: center; margin-bottom: 15px;
 }
 .papa-ing {
-  background: #333; border: 1px solid #ff007f; padding: 8px; cursor: grab;
-  border-radius: 4px; font-size: 12px; font-weight: bold;
+  background: #222; border: 1px solid #444; padding: 5px; cursor: grab;
+  border-radius: 8px; display: flex; align-items: center; justify-content: center;
 }
 .papa-ing:active { cursor: grabbing; }
+
+/* The pizza construction plate */
 #pizza-base {
-  width: 250px; height: 100px; background: #222; border: 2px dashed #ff007f;
-  margin: 0 auto; border-radius: 50px; display: flex; align-items: center; justify-content: center;
-  color: #666; font-weight: bold; flex-direction: column; font-size: 12px;
+  width: 140px; height: 140px; background: #222; border: 2px dashed #ff007f;
+  margin: 0 auto; border-radius: 50%; display: flex; align-items: center; justify-content: center;
+  color: #666; font-weight: bold; font-size: 12px; position: relative; overflow: hidden;
+  transition: border-color 0.2s;
 }
 
 /* Aim Trainer */
