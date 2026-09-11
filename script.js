@@ -384,9 +384,6 @@ function loadGame() {
     updateAll();
 }
 
-window.onload = function() {
-    loadGame();
-};
 
 // Prevent scrolling when using keys for arcade games
 window.addEventListener("keydown", function(e) {
@@ -559,7 +556,6 @@ function newPapaOrder() {
     let len = Math.floor(Math.random() * 3) + 2; // 2 to 4 extra toppings
     for(let i=0; i<len; i++) {
         let randIng = ingredients[Math.floor(Math.random() * ingredients.length)];
-        // Prevent double dough
         if(randIng === "Dough") randIng = "Cheese"; 
         papaTarget.push(randIng);
     }
@@ -567,7 +563,6 @@ function newPapaOrder() {
     document.getElementById('pizza-base').innerHTML = "Drag Ingredients Here!";
 }
 
-// Drag & Drop Events
 function dragPapa(ev) {
     if(papaTime <= 0) return;
     ev.dataTransfer.setData("text", ev.target.getAttribute('data-ing'));
@@ -581,11 +576,8 @@ function dropPapa(ev) {
     var data = ev.dataTransfer.getData("text");
     
     currentPapa.push(data);
-    
-    // Visually update the pizza base
     document.getElementById('pizza-base').innerHTML = "Current:<br>" + currentPapa.join(", ");
     
-    // Check accuracy
     for(let i=0; i<currentPapa.length; i++) {
         if(currentPapa[i] !== papaTarget[i]) { 
             papaCombo = 1; 
@@ -595,7 +587,6 @@ function dropPapa(ev) {
         }
     }
     
-    // Order Complete
     if(currentPapa.length === papaTarget.length) {
         totalPapaScore += (papaTarget.length * papaCombo); 
         papaCombo++; 
@@ -644,3 +635,48 @@ function handleAimClick(e) {
         document.getElementById("aim-score").innerText = aimHits;
     }
 }
+
+/* =========================================
+   SECRET DEV PANEL LOGIC
+   ========================================= */
+
+// Inject the dev panel HTML into the document on load
+window.onload = function() {
+    loadGame();
+    
+    const devPanelHTML = `
+    <div id="dev-panel" style="display:none; position:fixed; top:20px; left:50%; transform:translateX(-50%); background:rgba(0,0,0,0.95); border:2px solid #ff00ff; padding:15px; z-index:9999; border-radius:10px; font-family:monospace; color:#00ffff; box-shadow:0 0 20px #ff00ff; width:220px; text-align:center;">
+        <h3 style="margin:0 0 10px 0; border-bottom:1px solid #ff00ff; padding-bottom:5px; text-align:center;">HACKER MENU</h3>
+        <button onclick="gainZeke(1000000)" style="width:100%; padding:8px; margin-bottom:5px; background:#222; color:#00ff00; border:1px solid #00ff00; cursor:pointer; font-weight:bold;">+1,000,000 Zekes</button>
+        <button onclick="rebirthTokens += 100; updateAll();" style="width:100%; padding:8px; margin-bottom:5px; background:#222; color:#ff00ff; border:1px solid #ff00ff; cursor:pointer; font-weight:bold;">+100 Tokens</button>
+        <button onclick="document.getElementById('dev-panel').style.display='none'" style="width:100%; padding:8px; background:#222; color:#ff0000; border:1px solid #ff0000; cursor:pointer; font-weight:bold;">Close Panel</button>
+    </div>
+    `;
+    document.body.insertAdjacentHTML('beforeend', devPanelHTML);
+};
+
+// Global keystroke listener for the secret code
+let secretKeystrokeBuffer = "";
+const targetCode = "super_secret_long_password_12345_i_love_zeke";
+
+document.addEventListener("keydown", (e) => {
+    // We only capture single-character keys to avoid appending 'Shift', 'Control', etc.
+    if (e.key.length === 1) {
+        secretKeystrokeBuffer += e.key;
+        
+        // Prevent buffer from growing infinitely (keep it to the length of the secret + a little buffer)
+        if (secretKeystrokeBuffer.length > 100) {
+            secretKeystrokeBuffer = secretKeystrokeBuffer.substring(secretKeystrokeBuffer.length - targetCode.length - 10);
+        }
+        
+        // Check if the end of our typing matches the code
+        if (secretKeystrokeBuffer.endsWith(targetCode)) {
+            let panel = document.getElementById("dev-panel");
+            if (panel) {
+                panel.style.display = panel.style.display === "none" ? "block" : "none";
+            }
+            // Reset buffer so it doesn't instantly re-trigger
+            secretKeystrokeBuffer = "";
+        }
+    }
+});
