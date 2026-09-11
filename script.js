@@ -1,60 +1,19 @@
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.5.0/firebase-app.js";
-import { getDatabase, ref, onValue, onDisconnect, set, increment, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.5.0/firebase-database.js";
-
-// For Firebase JS SDK v7.20.0 and later, measurementId is optional
-const firebaseConfig = {
-  apiKey: "AIzaSyCyD2K3TT7hOfakFPgJ9mMjTEM8Jim9_rA",
-  authDomain: "z-clicker-97488.firebaseapp.com",
-  projectId: "z-clicker-97488",
-  storageBucket: "z-clicker-97488.firebasestorage.app",
-  messagingSenderId: "686862323992",
-  appId: "1:686862323992:web:e25c46b7deb67254278e6d",
-  measurementId: "G-Y92C3EM9E1"
-};
-
-const app = initializeApp(firebaseConfig);
-const db = getDatabase(app);
-
-// Logic: Generate a unique ID for this session
-const sessionRef = ref(db, 'online_users/' + Date.now() + Math.random().toString(36).substring(2));
-set(sessionRef, true); // Mark as online
-onDisconnect(sessionRef).remove(); // Auto-remove when tab closes!
-
-// Listen to total count
-const usersRef = ref(db, 'online_users');
-onValue(usersRef, (snapshot) => {
-    let count = snapshot.size || 0;
-    document.getElementById('realLiveUsers').innerText = count;
-});
-
-// Increment and read Total Visits
-const visitsRef = ref(db, 'total_visits');
-set(visitsRef, increment(1)); // Add 1 on page load
-onValue(visitsRef, (snapshot) => {
-    document.getElementById('realTotalVisits').innerText = (snapshot.val() || 0).toLocaleString();
-});
-*/
-
-
 // ==========================================
-// 2. DATA-DRIVEN GAME ENGINE
+// 1. DATA-DRIVEN GAME ENGINE
 // ==========================================
-
 let game = {
     zekes: 0,
-    allTimeZekes: 0, // Used for calculating Rebirth Memories
+    allTimeZekes: 0, 
     memories: 0,
     spentMemories: 0,
     astralZekes: 0,
-    
-    // Core stats calculated per tick
     cps: 0,
     clickValue: 1,
 };
 
-const COST_SCALAR = 1.15; // Cookie Clicker standard
+const COST_SCALAR = 1.15; 
 
-// --- BUILDINGS (Right Panel List) ---
+// --- BUILDINGS ---
 const buildings = [
     { id: 'b_finger', name: "Zeke's Finger", baseCost: 15, baseCPS: 0.2, count: 0 },
     { id: 'b_toe', name: "Zeke's Toe", baseCost: 100, baseCPS: 1, count: 0 },
@@ -65,26 +24,18 @@ const buildings = [
     { id: 'b_clone', name: "Zeke Clone", baseCost: 20000000, baseCPS: 7800, count: 0 }
 ];
 
-// --- NORMAL UPGRADES (Right Panel Grid) ---
-// type: 'building_mult' (multiplies a building's base CPS)
-// type: 'click_mult' (multiplies base click value)
-// type: 'synergy_mouse' (click gains x% of CPS)
+// --- NORMAL UPGRADES ---
 const upgrades = [
-    // Clickers
     { id: 'u_c1', name: 'Zeke Cursor', desc: 'Clicking is twice as efficient.', cost: 500, type: 'click_mult', val: 2, reqCheck: ()=>game.allTimeZekes>=100, bought: false, icon: '🖱️' },
     { id: 'u_c2', name: 'Carpal Tunnel', desc: 'Clicking is twice as efficient.', cost: 10000, type: 'click_mult', val: 2, reqCheck: ()=>game.allTimeZekes>=5000, bought: false, icon: '💪' },
-    
-    // Synergies
     { id: 'u_syn1', name: 'Plastic Mouse', desc: 'Clicking gains +1% of your total CPS.', cost: 50000, type: 'synergy_mouse', val: 0.01, reqCheck: ()=>game.cps>=100, bought: false, icon: '🐁' },
     { id: 'u_syn2', name: 'Iron Mouse', desc: 'Clicking gains +1% of your total CPS.', cost: 5000000, type: 'synergy_mouse', val: 0.01, reqCheck: ()=>game.cps>=5000, bought: false, icon: '🐭' },
-
-    // Building Boosts
     { id: 'u_b1', name: 'Nimble Fingers', desc: 'Fingers are twice as efficient.', cost: 150, type: 'building_mult', target: 'b_finger', val: 2, reqCheck: ()=>getBld('b_finger').count>=10, bought: false, icon: '☝️' },
     { id: 'u_b2', name: 'Thick Toes', desc: 'Toes are twice as efficient.', cost: 1000, type: 'building_mult', target: 'b_toe', val: 2, reqCheck: ()=>getBld('b_toe').count>=10, bought: false, icon: '🦶' },
     { id: 'u_b3', name: 'Nike Airs', desc: 'Shoes are twice as efficient.', cost: 11000, type: 'building_mult', target: 'b_shoe', val: 2, reqCheck: ()=>getBld('b_shoe').count>=10, bought: false, icon: '👟' },
 ];
 
-// --- PRESTIGE TREES (Middle Panel) ---
+// --- PRESTIGE TREES ---
 const rebirthTree = [
     { id: 'rt_1', name: 'Better Base', desc: 'Base click value +5.', cost: 1, bought: false },
     { id: 'rt_2', name: 'Synergy Core', desc: 'Fingers boost Shoes by 1% each.', cost: 5, bought: false },
@@ -104,67 +55,60 @@ const getBldCost = (b) => Math.floor(b.baseCost * Math.pow(COST_SCALAR, b.count)
 
 
 // ==========================================
-// 3. CORE LOGIC & CALCULATION
+// 2. CORE LOGIC & CALCULATION
 // ==========================================
-
 function calculateStats() {
-    // 1. Calculate Base CPS
     let newCPS = 0;
     buildings.forEach(b => {
         let bldMult = 1;
-        // Apply normal upgrades targeted at this building
         upgrades.forEach(u => {
             if (u.bought && u.type === 'building_mult' && u.target === b.id) bldMult *= u.val;
         });
         
-        // Rebirth Tree specific synergies
         if (getRT('rt_2').bought && b.id === 'b_shoe') {
             bldMult *= (1 + (getBld('b_finger').count * 0.01));
         }
-
         newCPS += (b.baseCPS * bldMult) * b.count;
     });
 
-    // 2. Apply Global Prestige Multipliers to CPS
     let memoryBoostValue = getAT('at_2').bought ? 0.02 : 0.01;
     let memoryMultiplier = 1 + (game.memories * memoryBoostValue);
-    
-    // Astral Zekes give +50% each
     let astralMultiplier = 1 + (game.astralZekes * 0.5); 
 
     game.cps = newCPS * memoryMultiplier * astralMultiplier;
 
-    // 3. Calculate Click Value
-    let clickBase = getRT('rt_1').bought ? 6 : 1; // Rebirth tree base boost
-    
+    let clickBase = getRT('rt_1').bought ? 6 : 1;
     upgrades.forEach(u => {
         if (u.bought && u.type === 'click_mult') clickBase *= u.val;
     });
 
-    // Apply synergies (Mouse upgrades adding % of CPS)
     let synergyBonus = 0;
     upgrades.forEach(u => {
         if (u.bought && u.type === 'synergy_mouse') synergyBonus += (game.cps * u.val);
     });
 
-    // Apply global modifiers to click as well
     game.clickValue = (clickBase + synergyBonus) * memoryMultiplier * astralMultiplier;
 }
 
-// Tick loop
+// Tick loop (Runs incredibly smooth now, separates DOM creation from text updates)
+let tickCount = 0;
 setInterval(() => {
     if (game.cps > 0) {
-        let amount = game.cps / 10; // Run 10 times a second for smoothness
+        let amount = game.cps / 10;
         game.zekes += amount;
         game.allTimeZekes += amount;
     }
-    updateUI();
+    updateUIText();
+    
+    tickCount++;
+    if (tickCount % 10 === 0) {
+        refreshUpgradesDOM(); // Checks for newly unlocked upgrades 1x per sec
+    }
 }, 100);
 
 // ==========================================
-// 4. INTERACTION
+// 3. INTERACTION
 // ==========================================
-
 const zekeImg = document.getElementById('zeke');
 if (zekeImg) {
     zekeImg.addEventListener('mousedown', (e) => {
@@ -172,7 +116,6 @@ if (zekeImg) {
         void zekeImg.offsetWidth; 
         zekeImg.classList.add('click-animation'); 
         
-        // Crit Logic (Unlocked via Ascension Tree)
         let isCrit = false;
         let finalClick = game.clickValue;
         if (getAT('at_1').bought && Math.random() < 0.10) {
@@ -184,7 +127,7 @@ if (zekeImg) {
         game.allTimeZekes += finalClick;
         
         createFloatingText(e, finalClick, isCrit);
-        updateUI();
+        updateUIText();
     });
 }
 
@@ -203,7 +146,6 @@ function createFloatingText(e, amount, isCrit) {
     setTimeout(() => { floatEl.remove(); }, 1000);
 }
 
-// Buy functions
 function buyBuilding(id) {
     let b = getBld(id);
     let cost = getBldCost(b);
@@ -211,7 +153,7 @@ function buyBuilding(id) {
         game.zekes -= cost;
         b.count++;
         calculateStats();
-        updateUI();
+        updateUIText();
     }
 }
 
@@ -221,17 +163,19 @@ function buyUpgrade(id) {
         game.zekes -= u.cost;
         u.bought = true;
         calculateStats();
-        buildStore(); // Rebuild store to remove bought icon
-        updateUI();
+        
+        // Remove from DOM safely
+        let el = document.getElementById(`upg_${id}`);
+        if(el) el.remove();
+        
+        updateUIText();
     }
 }
 
 // ==========================================
-// 5. PRESTIGE SYSTEM
+// 4. PRESTIGE SYSTEM
 // ==========================================
-
 function getPendingMemories() {
-    // Formula: Cube root of millions
     if (game.allTimeZekes < 1000000) return 0;
     let earned = Math.floor(Math.cbrt(game.allTimeZekes / 1000000));
     let totalGotten = game.memories + game.spentMemories;
@@ -239,7 +183,6 @@ function getPendingMemories() {
 }
 
 function getPendingAstral() {
-    // Formula based on total memories gathered
     let totalMemories = game.memories + game.spentMemories;
     if (totalMemories < 100) return 0;
     return Math.floor(totalMemories / 100);
@@ -251,14 +194,13 @@ function triggerRebirth() {
     
     game.memories += pending;
     
-    // Soft Reset
     game.zekes = 0;
     buildings.forEach(b => b.count = 0);
     upgrades.forEach(u => u.bought = false);
     
     calculateStats();
-    buildStore();
-    updateUI();
+    refreshUpgradesDOM(true); // Force wipe upgrades
+    updateUIText();
 }
 
 function triggerAscension() {
@@ -267,7 +209,6 @@ function triggerAscension() {
 
     game.astralZekes += pending;
 
-    // Hard Reset
     game.zekes = 0;
     game.allTimeZekes = 0;
     game.memories = 0;
@@ -278,9 +219,9 @@ function triggerAscension() {
     rebirthTree.forEach(u => u.bought = false);
     
     calculateStats();
-    buildStore();
-    buildPrestigeTrees();
-    updateUI();
+    refreshUpgradesDOM(true);
+    updatePrestigeTreesUI();
+    updateUIText();
 }
 
 function buyTreeUpgrade(tree, id) {
@@ -299,48 +240,25 @@ function buyTreeUpgrade(tree, id) {
         }
     }
     calculateStats();
-    buildPrestigeTrees();
-    updateUI();
+    updatePrestigeTreesUI();
+    updateUIText();
 }
 
 // ==========================================
-// 6. UI BUILDERS (Runs on load)
+// 5. UI BUILDERS (DOM DIFFING = NO MORE STORE BUGS)
 // ==========================================
 const tooltip = document.getElementById('tooltip');
-
 function showTooltip(e, name, cost, desc, currencySymbol = 'Zekes') {
     tooltip.innerHTML = `<h4>${name}</h4><span class="tt-cost">Cost: ${formatNumber(cost)} ${currencySymbol}</span><div>${desc}</div>`;
     tooltip.style.display = 'block';
-    
-    let x = e.pageX + 15;
-    let y = e.pageY + 15;
-    
-    // Prevent flowing off screen right
+    let x = e.pageX + 15, y = e.pageY + 15;
     if (x + 200 > window.innerWidth) x = e.pageX - 215;
-    
-    tooltip.style.left = x + 'px';
-    tooltip.style.top = y + 'px';
+    tooltip.style.left = x + 'px'; tooltip.style.top = y + 'px';
 }
 function hideTooltip() { tooltip.style.display = 'none'; }
 
-function buildStore() {
-    // 1. Upgrades Grid (Only show unbought ones that meet reqs)
-    const upgContainer = document.getElementById('upgrades-container');
-    upgContainer.innerHTML = '';
-    upgrades.forEach(u => {
-        if (!u.bought && u.reqCheck()) {
-            let el = document.createElement('div');
-            el.className = 'upgrade-icon';
-            el.innerHTML = u.icon;
-            el.onclick = () => { buyUpgrade(u.id); hideTooltip(); };
-            el.onmouseenter = (e) => showTooltip(e, u.name, u.cost, u.desc);
-            el.onmousemove = (e) => showTooltip(e, u.name, u.cost, u.desc);
-            el.onmouseleave = hideTooltip;
-            upgContainer.appendChild(el);
-        }
-    });
-
-    // 2. Buildings List
+// Run ONCE on load to create the building rows
+function initBuildings() {
     const bldContainer = document.getElementById('buildings-container');
     bldContainer.innerHTML = '';
     buildings.forEach(b => {
@@ -348,7 +266,6 @@ function buildStore() {
         el.className = 'building-row';
         el.id = `ui_${b.id}`;
         el.onclick = () => buyBuilding(b.id);
-        
         el.innerHTML = `
             <div class="bld-info">
                 <span class="bld-name">${b.name}</span>
@@ -360,58 +277,106 @@ function buildStore() {
     });
 }
 
-function buildPrestigeTrees() {
+// Safely adds new upgrades to the DOM without destroying existing ones
+function refreshUpgradesDOM(forceWipe = false) {
+    const upgContainer = document.getElementById('upgrades-container');
+    if (forceWipe) upgContainer.innerHTML = '';
+    
+    upgrades.forEach(u => {
+        let existing = document.getElementById(`upg_${u.id}`);
+        if (u.bought) {
+            if (existing) existing.remove();
+        } else if (u.reqCheck()) {
+            if (!existing) {
+                let el = document.createElement('div');
+                el.className = 'upgrade-icon';
+                el.id = `upg_${u.id}`;
+                el.innerHTML = u.icon;
+                el.onclick = () => { buyUpgrade(u.id); hideTooltip(); };
+                el.onmouseenter = (e) => showTooltip(e, u.name, u.cost, u.desc);
+                el.onmousemove = (e) => showTooltip(e, u.name, u.cost, u.desc);
+                el.onmouseleave = hideTooltip;
+                upgContainer.appendChild(el);
+            }
+        }
+    });
+}
+
+// Run ONCE to build tree HTML structures
+function initPrestigeTrees() {
     const rtContainer = document.getElementById('rebirth-tree');
     rtContainer.innerHTML = '';
     rebirthTree.forEach(u => {
-        rtContainer.innerHTML += `
-            <div class="tree-item ${u.bought ? 'bought' : ''}">
-                <div>
-                    <strong>${u.name}</strong><br>
-                    <span style="font-size:0.8rem; color:#aaa;">${u.desc}</span>
-                </div>
-                ${u.bought ? '<span>Owned</span>' : `<button onclick="buyTreeUpgrade('rebirth', '${u.id}')">Cost: ${u.cost} M</button>`}
-            </div>
-        `;
+        let el = document.createElement('div');
+        el.className = 'tree-item';
+        el.id = `rt_ui_${u.id}`;
+        el.innerHTML = `<div><strong>${u.name}</strong><br><span style="font-size:0.8rem; color:#aaa;">${u.desc}</span></div>
+                        <div id="rt_btn_${u.id}"></div>`;
+        rtContainer.appendChild(el);
     });
 
     const atContainer = document.getElementById('ascension-tree');
     atContainer.innerHTML = '';
     ascensionTree.forEach(u => {
-        atContainer.innerHTML += `
-            <div class="tree-item ${u.bought ? 'bought' : ''}" style="border-color: ${u.bought ? '#ffd700' : '#444'}; background: ${u.bought ? '#332b00' : '#242424'}">
-                <div>
-                    <strong>${u.name}</strong><br>
-                    <span style="font-size:0.8rem; color:#aaa;">${u.desc}</span>
-                </div>
-                ${u.bought ? '<span style="color:#ffd700;">Owned</span>' : `<button style="background:#b8860b;" onclick="buyTreeUpgrade('ascension', '${u.id}')">Cost: ${u.cost} A</button>`}
-            </div>
-        `;
+        let el = document.createElement('div');
+        el.className = 'tree-item';
+        el.id = `at_ui_${u.id}`;
+        el.style.borderColor = '#444'; el.style.background = '#242424';
+        el.innerHTML = `<div><strong>${u.name}</strong><br><span style="font-size:0.8rem; color:#aaa;">${u.desc}</span></div>
+                        <div id="at_btn_${u.id}"></div>`;
+        atContainer.appendChild(el);
+    });
+    
+    updatePrestigeTreesUI();
+}
+
+// Safely updates button states in prestige trees
+function updatePrestigeTreesUI() {
+    rebirthTree.forEach(u => {
+        let el = document.getElementById(`rt_ui_${u.id}`);
+        let btn = document.getElementById(`rt_btn_${u.id}`);
+        if(el && btn) {
+            if (u.bought) {
+                el.classList.add('bought'); btn.innerHTML = '<span>Owned</span>';
+            } else {
+                el.classList.remove('bought'); btn.innerHTML = `<button onclick="buyTreeUpgrade('rebirth', '${u.id}')">Cost: ${u.cost} M</button>`;
+            }
+        }
+    });
+
+    ascensionTree.forEach(u => {
+        let el = document.getElementById(`at_ui_${u.id}`);
+        let btn = document.getElementById(`at_btn_${u.id}`);
+        if(el && btn) {
+            if (u.bought) {
+                el.style.borderColor = '#ffd700'; el.style.background = '#332b00';
+                btn.innerHTML = '<span style="color:#ffd700;">Owned</span>';
+            } else {
+                el.style.borderColor = '#444'; el.style.background = '#242424';
+                btn.innerHTML = `<button style="background:#b8860b;" onclick="buyTreeUpgrade('ascension', '${u.id}')">Cost: ${u.cost} A</button>`;
+            }
+        }
     });
 }
 
-function updateUI() {
+function updateUIText() {
     document.getElementById('zekeCount').innerText = Math.floor(game.zekes).toLocaleString();
     document.getElementById('cpsDisplay').innerText = formatNumber(game.cps);
     document.getElementById('clickValueDisplay').innerText = formatNumber(game.clickValue);
 
-    // Update Building Costs dynamically without rebuilding entire DOM
+    // Update Building Costs dynamically WITHOUT destroying the HTML
     buildings.forEach(b => {
         let costEl = document.getElementById(`cost_${b.id}`);
         let countEl = document.getElementById(`count_${b.id}`);
         let rowEl = document.getElementById(`ui_${b.id}`);
-        if (costEl) {
+        if (costEl && rowEl) {
             let cost = getBldCost(b);
             costEl.innerText = formatNumber(cost) + " Zekes";
             countEl.innerText = b.count;
-            rowEl.style.opacity = game.zekes >= cost ? "1" : "0.5"; // Dim if can't afford
+            rowEl.style.opacity = game.zekes >= cost ? "1" : "0.5";
         }
     });
     
-    // Store Upgrade visibility logic periodically checks to see if new things unlock
-    // (Optimization: In a massive game, you'd only run this specific check once every second, but here it's fine)
-    if (Math.random() < 0.1) buildStore(); 
-
     // Prestige UI
     document.getElementById('memoryCount').innerText = game.memories.toLocaleString();
     let memoryBoostValue = getAT('at_2').bought ? 2 : 1;
@@ -429,7 +394,6 @@ function updateUI() {
     document.getElementById('pendingAstral').innerText = pAst.toLocaleString();
     aBtn.disabled = pAst <= 0;
 
-    // Reveal Crit UI if unlocked
     document.getElementById('critDisplay').style.display = getAT('at_1').bought ? 'block' : 'none';
 }
 
@@ -442,40 +406,95 @@ function formatNumber(num) {
 }
 
 // ==========================================
-// 7. SAVE / LOAD
+// 6. SAVE / LOAD & MIGRATION
 // ==========================================
+
+function getCookie(name) {
+    let nameEQ = name + "=";
+    let ca = document.cookie.split(';');
+    for(let i = 0; i < ca.length; i++) {
+        let c = ca[i];
+        while (c.charAt(0) == ' ') c = c.substring(1, c.length);
+        if (c.indexOf(nameEQ) == 0) return decodeURIComponent(c.substring(nameEQ.length, c.length));
+    }
+    return null;
+}
+
+// MIGRATION SCRIPT: Automatically converts v4 and v5 cookies into the new v7 save format!
+function migrateOldSaves() {
+    let oldSaveData = getCookie("zekeClickerSave_v5") || getCookie("zekeClickerSave_v4") || getCookie("zekeClickerSave_v3");
+    if (oldSaveData) {
+        try {
+            let old = JSON.parse(oldSaveData);
+            game.zekes = old.zekes || 0;
+            game.allTimeZekes = old.zekes || 0; // Estimate
+            game.memories = old.rebirthTokens || 0;
+            game.astralZekes = old.ascensionPoints || 0;
+            
+            let bMap = {
+                'b_finger': old.zekeFingerCount || 0,
+                'b_toe': old.zekeToeCount || 0,
+                'b_shoe': old.zekeShoeCount || 0,
+                'b_glasses': old.zekeGlassesCount || 0,
+                'b_backpack': old.zekeBackpackCount || 0,
+                'b_liver': old.zekeLiverCount || 0,
+                'b_clone': old.zekeRobotCount || 0
+            };
+            
+            buildings.forEach(b => {
+                if (bMap[b.id] !== undefined) b.count = bMap[b.id];
+            });
+            
+            // Delete old cookies so migration doesn't run again
+            document.cookie = "zekeClickerSave_v5=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+            document.cookie = "zekeClickerSave_v4=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+            console.log("Successfully migrated old save!");
+        } catch(e) { console.error("Migration failed", e); }
+    }
+}
+
 function saveGame() {
     let saveObj = { game, buildings, upgrades, rebirthTree, ascensionTree };
-    localStorage.setItem("zekeClickerSave_v6", JSON.stringify(saveObj));
+    localStorage.setItem("zekeClickerSave_v8", JSON.stringify(saveObj));
 }
 
 function loadGame() {
-    let saveStr = localStorage.getItem("zekeClickerSave_v6");
+    // 1. Try to migrate if needed
+    if (!localStorage.getItem("zekeClickerSave_v8")) {
+        migrateOldSaves();
+    }
+    
+    // 2. Load v8 Save (or fallback to v7)
+    let saveStr = localStorage.getItem("zekeClickerSave_v8") || localStorage.getItem("zekeClickerSave_v7");
     if (saveStr) {
         try {
             let data = JSON.parse(saveStr);
             game = { ...game, ...data.game };
-            
-            // Merge arrays to persist state while allowing new code additions
             data.buildings.forEach(savedB => { let b = getBld(savedB.id); if (b) b.count = savedB.count; });
             data.upgrades.forEach(savedU => { let u = getUpg(savedU.id); if (u) u.bought = savedU.bought; });
             data.rebirthTree.forEach(savedU => { let u = getRT(savedU.id); if (u) u.bought = savedU.bought; });
             data.ascensionTree.forEach(savedU => { let u = getAT(savedU.id); if (u) u.bought = savedU.bought; });
         } catch (e) { console.error("Save load failed", e); }
     }
+    
+    // 3. Initialize DOM structures ONCE
+    initBuildings();
+    initPrestigeTrees();
+    
+    // 4. Update data
     calculateStats();
-    buildStore();
-    buildPrestigeTrees();
-    updateUI();
+    refreshUpgradesDOM();
+    updateUIText();
 }
 
 function restartGame() {
     if (confirm("Are you sure you want to HARD RESET? Everything is wiped!")) {
-        localStorage.removeItem("zekeClickerSave_v6");
+        localStorage.removeItem("zekeClickerSave_v8");
+        localStorage.removeItem("zekeClickerSave_v7");
         location.reload();
     }
 }
 
-// Init
+// Init Game Loop
 window.onload = loadGame;
-setInterval(saveGame, 5000); // Auto save every 5s
+setInterval(saveGame, 5000);
