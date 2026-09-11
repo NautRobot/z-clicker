@@ -9,7 +9,7 @@ let rbAutoCost = 2;
 let zekes = 0; 
 let baseClickGain = 1; 
 let baseIdleZekes = 0; 
-const costMultiplier = 2.5; 
+const costMultiplier = 1.2; 
 
 // Costs
 let zekeFingerCost = 15; 
