@@ -15,13 +15,13 @@ const COST_SCALAR = 1.15;
 
 // --- BUILDINGS (Added Lore/Flavor Text!) ---
 const buildings = [
-    { id: 'b_finger', name: "Zeke's Finger", baseCost: 15, baseCPS: 0.2, count: 0, desc: "A severed finger that clicks for you. Best not to ask where it came from." },
-    { id: 'b_toe', name: "Zeke's Toe", baseCost: 100, baseCPS: 1, count: 0, desc: "Slightly more surface area than a finger. Very gross." },
-    { id: 'b_shoe', name: "Zeke's Shoe", baseCost: 1100, baseCPS: 8, count: 0, desc: "A well-worn shoe that stomps the ground to unearth hidden Zekes." },
-    { id: 'b_glasses', name: "Zeke's Glasses", baseCost: 12000, baseCPS: 47, count: 0, desc: "Reveals the microscopic Zekes floating in the air around you." },
-    { id: 'b_backpack', name: "Zeke's Backpack", baseCost: 130000, baseCPS: 260, count: 0, desc: "A massive, heavy bag used to hoard thousands of Zekes at once." },
-    { id: 'b_liver', name: "Zeke's Liver", baseCost: 1400000, baseCPS: 1400, count: 0, desc: "Filters your bloodstream to produce pure, highly-refined Zekes." },
-    { id: 'b_clone', name: "Zeke Clone", baseCost: 20000000, baseCPS: 7800, count: 0, desc: "A perfect genetic replica designed for the sole purpose of gathering more Zekes." }
+    { id: 'b_finger', name: "Zeke's Finger", baseCost: 15, baseCPS: 0.2, count: 0, desc: "A severed finger that clicks for you. Best not to ask where it came from. 0.2 CPS" },
+    { id: 'b_toe', name: "Zeke's Toe", baseCost: 100, baseCPS: 1, count: 0, desc: "Slightly more surface area than a finger. Very gross. 1 CPS." },
+    { id: 'b_shoe', name: "Zeke's Shoe", baseCost: 1100, baseCPS: 8, count: 0, desc: "A well-worn shoe that stomps the ground to unearth hidden Zekes. 8 CPS." },
+    { id: 'b_glasses', name: "Zeke's Glasses", baseCost: 12000, baseCPS: 47, count: 0, desc: "Reveals the microscopic Zekes floating in the air around you. 47 CPS." },
+    { id: 'b_backpack', name: "Zeke's Backpack", baseCost: 130000, baseCPS: 260, count: 0, desc: "A massive, heavy bag used to hoard thousands of Zekes at once. 260 CPS." },
+    { id: 'b_liver', name: "Zeke's Liver", baseCost: 1400000, baseCPS: 1400, count: 0, desc: "Filters your bloodstream to produce pure, highly-refined Zekes. 1400 CPS." },
+    { id: 'b_clone', name: "Zeke Clone", baseCost: 20000000, baseCPS: 7800, count: 0, desc: "A perfect genetic replica designed for the sole purpose of gathering more Zekes. 7800 CPS." }
 ];
 
 // --- NORMAL UPGRADES ---
