@@ -286,7 +286,7 @@
         // Every 60 seconds of active play, give 1 point
         if (activeSeconds >= 60) {
           activeSeconds = 0;
-          const userPointsRef = ref(db, `users/${user.uid}/points`);
+          const userPointsRef = ref(db, `users/${user.uid}/zekePoints`);
           
           runTransaction(userPointsRef, (currentPoints) => {
             return (currentPoints || 0) + 1;
